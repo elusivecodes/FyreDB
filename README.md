@@ -502,7 +502,7 @@ Add a UNION ALL query.
 - `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
 
 ```php
-$builder->unionALL($query);
+$builder->unionAll($query);
 ```
 
 **Where**
