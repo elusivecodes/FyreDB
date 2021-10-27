@@ -1,32 +1,67 @@
 <?php
+declare(strict_types=1);
 
-namespace Fyre;
+namespace Fyre\DB;
+
+use
+    Closure;
 
 use function
     array_merge,
-    is_string;
+    is_array;
 
+/**
+ * QueryBuilder
+ */
 class QueryBuilder
 {
 
     protected Connection $connection;
 
-    use QueryGenerator;
+    protected string $action = 'select';
+    protected array $tables = [];
+    protected array $data = [];
+    protected Closure|QueryBuilder|QueryLiteral|string $insertQuery = '';
+    protected array $insertColumns = [];
+    protected bool $distinct = false;
+    protected array $fields = [];
+    protected array $joins = [];
+    protected array $conditions = [];
+    protected array $orderBy = [];
+    protected array $groupBy = [];
+    protected array $having = [];
+    protected int $offset = 0;
+    protected int|null $limit = null;
+    protected string $epilog = '';
+    protected array $unions = [];
+    protected bool $unionAll = false;
+    protected string $updateKey = '';
 
+    /**
+     * New QueryBuilder constructor.
+     * @param Connection $connection The connection.
+     */
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-
-        $this->reset();
     }
 
-    public function delete(array $options = []): string|bool
+    /**
+     * Set query as DELETE.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function delete(): self
     {
         $this->action = 'delete';
 
-        return $this->execute($options);
+        return $this;
     }
 
+    /**
+     * Set the DISTINCT clause.
+     * @param bool $distinct Whether to set the DISTINCT clause.
+     * @return QueryBuilder The QueryBuilder.
+     */
     public function distinct(bool $distinct = true): self
     {
         $this->distinct = $distinct;
@@ -34,60 +69,138 @@ class QueryBuilder
         return $this;
     }
 
-    public function for(string|null $for = null): self
+    /**
+     * Set the epilog.
+     * @param string $epilog The epilog.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function epilog(string $epilog = ''): self
     {
-        $this->for = $for;
+        $this->epilog = $epilog;
 
         return $this;
     }
 
-    public function from(string|array $tables): self
+    /**
+     * Add an EXCEPT query.
+     * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function except(Closure|QueryBuilder|QueryLiteral|string $query): self
     {
-        if (is_string($tables)) {
-            $tables = [$tables];
-        }
-
-        $this->tables = array_merge($this->tables, $tables);
+        $this->unions[] = [
+            'type' => 'except',
+            'query' => $query,
+        ];
 
         return $this;
     }
 
-    public function get(array $options = []): Query|string|bool
+    /**
+     * Execute the query.
+     * @return ResultSet|bool The query result.
+     * @throws DBException if the query failed.
+     */
+    public function execute(): ResultSet|bool
     {
-        return $this->execute($options);
+        $query = $this->sql();
+
+        return $this->connection->query($query);
     }
 
+    /**
+     * Set the GROUP BY fields.
+     * @param string|array $fields The fields.
+     * @return QueryBuilder The QueryBuilder.
+     */
     public function groupBy(string|array $fields): self
     {
-        if (is_string($fields)) {
-            $fields = [$fields];
+        if (is_array($fields)) {
+            $this->groupBy = array_merge($this->groupBy, $fields);
+        } else {
+            $this->groupBy[] = $fields;
         }
 
-        $this->groupBy = array_merge($this->groupBy, $fields);
+        return $this;
+    }
+
+    /**
+     * Set the HAVING conditions.
+     * @param string|array $conditions The conditions.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function having(string|array $conditions): self
+    {
+        if (is_array($conditions)) {
+            $this->having = array_merge($this->having, $conditions);
+        } else {
+            $this->having[] = $conditions;
+        }
 
         return $this;
     }
 
-    public function having(array $conditions): self
-    {
-        $this->having = array_merge($this->having, $conditions);
-
-        return $this;
-    }
-
-    public function insert(array $data, array $options = []): string|bool
-    {
-        return $this->insertBatch([$data], $options);
-    }
-
-    public function insertBatch(array $data, array $options = []): string|bool
+    /**
+     * Set query as an INSERT.
+     * @param array $data The data.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function insert(array $data): self
     {
         $this->action = 'insert';
         $this->data = $data;
 
-        return $this->execute($options);
+        return $this;
     }
 
+    /**
+     * Set query as a batch INSERT.
+     * @param array $data The data.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function insertBatch(array $data): self
+    {
+        $this->action = 'insertBatch';
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Set query as an INSERT from another query.
+     * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @param array| $columns The columns.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function insertFrom(Closure|QueryBuilder|QueryLiteral|string $query, array $columns = []): self
+    {
+        $this->action = 'insertFrom';
+        $this->insertQuery = $query;
+        $this->insertColumns = $columns;
+
+        return $this;
+    }
+
+    /**
+     * Add an INTERSECT query.
+     * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function intersect(Closure|QueryBuilder|QueryLiteral|string $query): self
+    {
+        $this->unions[] = [
+            'type' => 'intersect',
+            'query' => $query,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Set the JOIN tables.
+     * @param array $joins The joins.
+     * @return QueryBuilder The QueryBuilder.
+     */
     public function join(array $joins): self
     {
         $this->joins = array_merge($this->joins, $joins);
@@ -95,6 +208,12 @@ class QueryBuilder
         return $this;
     }
 
+    /**
+     * Set the LIMIT and OFFSET clauses.
+     * @param int|null $limit The limit.
+     * @param int $offset The offset.
+     * @return QueryBuilder The QueryBuilder.
+     */
     public function limit(int|null $limit = null, int $offset = 0): self
     {
         $this->limit = $limit;
@@ -103,86 +222,219 @@ class QueryBuilder
         return $this;
     }
 
-    public function orderBy(array $fields): self
+    /**
+     * Create a QueryLiteral.
+     * @param string $string The literal string.
+     * @return QueryLiteral A new QueryLiteral.
+     */
+    public function literal(string $string): QueryLiteral
     {
-        $this->orderBy = array_merge($this->orderBy, $fields);
+        return new QueryLiteral($string);
+    }
+
+    /**
+     * Set the ORDER BY fields.
+     * @param string|array $fields The fields.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function orderBy(string|array $fields): self
+    {
+        if (is_array($fields)) {
+            $this->orderBy = array_merge($this->orderBy, $fields);
+        } else {
+            $this->orderBy[] = $fields;
+        }
 
         return $this;
     }
 
-    // public function replace(array $data, array $options = []): string|bool
-    // {
-    //     $this->action = 'replace';
-    //     $this->data = $data;
+    /**
+     * Set query as a REPLACE.
+     * @param array $data The data.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function replace(array $data): self
+    {
+        $this->action = 'replace';
+        $this->data = $data;
 
-    //     return $this->execute($options);
-    // }
+        return $this;
+    }
 
-    public function reset(): self
+    /**
+     * Set query as a batch REPLACE.
+     * @param array $data The data.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function replaceBatch(array $data): self
+    {
+        $this->action = 'replaceBatch';
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Set the SELECT fields.
+     * @param string|array $fields The fields.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function select(string|array $fields = '*'): self
     {
         $this->action = 'select';
-        $this->tables = [];
-        $this->distinct = false;
-        $this->fields = [];
-        $this->joins = [];
-        $this->conditions = [];
-        $this->orderBy = [];
-        $this->groupBy = [];
-        $this->having = [];
-        $this->offset = 0;
-        $this->limit = null;
-        $this->for = null;
-        $this->data = [];
+
+        if (is_array($fields)) {
+            $this->fields = array_merge($this->fields, $fields);
+        } else {
+            $this->fields[] = $fields;
+        }
 
         return $this;
     }
 
-    public function select(array $fields): self
+    /**
+     * Generate the SQL query.
+     * @return string The SQL query.
+     */
+    public function sql(): string
     {
-        $this->fields = array_merge($this->fields, $fields);
+        $generator = $this->connection->generator();
+
+        switch ($this->action) {
+            case 'insert':
+                $query = $generator->buildInsert($this->tables, $this->data);
+                break;
+            case 'insertBatch':
+                $query = $generator->buildInsertBatch($this->tables, $this->data);
+                break;
+            case 'insertFrom':
+                $query = $generator->buildInsertFrom($this->tables, $this->insertQuery, $this->insertColumns);
+                break;
+            case 'replace':
+                $query = $generator->buildReplace($this->tables, $this->data);
+                break;
+            case 'replaceBatch':
+                $query = $generator->buildReplaceBatch($this->tables, $this->data);
+                break;
+            case 'update':
+                $query = $generator->buildUpdate($this->tables, $this->data);
+                $query .= $generator->buildJoin($this->joins);
+                $query .= $generator->buildWhere($this->conditions);
+                break;
+            case 'updateBatch':
+                $query = $generator->buildUpdateBatch($this->tables, $this->data, $this->updateKey);
+                break;
+            case 'delete':
+                $query = $generator->buildDelete($this->tables);
+                $query .= $generator->buildJoin($this->joins);
+                $query .= $generator->buildWhere($this->conditions);
+                $query .= $generator->buildOrderBy($this->orderBy);
+                $query .= $generator->buildLimit($this->limit, $this->offset);
+                break;
+            case 'select':
+                $query = $generator->buildSelect($this->tables, $this->fields, $this->distinct);
+                $query .= $generator->buildJoin($this->joins);
+                $query .= $generator->buildWhere($this->conditions);
+                $query .= $generator->buildOrderBy($this->orderBy);
+                $query .= $generator->buildGroupBy($this->groupBy);
+                $query .= $generator->buildHaving($this->having);
+                $query .= $generator->buildLimit($this->limit, $this->offset);
+                $query .= $generator->buildEpilog($this->epilog);
+                $query .= $generator->buildUnion($this->unions);
+                break;
+        }
+
+        return $query;
+    }
+
+    /**
+     * Set the tables.
+     * @param string|array $tables The tables.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function table(string|array $tables): self
+    {
+        if (is_array($tables)) {
+            $this->tables = array_merge($this->tables, $tables);
+        } else {
+            $this->tables[] = $tables;
+        }
 
         return $this;
     }
 
-    public function update(array $data, array $options = []): string|bool
+    /**
+     * Set query as an UPDATE.
+     * @param array $data The data.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function update(array $data): self
     {
         $this->action = 'update';
         $this->data = $data;
 
-        return $this->execute($options);
+        return $this;
     }
 
-    // public function updateBatch(array $data, string $lookupKey, array $options = []): string|bool
-    // {
-    //     $this->action = 'update';
-    //     $this->data = $data;
-
-    //     return $this->execute($options);
-    // }
-
-    public function where(array $conditions): self
+    /**
+     * Set query as a batch UPDATE.
+     * @param array $data The data.
+     * @param string $updateKey The key to use for updating.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function updateBatch(array $data, string $updateKey): self
     {
-        $this->conditions = array_merge($this->conditions, $conditions);
+        $this->action = 'updateBatch';
+        $this->data = $data;
+        $this->updateKey = $updateKey;
 
         return $this;
     }
 
-    protected function execute(array $options = []): Query|string|bool
+    /**
+     * Add an UNION DISTINCT query.
+     * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function union(Closure|QueryBuilder|QueryLiteral|string $query): self
     {
-        $options['reset'] ??= true;
-        $options['returnQuery'] ??= false;
+        $this->unions[] = [
+            'type' => 'distinct',
+            'query' => $query,
+        ];
 
-        $query = $this->buildQuery();
+        return $this;
+    }
 
-        if ($options['reset']) {
-            $this->reset();
+    /**
+     * Add an UNION ALL query.
+     * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function unionAll(Closure|QueryBuilder|QueryLiteral|string $query): self
+    {
+        $this->unions[] = [
+            'type' => 'all',
+            'query' => $query
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Set the WHERE conditions.
+     * @param string|array $conditions The conditions.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function where(string|array $conditions): self
+    {
+        if (is_array($conditions)) {
+            $this->conditions = array_merge($this->conditions, $conditions);
+        } else {
+            $this->conditions[] = $conditions;
         }
 
-        if ($options['returnQuery']) {
-            return $query;
-        }
-
-        return $this->connection->query($query);
+        return $this;
     }
 
 }

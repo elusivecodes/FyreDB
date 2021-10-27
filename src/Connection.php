@@ -1,28 +1,27 @@
 <?php
+declare(strict_types=1);
 
-namespace Fyre;
+namespace Fyre\DB;
 
 use
-    mysqli;
-
-use const
-    FILTER_VALIDATE_FLOAT,
-    MYSQLI_CLIENT_COMPRESS,
-    MYSQLI_INIT_COMMAND,
-    MYSQLI_OPT_CONNECT_TIMEOUT,
-    MYSQLI_SET_CHARSET_NAME;
+    Closure,
+    Exception,
+    Fyre\DB\Exceptions\DBException,
+    Throwable;
 
 use function
-    array_replace_recursive,
-    filter_var,
-    mysql_init;
+    array_replace_recursive;
 
-class Connection
+/**
+ * Connection
+ */
+abstract class Connection
 {
 
     protected static array $defaults = [
-        'host' => '',
+        'host' => '127.0.0.1',
         'username' => '',
+        'password' => '',
         'database' => '',
         'port' => '3306',
         'collation' => 'utf8mb4_unicode_ci',
@@ -40,126 +39,178 @@ class Connection
 
     protected array $config;
 
-    protected mysqli $connection;
+    protected QueryGenerator $generator;
 
-    public function __construct(array $config)
+    /**
+     * New Connection constructor.
+     * @param array $config Options for the handler.
+     */
+    public function __construct(array $config = [])
     {
-        $this->config = array_replace_recursive(static::$defaults, $config);
+        $this->config = array_replace_recursive(static::$defaults, self::$defaults, $config);
 
-        $this->connection = mysqli_init();
-
-        if ($this->config['ssl'] && $this->config['ssl']['key']) {
-            $this->connection->ssl_set(
-                $this->config['ssl']['key'] ?? null,
-                $this->config['ssl']['cert'] ?? null,
-                $this->config['ssl']['ca'] ?? null,
-                $this->config['ssl']['capath'] ?? null,
-                $this->config['ssl']['cipher'] ?? null
-            );
-        }
-
-        if ($this->config['timeout']) {
-            $this->connection->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->config['timeout']);
-        }
-
-        if ($this->config['charset']) {
-            $this->connection->options(MYSQLI_SET_CHARSET_NAME, $this->config['charset']);
-        }
-
-        if ($this->config['collation']) {
-            $this->connection->options(MYSQLI_INIT_COMMAND, 'SET collation_connection = '.$this->config['collation']);
-        }
-
-        $flags = 0;
-
-        if ($this->config['compress']) {
-            $flags |= MYSQLI_CLIENT_COMPRESS;
-        }
-
-        $result = $this->connection->real_connect(
-            $this->config['host'],
-            $this->config['username'],
-            $this->config['password'],
-            $this->config['database'],
-            (int) $this->config['port'],
-            '',
-            $flags
-        );
-
-        if (!$result) {
-            throw SQLException::forConnectionFailed();
-        }
+        $this->connect();
     }
 
-    public function affectedRows(): int
-    {
-        return (int) $this->connection->affected_rows;
-    }
+    /**
+     * Get the number of affected rows.
+     * @param int The number of affected rows.
+     */
+    abstract public function affectedRows(): int;
 
+    /**
+     * Begin a transaction.
+     * @return bool TRUE if successful, otherwise FALSE.
+     */
     public function begin(): bool
     {
         return $this->query('START TRANSACTION');
     }
 
+    /**
+     * Create a QueryBuilder.
+     * @return QueryBuilder A new QueryBuilder.
+     */
     public function builder(): QueryBuilder
     {
         return new QueryBuilder($this);
     }
 
-    public function close(): bool
-    {
-        return $this->connection->close();
-    }
-
+    /**
+     * Commit a transaction.
+     * @return bool TRUE if successful, otherwise FALSE.
+     */
     public function commit(): bool
     {
         return $this->query('COMMIT');
     }
 
-    public function insertId(): int
+    /**
+     * Connect to the database.
+     */
+    abstract public function connect(): void;
+
+    /**
+     * Disconnect from the database.
+     */
+    abstract public function disconnect(): bool;
+
+    /**
+     * Get the query generator.
+     * @return QueryGenerator The query generator.
+     */
+    public function generator(): QueryGenerator
     {
-        return (int) $this->connection->insert_id;
+        return $this->generator ??= new QueryGenerator($this);
     }
 
-    public function query(string $query): Query|bool
-    {
-        $result = $this->connection->query($query);
+    /**
+     * Get the connection charset.
+     * @return string The connection charset.
+     */
+    abstract public function getCharset(): string;
 
-        if ($result === false) {
-            throw SQLException::forQueryFailed($this->connection->error);
-        }
+    /**
+     * Get the connection collation.
+     * @return string The connection collation.
+     */
+    abstract public function getCollation(): string;
+
+    /**
+     * Get the config.
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
+     * Get the last connection error.
+     * @return string The last  connection error.
+     */
+    abstract public function getError(): string;
+
+    /**
+     * Get the last inserted ID.
+     * @return int The last inserted ID.
+     */
+    abstract public function insertId(): int;
+
+    /**
+     * Execute a SQL query.
+     * @param string $query The SQL query.
+     * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
+     * @throws DBException if the query failed.
+     */
+    public function query(string $query): ResultSet|bool
+    {
+        $result = $this->rawQuery($query);
 
         if ($result === true) {
             return $result;
         }
 
-        return new Query($result);
+        if ($result === false) {
+            $error = $this->getError();
+
+            throw DBException::forQueryError($error);
+        }
+
+        return $this->results($result);
     }
 
-    public function quote(string|int|float|bool|null $value): string
-    {
-        if ($value === null) {
-            return 'NULL';
-        }
+    /**
+     * Quote a string for use in SQL queries.
+     * @param string $value The value to quote.
+     * @return string The quoted value.
+     */
+    abstract public function quote(string $value): string;
 
-        if ($value === false) {
-            return '0';
-        }
+    /**
+     * Execute a raw SQL query.
+     * @param string $query The SQL query.
+     * @return mixed The raw result.
+     */
+    abstract public function rawQuery(string $query);
 
-        if ($value === true) {
-            return '1';
-        }
+    /**
+     * Build a result set from a raw result.
+     * @param mixed $result The raw result.
+     * @return ResultSet The result set.
+     */
+    abstract public function results($result): ResultSet;
 
-        if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false) {
-            return (string) (float) $value;
-        }
-
-        return '"'.$this->connection->real_escape_string($value).'"';
-    }
-
+    /**
+     * Rollback a transaction.
+     * @return bool TRUE if successful, otherwise FALSE.
+     */
     public function rollback(): bool
     {
         return $this->query('ROLLBACK');
+    }
+
+    /**
+     * Execute a callback inside a database transaction.
+     * @param Closure $callback The callback.
+     * @throws Throwable if the callback throws an exception.
+     */
+    public function transactional(Closure $callback): void
+    {
+        try {
+            $this->begin();
+    
+            $result = $callback($this);
+        } catch (Throwable $e) {
+            $this->rollback();
+
+            throw $e;
+        }
+
+        if ($result !== false) {
+            $this->commit();
+        } else {
+            $this->rollback();
+        }
     }
 
 }
