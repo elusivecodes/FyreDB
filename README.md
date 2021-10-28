@@ -535,6 +535,14 @@ The *ResultSet* is an implementation of an *Iterator* and can be used in a *fore
 foreach ($result AS $row) { }
 ```
 
+**All**
+
+Get the results as an array.
+
+```php
+$array = $result->all();
+```
+
 **Column Count**
 
 Get the column count.
@@ -591,12 +599,4 @@ Get the last result.
 
 ```php
 $last = $result->last();
-```
-
-**To Array**
-
-Get the results as an array.
-
-```php
-$array = $result->toArray();
 ```

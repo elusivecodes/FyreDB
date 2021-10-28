@@ -37,7 +37,7 @@ final class ResultSetTest extends TestCase
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 

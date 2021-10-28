@@ -32,7 +32,7 @@ trait DeleteTest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 

@@ -28,6 +28,15 @@ class MySQLResultSet extends ResultSet
     }
 
     /**
+     * Get the results as an array.
+     * @return array The results.
+     */
+    public function all(): array
+    {
+        return $this->result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
      * Get the column count.
      * @return int The column count.
      */
@@ -84,15 +93,6 @@ class MySQLResultSet extends ResultSet
     public function row(): array|null
     {
         return $this->result->fetch_array(MYSQLI_ASSOC);
-    }
-
-    /**
-     * Get the results as an array.
-     * @return array The results.
-     */
-    public function toArray(): array
-    {
-        return $this->result->fetch_all(MYSQLI_ASSOC);
     }
 
 }

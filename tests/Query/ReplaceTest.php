@@ -85,7 +85,7 @@ trait Replacetest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 

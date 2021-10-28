@@ -43,7 +43,7 @@ trait TransactionTest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 
@@ -71,7 +71,7 @@ trait TransactionTest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 
@@ -106,7 +106,7 @@ trait TransactionTest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 
@@ -134,7 +134,7 @@ trait TransactionTest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 
@@ -164,7 +164,7 @@ trait TransactionTest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 

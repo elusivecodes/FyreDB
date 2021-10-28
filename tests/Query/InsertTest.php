@@ -63,7 +63,7 @@ trait InsertTest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 

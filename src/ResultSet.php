@@ -16,6 +16,12 @@ abstract class ResultSet implements Countable, Iterator
     protected int $index = 0;
 
     /**
+     * Get the results as an array.
+     * @return array The results.
+     */
+    abstract public function all(): array;
+
+    /**
      * Get the column count.
      * @return int The column count.
      */
@@ -102,12 +108,6 @@ abstract class ResultSet implements Countable, Iterator
      * @return array|null The current result.
      */
     abstract public function row(): array|null;
-
-    /**
-     * Get the results as an array.
-     * @return array The results.
-     */
-    abstract public function toArray(): array;
 
     /**
      * Determine if the current index is valid.

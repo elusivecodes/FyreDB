@@ -92,7 +92,7 @@ trait UpdateTest
                 ->table('test')
                 ->select()
                 ->execute()
-                ->toArray()
+                ->all()
         );
     }
 
