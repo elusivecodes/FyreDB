@@ -53,6 +53,14 @@ abstract class Connection
     }
 
     /**
+     * Connection deconstructor.
+     */
+    public function __deconstruct()
+    {
+        $this->disconnect();
+    }
+
+    /**
      * Get the number of affected rows.
      * @param int The number of affected rows.
      */
