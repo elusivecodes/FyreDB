@@ -53,9 +53,9 @@ abstract class Connection
     }
 
     /**
-     * Connection deconstructor.
+     * Connection destructor.
      */
-    public function __deconstruct()
+    public function __destruct()
     {
         $this->disconnect();
     }
