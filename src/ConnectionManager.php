@@ -23,14 +23,10 @@ abstract class ConnectionManager
     protected static array $instances = [];
 
     /**
-     * Clear (and close) instances.
+     * Clear instances.
      */
     public static function clear(): void
     {
-        foreach (static::$instances AS $instance) {
-            $instance->close();
-        };
-
         static::$instances = [];
     }
 
