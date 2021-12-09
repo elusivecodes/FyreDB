@@ -17,7 +17,7 @@
 **Using Composer**
 
 ```
-composer install fyre/db
+composer require fyre/db
 ```
 
 In PHP:
