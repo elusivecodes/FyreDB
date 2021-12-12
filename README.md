@@ -203,7 +203,7 @@ $connection->transactional($callback);
 If the callback returns *false* or throws an *Exception* the transaction will be rolled back, otherwise it will be committed.
 
 
-## MySQL
+### MySQL
 
 The MySQL connection can be loaded using custom configuration.
 
@@ -217,7 +217,7 @@ The MySQL connection can be loaded using custom configuration.
     - `port` is a number indicating the MySQL port, and will default to *3306*.
     - `collation` is a string representing the collation, and will default to "*utf8mb4_unicode_ci*".
     - `charset` is a string representing the character set, and will default to "*utf8mb4*".
-    - `compress` is a boolean indicating whether to enable compression, andw ill default to *true*.
+    - `compress` is a boolean indicating whether to enable compression, and will default to *true*.
     - `timeout` is a number indicating the connection timeout.
     - `ssl` is an array containing SSL options.
         - `key` is a string representing the path to the key file.
