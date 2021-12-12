@@ -6,7 +6,7 @@ namespace Tests\QueryBuilder;
 trait DeleteTest
 {
 
-    public function testQueryBuilderDelete()
+    public function testDelete()
     {
         $this->assertEquals(
             'DELETE FROM test USING test',
@@ -17,7 +17,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteAlias()
+    public function testDeleteAlias()
     {
         $this->assertEquals(
             'DELETE FROM test AS alt USING alt',
@@ -30,7 +30,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteMultipleTables()
+    public function testDeleteMultipleTables()
     {
         $this->assertEquals(
             'DELETE FROM test AS alt, test2 AS alt2 USING alt, alt2',
@@ -44,7 +44,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteJoin()
+    public function testDeleteJoin()
     {
         $this->assertEquals(
             'DELETE FROM test USING test INNER JOIN test2 ON test2.id = test.id',
@@ -63,7 +63,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteWhere()
+    public function testDeleteWhere()
     {
         $this->assertEquals(
             'DELETE FROM test USING test WHERE id = 1',
@@ -77,7 +77,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteOrderBy()
+    public function testDeleteOrderBy()
     {
         $this->assertEquals(
             'DELETE FROM test USING test ORDER BY id ASC',
@@ -89,7 +89,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteOrderByArray()
+    public function testDeleteOrderByArray()
     {
         $this->assertEquals(
             'DELETE FROM test USING test ORDER BY id ASC, value DESC',
@@ -104,7 +104,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteLimit()
+    public function testDeleteLimit()
     {
         $this->assertEquals(
             'DELETE FROM test USING test LIMIT 1',
@@ -116,7 +116,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteOffset()
+    public function testDeleteOffset()
     {
         $this->assertEquals(
             'DELETE FROM test USING test LIMIT 10, 20',
@@ -128,7 +128,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryBuilderDeleteFull()
+    public function testDeleteFull()
     {
         $this->assertEquals(
             'DELETE FROM test USING test INNER JOIN test2 ON test2.id = test.id WHERE test.name = "test" ORDER BY test.id ASC LIMIT 10, 20',

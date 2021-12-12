@@ -6,7 +6,7 @@ namespace Tests\Query;
 trait DeleteTest
 {
 
-    public function testQueryDelete()
+    public function testDelete()
     {
         $this->db->builder()
             ->table('test')
@@ -36,7 +36,7 @@ trait DeleteTest
         );
     }
 
-    public function testQueryDeleteAffectedRows()
+    public function testDeleteAffectedRows()
     {
         $this->db->builder()
             ->table('test')

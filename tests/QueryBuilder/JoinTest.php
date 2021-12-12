@@ -9,7 +9,7 @@ use
 trait JoinTest
 {
 
-    public function testQueryBuilderJoinUsing()
+    public function testJoinUsing()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 USING id',
@@ -26,7 +26,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditions()
+    public function testJoinConditions()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id',
@@ -45,7 +45,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinType()
+    public function testJoinType()
     {
         $this->assertEquals(
             'SELECT * FROM test LEFT OUTER JOIN test2 ON test2.id = test.id',
@@ -65,7 +65,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinTableKey()
+    public function testJoinTableKey()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id',
@@ -83,7 +83,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinAlias()
+    public function testJoinAlias()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 AS t2 ON t2.id = test.id',
@@ -103,7 +103,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinAliasKey()
+    public function testJoinAliasKey()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 AS t2 ON t2.id = test.id',
@@ -122,7 +122,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinQueryBuilder()
+    public function testJoinQueryBuilder()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN (SELECT * FROM test) AS t2 ON t2.id = test.id',
@@ -143,7 +143,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinClosure()
+    public function testJoinClosure()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN (SELECT * FROM test) AS t2 ON t2.id = test.id',
@@ -165,7 +165,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinLiteral()
+    public function testJoinLiteral()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN (SELECT * FROM test) AS t2 ON t2.id = test.id',
@@ -186,7 +186,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinMultipleJoins()
+    public function testJoinMultipleJoins()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id INNER JOIN test3 ON test3.id = test.id',
@@ -209,7 +209,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinMultipleJoinCalls()
+    public function testJoinMultipleJoinCalls()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id INNER JOIN test3 ON test3.id = test.id',
@@ -234,7 +234,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsInteger()
+    public function testJoinConditionsInteger()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.id = 1',
@@ -253,7 +253,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsFloat()
+    public function testJoinConditionsFloat()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value = 1.25',
@@ -272,7 +272,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsBooleanTrue()
+    public function testJoinConditionsBooleanTrue()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value = 1',
@@ -291,7 +291,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsBooleanFalse()
+    public function testJoinConditionsBooleanFalse()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value = 0',
@@ -310,7 +310,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsEqual()
+    public function testJoinConditionsEqual()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value = 1',
@@ -329,7 +329,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsNotEqual()
+    public function testJoinConditionsNotEqual()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value != 1',
@@ -348,7 +348,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsGreaterThan()
+    public function testJoinConditionsGreaterThan()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value > 1',
@@ -367,7 +367,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsLessThan()
+    public function testJoinConditionsLessThan()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value < 1',
@@ -386,7 +386,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsGreaterThanOrEqual()
+    public function testJoinConditionsGreaterThanOrEqual()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value >= 1',
@@ -405,7 +405,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsLessThanOrEqual()
+    public function testJoinConditionsLessThanOrEqual()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value <= 1',
@@ -424,7 +424,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsIsNull()
+    public function testJoinConditionsIsNull()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value IS NULL',
@@ -443,7 +443,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsIsNotNull()
+    public function testJoinConditionsIsNotNull()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value IS NOT NULL',
@@ -462,7 +462,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsLike()
+    public function testJoinConditionsLike()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.name LIKE "%test%"',
@@ -481,7 +481,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsNotLike()
+    public function testJoinConditionsNotLike()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.name NOT LIKE "%test%"',
@@ -500,7 +500,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsIn()
+    public function testJoinConditionsIn()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value IN (1, 2, 3)',
@@ -519,7 +519,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsNotIn()
+    public function testJoinConditionsNotIn()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value NOT IN (1, 2, 3)',
@@ -538,7 +538,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsMultiple()
+    public function testJoinConditionsMultiple()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id AND test2.value = 1',
@@ -558,7 +558,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsAnd()
+    public function testJoinConditionsAnd()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON (test2.id = test.id AND test2.value = 1)',
@@ -580,7 +580,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsOr()
+    public function testJoinConditionsOr()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON (test2.id = test.id OR test2.value = 1)',
@@ -602,7 +602,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsGroups()
+    public function testJoinConditionsGroups()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON (test2.id = test.id AND (test2.value = 1 OR test2.value IS NULL))',
@@ -627,7 +627,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsQueryBuilder()
+    public function testJoinConditionsQueryBuilder()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value IN (SELECT id FROM test)',
@@ -648,7 +648,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsClosure()
+    public function testJoinConditionsClosure()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value IN (SELECT id FROM test)',
@@ -671,7 +671,7 @@ trait JoinTest
         );
     }
 
-    public function testQueryBuilderJoinConditionsLiteral()
+    public function testJoinConditionsLiteral()
     {
         $this->assertEquals(
             'SELECT * FROM test INNER JOIN test2 ON test2.value = UPPER(test.test)',

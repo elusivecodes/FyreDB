@@ -9,7 +9,7 @@ use
 trait InsertTest
 {
 
-    public function testQueryBuilderInsert()
+    public function testInsert()
     {
         $this->assertEquals(
             'INSERT INTO test (name, value) VALUES ("Test", 1)',
@@ -23,7 +23,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertQueryBuilder()
+    public function testInsertQueryBuilder()
     {
         $this->assertEquals(
             'INSERT INTO test (name, value) VALUES ("Test", (SELECT id FROM test LIMIT 1))',
@@ -40,7 +40,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertClosure()
+    public function testInsertClosure()
     {
         $this->assertEquals(
             'INSERT INTO test (name, value) VALUES ("Test", (SELECT id FROM test LIMIT 1))',
@@ -59,7 +59,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertLiteral()
+    public function testInsertLiteral()
     {
         $this->assertEquals(
             'INSERT INTO test (name, value) VALUES ("Test", 2 * 10)',
@@ -75,7 +75,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertBatch()
+    public function testInsertBatch()
     {
         $this->assertEquals(
             'INSERT INTO test (name, value) VALUES ("Test 1", 1), ("Test 2", 2)',
@@ -95,7 +95,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertBatchQueryBuilder()
+    public function testInsertBatchQueryBuilder()
     {
         $this->assertEquals(
             'INSERT INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
@@ -121,7 +121,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertBatchClosure()
+    public function testInsertBatchClosure()
     {
         $this->assertEquals(
             'INSERT INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
@@ -151,7 +151,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertBatchLiteral()
+    public function testInsertBatchLiteral()
     {
         $this->assertEquals(
             'INSERT INTO test (name, value) VALUES ("Test 1", 2 * 10), ("Test 2", 2 * 20)',
@@ -175,7 +175,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertFromQueryBuilder()
+    public function testInsertFromQueryBuilder()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -190,7 +190,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertFromClosure()
+    public function testInsertFromClosure()
     {
         $this->assertEquals(
             'INSERT INTO test VALUES SELECT * FROM test2',
@@ -204,7 +204,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertFromLiteral()
+    public function testInsertFromLiteral()
     {
         $this->assertEquals(
             'INSERT INTO test VALUES SELECT * FROM test2',
@@ -217,7 +217,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertFromString()
+    public function testInsertFromString()
     {
         $this->assertEquals(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
@@ -228,7 +228,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertFromColumnsQueryBuilder()
+    public function testInsertFromColumnsQueryBuilder()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -243,7 +243,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertFromColumnsClosure()
+    public function testInsertFromColumnsClosure()
     {
         $this->assertEquals(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
@@ -257,7 +257,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertFromColumnsLiteral()
+    public function testInsertFromColumnsLiteral()
     {
         $this->assertEquals(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
@@ -270,7 +270,7 @@ trait InsertTest
         );
     }
 
-    public function testQueryBuilderInsertFromColumnsString()
+    public function testInsertFromColumnsString()
     {
         $this->assertEquals(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',

@@ -9,7 +9,7 @@ use
 trait UpdateTest
 {
 
-    public function testQueryBuilderUpdate()
+    public function testUpdate()
     {
         $this->assertEquals(
             'UPDATE test SET value = 1',
@@ -22,7 +22,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateAlias()
+    public function testUpdateAlias()
     {
         $this->assertEquals(
             'UPDATE test AS alt SET value = 1',
@@ -37,7 +37,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateMultipleTables()
+    public function testUpdateMultipleTables()
     {
         $this->assertEquals(
             'UPDATE test AS alt, test2 AS alt2 SET alt.value = 1, alt2.value = 2',
@@ -54,7 +54,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateJoin()
+    public function testUpdateJoin()
     {
         $this->assertEquals(
             'UPDATE test SET name = "Test", value = 1 INNER JOIN test2 ON test2.id = test.id',
@@ -76,7 +76,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateWhere()
+    public function testUpdateWhere()
     {
         $this->assertEquals(
             'UPDATE test SET name = "Test", value = 1 WHERE id = 1',
@@ -93,7 +93,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateQueryBuilder()
+    public function testUpdateQueryBuilder()
     {
         $this->assertEquals(
             'UPDATE test SET name = "Test", value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
@@ -113,7 +113,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateClosure()
+    public function testUpdateClosure()
     {
         $this->assertEquals(
             'UPDATE test SET name = "Test", value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
@@ -135,7 +135,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateLiteral()
+    public function testUpdateLiteral()
     {
         $this->assertEquals(
             'UPDATE test SET name = "Test", value = 2 * 10 WHERE id = 1',
@@ -154,7 +154,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateBatch()
+    public function testUpdateBatch()
     {
         $this->assertEquals(
             'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN 1 WHEN id = 2 THEN 2 END WHERE id IN (1, 2)',
@@ -176,7 +176,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateBatchQueryBuilder()
+    public function testUpdateBatchQueryBuilder()
     {
         $this->assertEquals(
             'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
@@ -204,7 +204,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateBatchClosure()
+    public function testUpdateBatchClosure()
     {
         $this->assertEquals(
             'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
@@ -236,7 +236,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateBatchLiteral()
+    public function testUpdateBatchLiteral()
     {
         $this->assertEquals(
             'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN 2 * 10 WHEN id = 2 THEN 2 * 20 END WHERE id IN (1, 2)',
@@ -262,7 +262,7 @@ trait UpdateTest
         );
     }
 
-    public function testQueryBuilderUpdateFull()
+    public function testUpdateFull()
     {
         $this->assertEquals(
             'UPDATE test SET name = "Test", value = 1 INNER JOIN test2 ON test2.id = test.id WHERE test.name = "test"',

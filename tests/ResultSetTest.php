@@ -16,7 +16,7 @@ final class ResultSetTest extends TestCase
     use
         ConnectionTrait;
 
-    public function testResultSetToArray(): void
+    public function testToArray(): void
     {
         $this->assertEquals(
             [
@@ -41,7 +41,7 @@ final class ResultSetTest extends TestCase
         );
     }
 
-    public function testResultSetCount(): void
+    public function testCount(): void
     {
         $this->assertEquals(
             3,
@@ -53,7 +53,7 @@ final class ResultSetTest extends TestCase
         );
     }
 
-    public function testResultSetFetch(): void
+    public function testFetch(): void
     {
         $this->assertEquals(
             [
@@ -68,7 +68,7 @@ final class ResultSetTest extends TestCase
         );
     }
 
-    public function testResultSetFirst(): void
+    public function testFirst(): void
     {
         $this->assertEquals(
             [
@@ -83,7 +83,7 @@ final class ResultSetTest extends TestCase
         );
     }
 
-    public function testResultSetLast(): void
+    public function testLast(): void
     {
         $this->assertEquals(
             [
@@ -98,7 +98,7 @@ final class ResultSetTest extends TestCase
         );
     }
 
-    public function testResultSetColumnCount(): void
+    public function testColumnCount(): void
     {
         $this->assertEquals(
             2,
@@ -110,7 +110,7 @@ final class ResultSetTest extends TestCase
         );
     }
 
-    public function testResultSetColumns(): void
+    public function testColumns(): void
     {
         $this->assertEquals(
             [
@@ -125,7 +125,7 @@ final class ResultSetTest extends TestCase
         );
     }
 
-    public function testResultSetIteration(): void
+    public function testIteration(): void
     {
         $query =  $this->db->builder()
             ->table('test')

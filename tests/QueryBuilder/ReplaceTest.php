@@ -9,7 +9,7 @@ use
 trait ReplaceTest
 {
 
-    public function testQueryBuilderReplace()
+    public function testReplace()
     {
         $this->assertEquals(
             'REPLACE INTO test (id, name, value) VALUES (1, "Test", 1)',
@@ -24,7 +24,7 @@ trait ReplaceTest
         );
     }
 
-    public function testQueryBuilderReplaceQueryBuilder()
+    public function testReplaceQueryBuilder()
     {
         $this->assertEquals(
             'REPLACE INTO test (id, name, value) VALUES (1, "Test", (SELECT id FROM test LIMIT 1))',
@@ -42,7 +42,7 @@ trait ReplaceTest
         );
     }
 
-    public function testQueryBuilderReplaceClosure()
+    public function testReplaceClosure()
     {
         $this->assertEquals(
             'REPLACE INTO test (id, name, value) VALUES (1, "Test", (SELECT id FROM test LIMIT 1))',
@@ -62,7 +62,7 @@ trait ReplaceTest
         );
     }
 
-    public function testQueryBuilderReplaceLiteral()
+    public function testReplaceLiteral()
     {
         $this->assertEquals(
             'REPLACE INTO test (id, name, value) VALUES (1, "Test", 2 * 10)',
@@ -79,7 +79,7 @@ trait ReplaceTest
         );
     }
 
-    public function testQueryBuilderReplaceBatch()
+    public function testReplaceBatch()
     {
         $this->assertEquals(
             'REPLACE INTO test (id, name, value) VALUES (1, "Test 1", 1), (2, "Test 2", 2)',
@@ -101,7 +101,7 @@ trait ReplaceTest
         );
     }
 
-    public function testQueryBuilderReplaceBatchQueryBuilder()
+    public function testReplaceBatchQueryBuilder()
     {
         $this->assertEquals(
             'REPLACE INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
@@ -127,7 +127,7 @@ trait ReplaceTest
         );
     }
 
-    public function testQueryBuilderReplaceBatchClosure()
+    public function testReplaceBatchClosure()
     {
         $this->assertEquals(
             'REPLACE INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
@@ -157,7 +157,7 @@ trait ReplaceTest
         );
     }
 
-    public function testQueryBuilderReplaceBatchLiteral()
+    public function testReplaceBatchLiteral()
     {
         $this->assertEquals(
             'REPLACE INTO test (name, value) VALUES ("Test 1", 2 * 10), ("Test 2", 2 * 20)',

@@ -9,7 +9,7 @@ use
 trait SelectTest
 {
 
-    public function testQueryBuilderSelect()
+    public function testSelect()
     {
         $this->assertEquals(
             'SELECT * FROM test',
@@ -20,7 +20,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectAlias()
+    public function testSelectAlias()
     {
         $this->assertEquals(
             'SELECT * FROM test AS alt',
@@ -33,7 +33,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectMultipleTables()
+    public function testSelectMultipleTables()
     {
         $this->assertEquals(
             'SELECT * FROM test AS alt, test2 AS alt2',
@@ -47,7 +47,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectMultipleTableCalls()
+    public function testSelectMultipleTableCalls()
     {
         $this->assertEquals(
             'SELECT * FROM test AS alt, test2 AS alt2',
@@ -63,7 +63,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectQueryBuilder()
+    public function testSelectQueryBuilder()
     {
         $this->assertEquals(
             'SELECT * FROM (SELECT * FROM test) AS alt',
@@ -78,7 +78,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectClosure()
+    public function testSelectClosure()
     {
         $this->assertEquals(
             'SELECT * FROM (SELECT * FROM test) AS alt',
@@ -94,7 +94,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectLiteral()
+    public function testSelectLiteral()
     {
         $this->assertEquals(
             'SELECT * FROM (SELECT * FROM test) AS alt',
@@ -109,7 +109,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectWithoutTable()
+    public function testSelectWithoutTable()
     {
         $this->assertEquals(
             'SELECT *',
@@ -119,7 +119,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectFields()
+    public function testSelectFields()
     {
         $this->assertEquals(
             'SELECT id, name FROM test',
@@ -130,7 +130,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectFieldsArray()
+    public function testSelectFieldsArray()
     {
         $this->assertEquals(
             'SELECT id, name FROM test',
@@ -144,7 +144,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectFieldsAs()
+    public function testSelectFieldsAs()
     {
         $this->assertEquals(
             'SELECT name AS alt FROM test',
@@ -157,7 +157,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectFieldsQueryBuilder()
+    public function testSelectFieldsQueryBuilder()
     {
         $this->assertEquals(
             'SELECT (SELECT name FROM test) AS alt FROM test',
@@ -172,7 +172,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectFieldsClosure()
+    public function testSelectFieldsClosure()
     {
         $this->assertEquals(
             'SELECT (SELECT name FROM test LIMIT 1) AS alt FROM test',
@@ -190,7 +190,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectFieldsLiteral()
+    public function testSelectFieldsLiteral()
     {
         $this->assertEquals(
             'SELECT UPPER(test) AS alt FROM test',
@@ -205,7 +205,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectFieldsMultipleCalls()
+    public function testSelectFieldsMultipleCalls()
     {
         $this->assertEquals(
             'SELECT id, name FROM test',
@@ -217,7 +217,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectDistinct()
+    public function testSelectDistinct()
     {
         $this->assertEquals(
             'SELECT DISTINCT * FROM test',
@@ -229,7 +229,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectEpilog()
+    public function testSelectEpilog()
     {
         $this->assertEquals(
             'SELECT * FROM test FOR UPDATE',
@@ -241,7 +241,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectGroupBy()
+    public function testSelectGroupBy()
     {
         $this->assertEquals(
             'SELECT * FROM test GROUP BY id',
@@ -253,7 +253,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectGroupByArray()
+    public function testSelectGroupByArray()
     {
         $this->assertEquals(
             'SELECT * FROM test GROUP BY id, name',
@@ -268,7 +268,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectGroupByMultipleCalls()
+    public function testSelectGroupByMultipleCalls()
     {
         $this->assertEquals(
             'SELECT * FROM test GROUP BY id, name',
@@ -281,7 +281,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectOrderBy()
+    public function testSelectOrderBy()
     {
         $this->assertEquals(
             'SELECT * FROM test ORDER BY id ASC',
@@ -293,7 +293,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectOrderByArray()
+    public function testSelectOrderByArray()
     {
         $this->assertEquals(
             'SELECT * FROM test ORDER BY id ASC, value DESC',
@@ -308,7 +308,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectOrderByMultipleCalls()
+    public function testSelectOrderByMultipleCalls()
     {
         $this->assertEquals(
             'SELECT * FROM test ORDER BY id ASC, value DESC',
@@ -325,7 +325,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectLimit()
+    public function testSelectLimit()
     {
         $this->assertEquals(
             'SELECT * FROM test LIMIT 1',
@@ -337,7 +337,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectOffset()
+    public function testSelectOffset()
     {
         $this->assertEquals(
             'SELECT * FROM test LIMIT 10, 20',
@@ -349,7 +349,7 @@ trait SelectTest
         );
     }
 
-    public function testQueryBuilderSelectFull()
+    public function testSelectFull()
     {
         $this->assertEquals(
             'SELECT DISTINCT test.id, test.name FROM test INNER JOIN test2 ON test2.id = test.id WHERE test.name = "test" ORDER BY test.id ASC GROUP BY test.id HAVING value = 1 LIMIT 10, 20 FOR UPDATE',

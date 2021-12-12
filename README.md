@@ -7,6 +7,7 @@
 - [Installation](#installation)
 - [Methods](#methods)
 - [Connections](#connections)
+    -[MySQL](#mysql)
 - [Queries](#queries)
 - [Results](#results)
 
@@ -41,7 +42,7 @@ ConnectionManager::clear();
 
 Load a connection.
 
-- `$config` is an array containing the configuration for the connection.
+- `$config` is an array containing configuration options.
 
 ```php
 $connection = ConnectionManager::load($config);
@@ -52,7 +53,7 @@ $connection = ConnectionManager::load($config);
 Set the connection config.
 
 - `$key` is a string representing the connection key.
-- `$config` is an array containing configuration data.
+- `$config` is an array containing configuration options.
 
 ```php
 ConnectionManager::setConfig($key, $config);
@@ -72,9 +73,6 @@ $connection = ConnectionManager::use($key);
 ## Connections
 
 You can load a specific connection handler by specifying the className option of the $config variable above.
-
-The default connection handlers are:
-- `\Fyre\DB\Handlers\MySQL\MySQLConnection`
 
 Custom connection handlers can be created by extending `\Fyre\DB\Connection`, ensuring all below methods are implemented.
 
@@ -203,6 +201,35 @@ $connection->transactional($callback);
 ```
 
 If the callback returns *false* or throws an *Exception* the transaction will be rolled back, otherwise it will be committed.
+
+
+## MySQL
+
+The MySQL connection can be loaded using custom configuration.
+
+- `$key` is a string representing the connection key.
+- `$config` is an array containing configuration options.
+    - `className` must be set to `\Fyre\DB\Handlers\MySQL\MySQLConnection`.
+    - `host` is a string representing the MySQL host, and will default to "*127.0.0.1*".
+    - `username` is a string representing the MySQL username.
+    - `password` is a string representing the MySQL password.
+    - `database` is a string representing the MySQL database.
+    - `port` is a number indicating the MySQL port, and will default to *3306*.
+    - `collation` is a string representing the collation, and will default to "*utf8mb4_unicode_ci*".
+    - `charset` is a string representing the character set, and will default to "*utf8mb4*".
+    - `compress` is a boolean indicating whether to enable compression, andw ill default to *true*.
+    - `timeout` is a number indicating the connection timeout.
+    - `ssl` is an array containing SSL options.
+        - `key` is a string representing the path to the key file.
+        - `cert` is a string representing the path to the certificate file.
+        - `ca` is a string representing the path to the certificate authority file.
+        - `capath` is a string representing the path to a directory containing CA certificates.
+        - `cipher` is a string representing a list of allowable ciphers to use for encryption.
+
+```php
+ConnectionManager::setConfig($key, $config);
+$connection = ConnectionManager::use($key);
+```
 
 
 ## Queries

@@ -9,7 +9,7 @@ use
 trait HavingTest
 {
 
-    public function testQueryBuilderHaving()
+    public function testHaving()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING name IS NULL',
@@ -21,7 +21,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingArray()
+    public function testHavingArray()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING name = "test"',
@@ -35,7 +35,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingInteger()
+    public function testHavingInteger()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING id = 1',
@@ -49,7 +49,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingFloat()
+    public function testHavingFloat()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value = 1.25',
@@ -63,7 +63,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingBooleanTrue()
+    public function testHavingBooleanTrue()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value = 1',
@@ -77,7 +77,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingBooleanFalse()
+    public function testHavingBooleanFalse()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value = 0',
@@ -91,7 +91,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingEqual()
+    public function testHavingEqual()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value = 1',
@@ -105,7 +105,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingNotEqual()
+    public function testHavingNotEqual()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value != 1',
@@ -119,7 +119,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingGreaterThan()
+    public function testHavingGreaterThan()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value > 1',
@@ -133,7 +133,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingLessThan()
+    public function testHavingLessThan()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value < 1',
@@ -147,7 +147,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingGreaterThanOrEqual()
+    public function testHavingGreaterThanOrEqual()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value >= 1',
@@ -161,7 +161,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingLessThanOrEqual()
+    public function testHavingLessThanOrEqual()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value <= 1',
@@ -175,7 +175,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingIsNull()
+    public function testHavingIsNull()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value IS NULL',
@@ -190,7 +190,7 @@ trait HavingTest
     }
 
 
-    public function testQueryBuilderHavingIsNotNull()
+    public function testHavingIsNotNull()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value IS NOT NULL',
@@ -204,7 +204,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingLike()
+    public function testHavingLike()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING name LIKE "%test%"',
@@ -218,7 +218,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingNotLike()
+    public function testHavingNotLike()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING name NOT LIKE "%test%"',
@@ -232,7 +232,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingIn()
+    public function testHavingIn()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value IN (1, 2, 3)',
@@ -246,7 +246,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingNotIn()
+    public function testHavingNotIn()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value NOT IN (1, 2, 3)',
@@ -260,7 +260,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingMultiple()
+    public function testHavingMultiple()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value = 1 AND name = "test"',
@@ -275,7 +275,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingAnd()
+    public function testHavingAnd()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING (value = 1 AND name = "test")',
@@ -292,7 +292,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingOr()
+    public function testHavingOr()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING (value = 1 OR name = "test")',
@@ -309,7 +309,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingGroups()
+    public function testHavingGroups()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING (value = 1 AND (name = "test" OR name IS NULL))',
@@ -329,7 +329,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingQueryBuilder()
+    public function testHavingQueryBuilder()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
@@ -345,7 +345,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingClosure()
+    public function testHavingClosure()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
@@ -363,7 +363,7 @@ trait HavingTest
         );
     }
 
-    public function testQueryBuilderHavingLiteral()
+    public function testHavingLiteral()
     {
         $this->assertEquals(
             'SELECT * FROM test HAVING value = UPPER(test)',

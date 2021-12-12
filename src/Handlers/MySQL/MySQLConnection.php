@@ -25,10 +25,6 @@ use function
 class MySQLConnection extends Connection
 {
 
-    protected static array $defaults = [
-        'port' => '3306'
-    ];
-
     protected array $config;
 
     protected mysqli|null $connection = null;

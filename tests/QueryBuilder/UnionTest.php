@@ -9,7 +9,7 @@ use
 trait UnionTest
 {
 
-    public function testQueryBuilderExcept()
+    public function testExcept()
     {
         $this->assertEquals(
             'SELECT * FROM test EXCEPT SELECT * FROM test2',
@@ -21,7 +21,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderExceptQueryBuilder()
+    public function testExceptQueryBuilder()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -37,7 +37,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderExceptClosure()
+    public function testExceptClosure()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -56,7 +56,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderExceptLiteral()
+    public function testExceptLiteral()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -74,7 +74,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderIntersect()
+    public function testIntersect()
     {
         $this->assertEquals(
             'SELECT * FROM test INTERSECT SELECT * FROM test2',
@@ -86,7 +86,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderIntersectQueryBuilder()
+    public function testIntersectQueryBuilder()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -102,7 +102,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderIntersectClosure()
+    public function testIntersectClosure()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -121,7 +121,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderIntersectLiteral()
+    public function testIntersectLiteral()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -139,7 +139,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderUnion()
+    public function testUnion()
     {
         $this->assertEquals(
             'SELECT * FROM test UNION DISTINCT SELECT * FROM test2',
@@ -151,7 +151,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderUnionQueryBuilder()
+    public function testUnionQueryBuilder()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -167,7 +167,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderUnionClosure()
+    public function testUnionClosure()
     {
         $this->assertEquals(
             'SELECT * FROM test UNION DISTINCT SELECT * FROM test2',
@@ -182,7 +182,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderUnionLiteral()
+    public function testUnionLiteral()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -200,7 +200,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderUnionAll()
+    public function testUnionAll()
     {
         $this->assertEquals(
             'SELECT * FROM test UNION ALL SELECT * FROM test2',
@@ -212,7 +212,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderUnionAllQueryBuilder()
+    public function testUnionAllQueryBuilder()
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -228,7 +228,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderUnionAllClosure()
+    public function testUnionAllClosure()
     {
         $this->assertEquals(
             'SELECT * FROM test UNION ALL SELECT * FROM test2',
@@ -243,7 +243,7 @@ trait UnionTest
         );
     }
 
-    public function testQueryBuilderUnionAllLiteral()
+    public function testUnionAllLiteral()
     {
         $query = $this->db->builder()
             ->table('test2')

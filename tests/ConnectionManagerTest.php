@@ -15,7 +15,7 @@ final class ConnectionManagerTest extends TestCase
     use
         ConnectionTrait;
 
-    public function testConnectionManagerLoadInvalidHandler(): void
+    public function testLoadInvalidHandler(): void
     {
         $this->expectException(DBException::class);
 
@@ -24,7 +24,7 @@ final class ConnectionManagerTest extends TestCase
         ]);
     }
 
-    public function testConnectionManagerUse(): void
+    public function testUse(): void
     {
         $handler1 = ConnectionManager::use();
         $handler2 = ConnectionManager::use();
