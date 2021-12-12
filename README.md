@@ -7,7 +7,7 @@
 - [Installation](#installation)
 - [Methods](#methods)
 - [Connections](#connections)
-    -[MySQL](#mysql)
+    - [MySQL](#mysql)
 - [Queries](#queries)
 - [Results](#results)
 
