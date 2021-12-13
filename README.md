@@ -72,7 +72,7 @@ $connection = ConnectionManager::use($key);
 
 ## Connections
 
-You can load a specific connection handler by specifying the className option of the $config variable above.
+You can load a specific connection handler by specifying the `className` option of the `$config` variable above.
 
 Custom connection handlers can be created by extending `\Fyre\DB\Connection`, ensuring all below methods are implemented.
 
