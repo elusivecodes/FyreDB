@@ -130,7 +130,7 @@ $connection->disconnect();
 
 **Get Charset**
 
-Get the connection charset.
+Get the connection character set.
 
 ```php
 $charset = $connection->getCharset();
