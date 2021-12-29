@@ -22,7 +22,6 @@ use function
     is_numeric,
     preg_match,
     strtoupper,
-    substr,
     trim;
 
 /**

@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Fyre\DB\Handlers\MySQL;
 
 use
-    Exception,
     Fyre\DB\Connection,
     Fyre\DB\Exceptions\DBException,
     Fyre\DB\ResultSet,
-    mysqli;
+    mysqli,
+    mysqli_sql_exception;
 
 use const
     MYSQLI_CLIENT_COMPRESS,
@@ -40,6 +40,7 @@ class MySQLConnection extends Connection
 
     /**
      * Connect to the database.
+     * @throws DBException if the connection failed.
      */
     public function connect(): void
     {
@@ -87,7 +88,7 @@ class MySQLConnection extends Connection
                 '',
                 $flags
             );
-        } catch (Exception $e) {
+        } catch (mysqli_sql_exception $e) {
             throw DBException::forConnectionFailed($e->getMessage());
         }
     }
@@ -150,10 +151,15 @@ class MySQLConnection extends Connection
      * Execute a raw SQL query.
      * @param string $query The SQL query.
      * @return mixed The raw result.
+     * @throws DBException if the query threw an error.
      */
     public function rawQuery(string $query)
     {
-        return $this->connection->query($query);
+        try {
+            return $this->connection->query($query);
+        } catch (mysqli_sql_exception $e) {
+            throw DBException::forQueryError($e->getMessage());
+        }
     }
 
     /**
