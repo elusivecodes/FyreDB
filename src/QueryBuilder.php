@@ -50,7 +50,7 @@ class QueryBuilder
      * Set query as DELETE.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function delete(): self
+    public function delete(): static
     {
         $this->action = 'delete';
 
@@ -62,7 +62,7 @@ class QueryBuilder
      * @param bool $distinct Whether to set the DISTINCT clause.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function distinct(bool $distinct = true): self
+    public function distinct(bool $distinct = true): static
     {
         $this->distinct = $distinct;
 
@@ -74,7 +74,7 @@ class QueryBuilder
      * @param string $epilog The epilog.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function epilog(string $epilog = ''): self
+    public function epilog(string $epilog = ''): static
     {
         $this->epilog = $epilog;
 
@@ -86,7 +86,7 @@ class QueryBuilder
      * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function except(Closure|QueryBuilder|QueryLiteral|string $query): self
+    public function except(Closure|QueryBuilder|QueryLiteral|string $query): static
     {
         $this->unions[] = [
             'type' => 'except',
@@ -113,7 +113,7 @@ class QueryBuilder
      * @param string|array $fields The fields.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function groupBy(string|array $fields): self
+    public function groupBy(string|array $fields): static
     {
         if (is_array($fields)) {
             $this->groupBy = array_merge($this->groupBy, $fields);
@@ -129,7 +129,7 @@ class QueryBuilder
      * @param string|array $conditions The conditions.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function having(string|array $conditions): self
+    public function having(string|array $conditions): static
     {
         if (is_array($conditions)) {
             $this->having = array_merge($this->having, $conditions);
@@ -145,7 +145,7 @@ class QueryBuilder
      * @param array $data The data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function insert(array $data): self
+    public function insert(array $data): static
     {
         $this->action = 'insert';
         $this->data = $data;
@@ -158,7 +158,7 @@ class QueryBuilder
      * @param array $data The data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function insertBatch(array $data): self
+    public function insertBatch(array $data): static
     {
         $this->action = 'insertBatch';
         $this->data = $data;
@@ -172,7 +172,7 @@ class QueryBuilder
      * @param array| $columns The columns.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function insertFrom(Closure|QueryBuilder|QueryLiteral|string $query, array $columns = []): self
+    public function insertFrom(Closure|QueryBuilder|QueryLiteral|string $query, array $columns = []): static
     {
         $this->action = 'insertFrom';
         $this->insertQuery = $query;
@@ -186,7 +186,7 @@ class QueryBuilder
      * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function intersect(Closure|QueryBuilder|QueryLiteral|string $query): self
+    public function intersect(Closure|QueryBuilder|QueryLiteral|string $query): static
     {
         $this->unions[] = [
             'type' => 'intersect',
@@ -201,7 +201,7 @@ class QueryBuilder
      * @param array $joins The joins.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function join(array $joins): self
+    public function join(array $joins): static
     {
         $this->joins = array_merge($this->joins, $joins);
 
@@ -214,7 +214,7 @@ class QueryBuilder
      * @param int $offset The offset.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function limit(int|null $limit = null, int $offset = 0): self
+    public function limit(int|null $limit = null, int $offset = 0): static
     {
         $this->limit = $limit;
         $this->offset = $offset;
@@ -237,7 +237,7 @@ class QueryBuilder
      * @param string|array $fields The fields.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function orderBy(string|array $fields): self
+    public function orderBy(string|array $fields): static
     {
         if (is_array($fields)) {
             $this->orderBy = array_merge($this->orderBy, $fields);
@@ -253,7 +253,7 @@ class QueryBuilder
      * @param array $data The data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function replace(array $data): self
+    public function replace(array $data): static
     {
         $this->action = 'replace';
         $this->data = $data;
@@ -266,7 +266,7 @@ class QueryBuilder
      * @param array $data The data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function replaceBatch(array $data): self
+    public function replaceBatch(array $data): static
     {
         $this->action = 'replaceBatch';
         $this->data = $data;
@@ -279,7 +279,7 @@ class QueryBuilder
      * @param string|array $fields The fields.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function select(string|array $fields = '*'): self
+    public function select(string|array $fields = '*'): static
     {
         $this->action = 'select';
 
@@ -352,7 +352,7 @@ class QueryBuilder
      * @param string|array $tables The tables.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function table(string|array $tables): self
+    public function table(string|array $tables): static
     {
         if (is_array($tables)) {
             $this->tables = array_merge($this->tables, $tables);
@@ -368,7 +368,7 @@ class QueryBuilder
      * @param array $data The data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function update(array $data): self
+    public function update(array $data): static
     {
         $this->action = 'update';
         $this->data = $data;
@@ -382,7 +382,7 @@ class QueryBuilder
      * @param string $updateKey The key to use for updating.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function updateBatch(array $data, string $updateKey): self
+    public function updateBatch(array $data, string $updateKey): static
     {
         $this->action = 'updateBatch';
         $this->data = $data;
@@ -396,7 +396,7 @@ class QueryBuilder
      * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function union(Closure|QueryBuilder|QueryLiteral|string $query): self
+    public function union(Closure|QueryBuilder|QueryLiteral|string $query): static
     {
         $this->unions[] = [
             'type' => 'distinct',
@@ -411,7 +411,7 @@ class QueryBuilder
      * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function unionAll(Closure|QueryBuilder|QueryLiteral|string $query): self
+    public function unionAll(Closure|QueryBuilder|QueryLiteral|string $query): static
     {
         $this->unions[] = [
             'type' => 'all',
@@ -426,7 +426,7 @@ class QueryBuilder
      * @param string|array $conditions The conditions.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function where(string|array $conditions): self
+    public function where(string|array $conditions): static
     {
         if (is_array($conditions)) {
             $this->conditions = array_merge($this->conditions, $conditions);
