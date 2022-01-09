@@ -11,7 +11,7 @@ trait UpdateTest
 
     public function testUpdate()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET value = 1',
             $this->db->builder()
                 ->table('test')
@@ -24,7 +24,7 @@ trait UpdateTest
 
     public function testUpdateAlias()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test AS alt SET value = 1',
             $this->db->builder()
                 ->table([
@@ -39,7 +39,7 @@ trait UpdateTest
 
     public function testUpdateMultipleTables()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test AS alt, test2 AS alt2 SET alt.value = 1, alt2.value = 2',
             $this->db->builder()
                 ->table([
@@ -56,7 +56,7 @@ trait UpdateTest
 
     public function testUpdateJoin()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = "Test", value = 1 INNER JOIN test2 ON test2.id = test.id',
             $this->db->builder()
                 ->table('test')
@@ -78,7 +78,7 @@ trait UpdateTest
 
     public function testUpdateWhere()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = "Test", value = 1 WHERE id = 1',
             $this->db->builder()
                 ->table('test')
@@ -95,7 +95,7 @@ trait UpdateTest
 
     public function testUpdateQueryBuilder()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = "Test", value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
             $this->db->builder()
                 ->table('test')
@@ -115,7 +115,7 @@ trait UpdateTest
 
     public function testUpdateClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = "Test", value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
             $this->db->builder()
                 ->table('test')
@@ -137,7 +137,7 @@ trait UpdateTest
 
     public function testUpdateLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = "Test", value = 2 * 10 WHERE id = 1',
             $this->db->builder()
                 ->table('test')
@@ -156,7 +156,7 @@ trait UpdateTest
 
     public function testUpdateBatch()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN 1 WHEN id = 2 THEN 2 END WHERE id IN (1, 2)',
             $this->db->builder()
                 ->table('test')
@@ -178,7 +178,7 @@ trait UpdateTest
 
     public function testUpdateBatchQueryBuilder()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
             $this->db->builder()
                 ->table('test')
@@ -206,7 +206,7 @@ trait UpdateTest
 
     public function testUpdateBatchClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
             $this->db->builder()
                 ->table('test')
@@ -238,7 +238,7 @@ trait UpdateTest
 
     public function testUpdateBatchLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN 2 * 10 WHEN id = 2 THEN 2 * 20 END WHERE id IN (1, 2)',
             $this->db->builder()
                 ->table('test')
@@ -264,7 +264,7 @@ trait UpdateTest
 
     public function testUpdateFull()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'UPDATE test SET name = "Test", value = 1 INNER JOIN test2 ON test2.id = test.id WHERE test.name = "test"',
             $this->db->builder()
                 ->table('test')

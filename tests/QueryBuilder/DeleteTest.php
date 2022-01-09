@@ -8,7 +8,7 @@ trait DeleteTest
 
     public function testDelete()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test USING test',
             $this->db->builder()
                 ->table('test')
@@ -19,7 +19,7 @@ trait DeleteTest
 
     public function testDeleteAlias()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test AS alt USING alt',
             $this->db->builder()
                 ->table([
@@ -32,7 +32,7 @@ trait DeleteTest
 
     public function testDeleteMultipleTables()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test AS alt, test2 AS alt2 USING alt, alt2',
             $this->db->builder()
                 ->table([
@@ -46,7 +46,7 @@ trait DeleteTest
 
     public function testDeleteJoin()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test USING test INNER JOIN test2 ON test2.id = test.id',
             $this->db->builder()
                 ->table('test')
@@ -65,7 +65,7 @@ trait DeleteTest
 
     public function testDeleteWhere()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test USING test WHERE id = 1',
             $this->db->builder()
                 ->table('test')
@@ -79,7 +79,7 @@ trait DeleteTest
 
     public function testDeleteOrderBy()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test USING test ORDER BY id ASC',
             $this->db->builder()
                 ->table('test')
@@ -91,7 +91,7 @@ trait DeleteTest
 
     public function testDeleteOrderByArray()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test USING test ORDER BY id ASC, value DESC',
             $this->db->builder()
                 ->table('test')
@@ -106,7 +106,7 @@ trait DeleteTest
 
     public function testDeleteLimit()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test USING test LIMIT 1',
             $this->db->builder()
                 ->table('test')
@@ -118,7 +118,7 @@ trait DeleteTest
 
     public function testDeleteOffset()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test USING test LIMIT 10, 20',
             $this->db->builder()
                 ->table('test')
@@ -130,7 +130,7 @@ trait DeleteTest
 
     public function testDeleteFull()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'DELETE FROM test USING test INNER JOIN test2 ON test2.id = test.id WHERE test.name = "test" ORDER BY test.id ASC LIMIT 10, 20',
             $this->db->builder()
                 ->table('test')

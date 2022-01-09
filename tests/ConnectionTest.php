@@ -19,7 +19,7 @@ final class ConnectionTest extends TestCase
 
     public function testCharset(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'utf8mb4',
             $this->db->getCharset()
         );
@@ -27,7 +27,7 @@ final class ConnectionTest extends TestCase
 
     public function testCollation(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'utf8mb4_general_ci',
             $this->db->getCollation()
         );

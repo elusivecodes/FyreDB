@@ -11,7 +11,7 @@ trait SelectTest
 
     public function testSelect()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test',
             $this->db->builder()
                 ->table('test')
@@ -22,7 +22,7 @@ trait SelectTest
 
     public function testSelectAlias()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test AS alt',
             $this->db->builder()
                 ->table([
@@ -35,7 +35,7 @@ trait SelectTest
 
     public function testSelectMultipleTables()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test AS alt, test2 AS alt2',
             $this->db->builder()
                 ->table([
@@ -49,7 +49,7 @@ trait SelectTest
 
     public function testSelectMultipleTableCalls()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test AS alt, test2 AS alt2',
             $this->db->builder()
                 ->table([
@@ -65,7 +65,7 @@ trait SelectTest
 
     public function testSelectQueryBuilder()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
             $this->db->builder()
                 ->table([
@@ -80,7 +80,7 @@ trait SelectTest
 
     public function testSelectClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
             $this->db->builder()
                 ->table([
@@ -96,7 +96,7 @@ trait SelectTest
 
     public function testSelectLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
             $this->db->builder()
                 ->table([
@@ -111,7 +111,7 @@ trait SelectTest
 
     public function testSelectWithoutTable()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT *',
             $this->db->builder()
                 ->select()
@@ -121,7 +121,7 @@ trait SelectTest
 
     public function testSelectFields()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT id, name FROM test',
             $this->db->builder()
                 ->table('test')
@@ -132,7 +132,7 @@ trait SelectTest
 
     public function testSelectFieldsArray()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT id, name FROM test',
             $this->db->builder()
                 ->table('test')
@@ -146,7 +146,7 @@ trait SelectTest
 
     public function testSelectFieldsAs()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT name AS alt FROM test',
             $this->db->builder()
                 ->table('test')
@@ -159,7 +159,7 @@ trait SelectTest
 
     public function testSelectFieldsQueryBuilder()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT (SELECT name FROM test) AS alt FROM test',
             $this->db->builder()
                 ->table('test')
@@ -174,7 +174,7 @@ trait SelectTest
 
     public function testSelectFieldsClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT (SELECT name FROM test LIMIT 1) AS alt FROM test',
             $this->db->builder()
                 ->table('test')
@@ -192,7 +192,7 @@ trait SelectTest
 
     public function testSelectFieldsLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT UPPER(test) AS alt FROM test',
             $this->db->builder()
                 ->table('test')
@@ -207,7 +207,7 @@ trait SelectTest
 
     public function testSelectFieldsMultipleCalls()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT id, name FROM test',
             $this->db->builder()
                 ->table('test')
@@ -219,7 +219,7 @@ trait SelectTest
 
     public function testSelectDistinct()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT DISTINCT * FROM test',
             $this->db->builder()
                 ->table('test')
@@ -231,7 +231,7 @@ trait SelectTest
 
     public function testSelectEpilog()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test FOR UPDATE',
             $this->db->builder()
                 ->table('test')
@@ -243,7 +243,7 @@ trait SelectTest
 
     public function testSelectGroupBy()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test GROUP BY id',
             $this->db->builder()
                 ->table('test')
@@ -255,7 +255,7 @@ trait SelectTest
 
     public function testSelectGroupByArray()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test GROUP BY id, name',
             $this->db->builder()
                 ->table('test')
@@ -270,7 +270,7 @@ trait SelectTest
 
     public function testSelectGroupByMultipleCalls()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test GROUP BY id, name',
             $this->db->builder()
                 ->table('test')
@@ -283,7 +283,7 @@ trait SelectTest
 
     public function testSelectOrderBy()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC',
             $this->db->builder()
                 ->table('test')
@@ -295,7 +295,7 @@ trait SelectTest
 
     public function testSelectOrderByArray()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC, value DESC',
             $this->db->builder()
                 ->table('test')
@@ -310,7 +310,7 @@ trait SelectTest
 
     public function testSelectOrderByMultipleCalls()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC, value DESC',
             $this->db->builder()
                 ->table('test')
@@ -327,7 +327,7 @@ trait SelectTest
 
     public function testSelectLimit()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test LIMIT 1',
             $this->db->builder()
                 ->table('test')
@@ -339,7 +339,7 @@ trait SelectTest
 
     public function testSelectOffset()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test LIMIT 10, 20',
             $this->db->builder()
                 ->table('test')
@@ -351,7 +351,7 @@ trait SelectTest
 
     public function testSelectFull()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT DISTINCT test.id, test.name FROM test INNER JOIN test2 ON test2.id = test.id WHERE test.name = "test" ORDER BY test.id ASC GROUP BY test.id HAVING value = 1 LIMIT 10, 20 FOR UPDATE',
             $this->db->builder()
                 ->table('test')

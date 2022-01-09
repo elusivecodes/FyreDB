@@ -43,11 +43,11 @@ abstract class Connection
 
     /**
      * New Connection constructor.
-     * @param array $config Options for the handler.
+     * @param array $options Options for the handler.
      */
-    public function __construct(array $config = [])
+    public function __construct(array $options = [])
     {
-        $this->config = array_replace_recursive(self::$defaults, static::$defaults, $config);
+        $this->config = array_replace_recursive(self::$defaults, static::$defaults, $options);
 
         $this->connect();
     }

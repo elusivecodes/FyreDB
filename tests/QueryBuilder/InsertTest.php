@@ -11,7 +11,7 @@ trait InsertTest
 
     public function testInsert()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (name, value) VALUES ("Test", 1)',
             $this->db->builder()
                 ->table('test')
@@ -25,7 +25,7 @@ trait InsertTest
 
     public function testInsertQueryBuilder()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (name, value) VALUES ("Test", (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
@@ -42,7 +42,7 @@ trait InsertTest
 
     public function testInsertClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (name, value) VALUES ("Test", (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
@@ -61,7 +61,7 @@ trait InsertTest
 
     public function testInsertLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (name, value) VALUES ("Test", 2 * 10)',
             $this->db->builder()
                 ->table('test')
@@ -77,7 +77,7 @@ trait InsertTest
 
     public function testInsertBatch()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (name, value) VALUES ("Test 1", 1), ("Test 2", 2)',
             $this->db->builder()
                 ->table('test')
@@ -97,7 +97,7 @@ trait InsertTest
 
     public function testInsertBatchQueryBuilder()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
@@ -123,7 +123,7 @@ trait InsertTest
 
     public function testInsertBatchClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
@@ -153,7 +153,7 @@ trait InsertTest
 
     public function testInsertBatchLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (name, value) VALUES ("Test 1", 2 * 10), ("Test 2", 2 * 20)',
             $this->db->builder()
                 ->table('test')
@@ -181,7 +181,7 @@ trait InsertTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test VALUES SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -192,7 +192,7 @@ trait InsertTest
 
     public function testInsertFromClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test VALUES SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -206,7 +206,7 @@ trait InsertTest
 
     public function testInsertFromLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test VALUES SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -219,7 +219,7 @@ trait InsertTest
 
     public function testInsertFromString()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -234,7 +234,7 @@ trait InsertTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -245,7 +245,7 @@ trait InsertTest
 
     public function testInsertFromColumnsClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -259,7 +259,7 @@ trait InsertTest
 
     public function testInsertFromColumnsLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -272,7 +272,7 @@ trait InsertTest
 
     public function testInsertFromColumnsString()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')

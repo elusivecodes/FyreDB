@@ -15,8 +15,7 @@ trait Replacetest
             ])
             ->execute();
 
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->db->builder()
                 ->table('test')
                 ->replace([
@@ -26,9 +25,9 @@ trait Replacetest
                 ->execute()
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
-                'id' => 1,
+                'id' => '1',
                 'name' => 'Test 2'
             ],
             $this->db->builder()
@@ -53,8 +52,7 @@ trait Replacetest
             ])
             ->execute();
 
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->db->builder()
                 ->table('test')
                 ->replaceBatch([
@@ -70,14 +68,14 @@ trait Replacetest
                 ->execute()
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'id' => 1,
+                    'id' => '1',
                     'name' => 'Test 3'
                 ],
                 [
-                    'id' => 2,
+                    'id' => '2',
                     'name' => 'Test 4'
                 ]
             ],

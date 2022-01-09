@@ -11,7 +11,7 @@ trait UnionTest
 
     public function testExcept()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test EXCEPT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -27,7 +27,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test EXCEPT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -43,7 +43,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test EXCEPT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -62,7 +62,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test EXCEPT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -76,7 +76,7 @@ trait UnionTest
 
     public function testIntersect()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test INTERSECT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -92,7 +92,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test INTERSECT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -108,7 +108,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test INTERSECT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -127,7 +127,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test INTERSECT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -141,7 +141,7 @@ trait UnionTest
 
     public function testUnion()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test UNION DISTINCT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -157,7 +157,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test UNION DISTINCT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -169,7 +169,7 @@ trait UnionTest
 
     public function testUnionClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test UNION DISTINCT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -188,7 +188,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test UNION DISTINCT SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -202,7 +202,7 @@ trait UnionTest
 
     public function testUnionAll()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test UNION ALL SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -218,7 +218,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test UNION ALL SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -230,7 +230,7 @@ trait UnionTest
 
     public function testUnionAllClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test UNION ALL SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')
@@ -249,7 +249,7 @@ trait UnionTest
             ->table('test2')
             ->select();
 
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test UNION ALL SELECT * FROM test2',
             $this->db->builder()
                 ->table('test')

@@ -15,8 +15,7 @@ trait DeleteTest
             ])
             ->execute();
 
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->db->builder()
                 ->table('test')
                 ->delete()
@@ -26,7 +25,7 @@ trait DeleteTest
                 ->execute()
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [],
             $this->db->builder()
                 ->table('test')
@@ -55,7 +54,7 @@ trait DeleteTest
             ->delete()
             ->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             2,
             $this->db->affectedRows()
         );

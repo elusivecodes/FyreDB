@@ -28,14 +28,14 @@ trait TransactionTest
 
         $this->db->commit();
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'id' => 1,
+                    'id' => '1',
                     'name' => 'Test 1'
                 ],
                 [
-                    'id' => 2,
+                    'id' => '2',
                     'name' => 'Test 2'
                 ]
             ],
@@ -65,7 +65,7 @@ trait TransactionTest
 
         $this->db->rollback();
 
-        $this->assertEquals(
+        $this->assertSame(
             [],
             $this->db->builder()
                 ->table('test')
@@ -91,14 +91,14 @@ trait TransactionTest
                 ->execute();
         });
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'id' => 1,
+                    'id' => '1',
                     'name' => 'Test 1'
                 ],
                 [
-                    'id' => 2,
+                    'id' => '2',
                     'name' => 'Test 2'
                 ]
             ],
@@ -128,7 +128,7 @@ trait TransactionTest
             return false;
         });
 
-        $this->assertEquals(
+        $this->assertSame(
             [],
             $this->db->builder()
                 ->table('test')
@@ -158,7 +158,7 @@ trait TransactionTest
             });
         } catch (Exception $e) { }
 
-        $this->assertEquals(
+        $this->assertSame(
             [],
             $this->db->builder()
                 ->table('test')

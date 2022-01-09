@@ -20,8 +20,7 @@ trait UpdateTest
             ])
             ->execute();
 
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->db->builder()
                 ->table('test')
                 ->update([
@@ -33,9 +32,9 @@ trait UpdateTest
                 ->execute()
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
-                'id' => 1,
+                'id' => '1',
                 'name' => 'Test 2'
             ],
             $this->db->builder()
@@ -60,8 +59,7 @@ trait UpdateTest
             ])
             ->execute();
 
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->db->builder()
                 ->table('test')
                 ->updateBatch([
@@ -77,14 +75,14 @@ trait UpdateTest
                 ->execute()
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'id' => 1,
+                    'id' => '1',
                     'name' => 'Test 3'
                 ],
                 [
-                    'id' => 2,
+                    'id' => '2',
                     'name' => 'Test 4'
                 ]
             ],
@@ -120,7 +118,7 @@ trait UpdateTest
             ])
             ->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             1,
             $this->db->affectedRows()
         );
@@ -154,7 +152,7 @@ trait UpdateTest
             ], 'id')
             ->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             2,
             $this->db->affectedRows()
         );

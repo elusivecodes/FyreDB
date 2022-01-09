@@ -11,7 +11,7 @@ trait HavingTest
 
     public function testHaving()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING name IS NULL',
             $this->db->builder()
                 ->table('test')
@@ -23,7 +23,7 @@ trait HavingTest
 
     public function testHavingArray()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING name = "test"',
             $this->db->builder()
                 ->table('test')
@@ -37,7 +37,7 @@ trait HavingTest
 
     public function testHavingInteger()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING id = 1',
             $this->db->builder()
                 ->table('test')
@@ -51,7 +51,7 @@ trait HavingTest
 
     public function testHavingFloat()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value = 1.25',
             $this->db->builder()
                 ->table('test')
@@ -65,7 +65,7 @@ trait HavingTest
 
     public function testHavingBooleanTrue()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value = 1',
             $this->db->builder()
                 ->table('test')
@@ -79,7 +79,7 @@ trait HavingTest
 
     public function testHavingBooleanFalse()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value = 0',
             $this->db->builder()
                 ->table('test')
@@ -93,7 +93,7 @@ trait HavingTest
 
     public function testHavingEqual()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value = 1',
             $this->db->builder()
                 ->table('test')
@@ -107,7 +107,7 @@ trait HavingTest
 
     public function testHavingNotEqual()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value != 1',
             $this->db->builder()
                 ->table('test')
@@ -121,7 +121,7 @@ trait HavingTest
 
     public function testHavingGreaterThan()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value > 1',
             $this->db->builder()
                 ->table('test')
@@ -135,7 +135,7 @@ trait HavingTest
 
     public function testHavingLessThan()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value < 1',
             $this->db->builder()
                 ->table('test')
@@ -149,7 +149,7 @@ trait HavingTest
 
     public function testHavingGreaterThanOrEqual()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value >= 1',
             $this->db->builder()
                 ->table('test')
@@ -163,7 +163,7 @@ trait HavingTest
 
     public function testHavingLessThanOrEqual()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value <= 1',
             $this->db->builder()
                 ->table('test')
@@ -177,7 +177,7 @@ trait HavingTest
 
     public function testHavingIsNull()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value IS NULL',
             $this->db->builder()
                 ->table('test')
@@ -192,7 +192,7 @@ trait HavingTest
 
     public function testHavingIsNotNull()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value IS NOT NULL',
             $this->db->builder()
                 ->table('test')
@@ -206,7 +206,7 @@ trait HavingTest
 
     public function testHavingLike()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING name LIKE "%test%"',
             $this->db->builder()
                 ->table('test')
@@ -220,7 +220,7 @@ trait HavingTest
 
     public function testHavingNotLike()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING name NOT LIKE "%test%"',
             $this->db->builder()
                 ->table('test')
@@ -234,7 +234,7 @@ trait HavingTest
 
     public function testHavingIn()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value IN (1, 2, 3)',
             $this->db->builder()
                 ->table('test')
@@ -248,7 +248,7 @@ trait HavingTest
 
     public function testHavingNotIn()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value NOT IN (1, 2, 3)',
             $this->db->builder()
                 ->table('test')
@@ -262,7 +262,7 @@ trait HavingTest
 
     public function testHavingMultiple()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value = 1 AND name = "test"',
             $this->db->builder()
                 ->table('test')
@@ -277,7 +277,7 @@ trait HavingTest
 
     public function testHavingAnd()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 AND name = "test")',
             $this->db->builder()
                 ->table('test')
@@ -294,7 +294,7 @@ trait HavingTest
 
     public function testHavingOr()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 OR name = "test")',
             $this->db->builder()
                 ->table('test')
@@ -311,7 +311,7 @@ trait HavingTest
 
     public function testHavingGroups()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 AND (name = "test" OR name IS NULL))',
             $this->db->builder()
                 ->table('test')
@@ -331,7 +331,7 @@ trait HavingTest
 
     public function testHavingQueryBuilder()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
             $this->db->builder()
                 ->table('test')
@@ -347,7 +347,7 @@ trait HavingTest
 
     public function testHavingClosure()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
             $this->db->builder()
                 ->table('test')
@@ -365,7 +365,7 @@ trait HavingTest
 
     public function testHavingLiteral()
     {
-        $this->assertEquals(
+        $this->assertSame(
             'SELECT * FROM test HAVING value = UPPER(test)',
             $this->db->builder()
                 ->table('test')

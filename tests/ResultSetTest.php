@@ -18,18 +18,18 @@ final class ResultSetTest extends TestCase
 
     public function testToArray(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'id' => 1,
+                    'id' => '1',
                     'name' => 'Test 1'
                 ],
                 [
-                    'id' => 2,
+                    'id' => '2',
                     'name' => 'Test 2'
                 ],
                 [
-                    'id' => 3,
+                    'id' => '3',
                     'name' => 'Test 3'
                 ]
             ],
@@ -43,7 +43,7 @@ final class ResultSetTest extends TestCase
 
     public function testCount(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             3,
             $this->db->builder()
                 ->table('test')
@@ -55,9 +55,9 @@ final class ResultSetTest extends TestCase
 
     public function testFetch(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             [
-                'id' => 2,
+                'id' => '2',
                 'name' => 'Test 2'
             ],
             $this->db->builder()
@@ -70,9 +70,9 @@ final class ResultSetTest extends TestCase
 
     public function testFirst(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             [
-                'id' => 1,
+                'id' => '1',
                 'name' => 'Test 1'
             ],
             $this->db->builder()
@@ -85,9 +85,9 @@ final class ResultSetTest extends TestCase
 
     public function testLast(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             [
-                'id' => 3,
+                'id' => '3',
                 'name' => 'Test 3'
             ],
             $this->db->builder()
@@ -100,7 +100,7 @@ final class ResultSetTest extends TestCase
 
     public function testColumnCount(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             2,
             $this->db->builder()
                 ->table('test')
@@ -112,7 +112,7 @@ final class ResultSetTest extends TestCase
 
     public function testColumns(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'id',
                 'name'
@@ -138,18 +138,18 @@ final class ResultSetTest extends TestCase
             $results[] = $row;
         }
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'id' => 1,
+                    'id' => '1',
                     'name' => 'Test 1'
                 ],
                 [
-                    'id' => 2,
+                    'id' => '2',
                     'name' => 'Test 2'
                 ],
                 [
-                    'id' => 3,
+                    'id' => '3',
                     'name' => 'Test 3'
                 ]
             ],

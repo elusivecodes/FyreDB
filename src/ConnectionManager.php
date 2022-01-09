@@ -32,31 +32,31 @@ abstract class ConnectionManager
 
     /**
      * Load a handler.
-     * @param array $config Options for the handler.
+     * @param array $options Options for the handler.
      * @return Connection The handler.
      * @throws DBException if the handler is invalid.
      */
-    public static function load(array $config = []): Connection
+    public static function load(array $options = []): Connection
     {
-        if (!array_key_exists('className', $config)) {
+        if (!array_key_exists('className', $options)) {
             throw DBException::forInvalidClass();
         }
 
-        if (!class_exists($config['className'], true)) {
-            throw DBException::forInvalidClass($config['className']);
+        if (!class_exists($options['className'], true)) {
+            throw DBException::forInvalidClass($options['className']);
         }
 
-        return new $config['className']($config);
+        return new $options['className']($options);
     }
 
     /**
      * Set handler config.
      * @param string $key The config key.
-     * @param array $config The config options.
+     * @param array $options The config options.
      */
-    public static function setConfig(string $key, array $config): void
+    public static function setConfig(string $key, array $options): void
     {
-        static::$config[$key] = $config;
+        static::$config[$key] = $options;
     }
 
     /**

@@ -8,8 +8,7 @@ trait InsertTest
 
     public function testInsert()
     {
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->db->builder()
                 ->table('test')
                 ->insert([
@@ -18,9 +17,9 @@ trait InsertTest
                 ->execute()
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
-                'id' => 1,
+                'id' => '1',
                 'name' => 'Test'
             ],
             $this->db->builder()
@@ -33,8 +32,7 @@ trait InsertTest
 
     public function testInsertBatch()
     {
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->db->builder()
                 ->table('test')
                 ->insertBatch([
@@ -48,14 +46,14 @@ trait InsertTest
                 ->execute()
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
-                    'id' => 1,
+                    'id' => '1',
                     'name' => 'Test 1'
                 ],
                 [
-                    'id' => 2,
+                    'id' => '2',
                     'name' => 'Test 2'
                 ]
             ],
@@ -76,7 +74,7 @@ trait InsertTest
             ])
             ->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             1,
             $this->db->insertId()
         );
@@ -88,7 +86,7 @@ trait InsertTest
             ])
             ->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             2,
             $this->db->insertId()
         );
@@ -108,7 +106,7 @@ trait InsertTest
             ])
             ->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             1,
             $this->db->insertId()
         );
@@ -123,7 +121,7 @@ trait InsertTest
             ])
             ->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             1,
             $this->db->affectedRows()
         );
@@ -143,7 +141,7 @@ trait InsertTest
             ])
             ->execute();
 
-        $this->assertEquals(
+        $this->assertSame(
             2,
             $this->db->affectedRows()
         );

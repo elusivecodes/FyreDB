@@ -42,10 +42,10 @@ ConnectionManager::clear();
 
 Load a connection.
 
-- `$config` is an array containing configuration options.
+- `$options` is an array containing configuration options.
 
 ```php
-$connection = ConnectionManager::load($config);
+$connection = ConnectionManager::load($options);
 ```
 
 **Set Config**
@@ -53,10 +53,10 @@ $connection = ConnectionManager::load($config);
 Set the connection config.
 
 - `$key` is a string representing the connection key.
-- `$config` is an array containing configuration options.
+- `$options` is an array containing configuration options.
 
 ```php
-ConnectionManager::setConfig($key, $config);
+ConnectionManager::setConfig($key, $options);
 ```
 
 **Use**
@@ -72,7 +72,7 @@ $connection = ConnectionManager::use($key);
 
 ## Connections
 
-You can load a specific connection handler by specifying the `className` option of the `$config` variable above.
+You can load a specific connection handler by specifying the `className` option of the `$options` variable above.
 
 Custom connection handlers can be created by extending `\Fyre\DB\Connection`, ensuring all below methods are implemented.
 
@@ -208,7 +208,7 @@ If the callback returns *false* or throws an *Exception* the transaction will be
 The MySQL connection can be loaded using custom configuration.
 
 - `$key` is a string representing the connection key.
-- `$config` is an array containing configuration options.
+- `$options` is an array containing configuration options.
     - `className` must be set to `\Fyre\DB\Handlers\MySQL\MySQLConnection`.
     - `host` is a string representing the MySQL host, and will default to "*127.0.0.1*".
     - `username` is a string representing the MySQL username.
@@ -227,7 +227,7 @@ The MySQL connection can be loaded using custom configuration.
         - `cipher` is a string representing a list of allowable ciphers to use for encryption.
 
 ```php
-ConnectionManager::setConfig($key, $config);
+ConnectionManager::setConfig($key, $options);
 $connection = ConnectionManager::use($key);
 ```
 
