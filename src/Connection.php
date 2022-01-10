@@ -26,7 +26,8 @@ abstract class Connection
         'port' => '3306',
         'collation' => 'utf8mb4_unicode_ci',
         'charset' => 'utf8mb4',
-        'compress' => true,
+        'compress' => false,
+        'persist' => false,
         'timeout' => null,
         'ssl' => [
             'key' => null,
@@ -104,6 +105,14 @@ abstract class Connection
     abstract public function disconnect(): bool;
 
     /**
+     * Execute a SQL query with bound parameters.
+     * @param string $query The SQL query.
+     * @param array $params The parameters to bind.
+     * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
+     */
+    abstract public function execute(string $query, array $params): ResultSet|bool;
+
+    /**
      * Get the query generator.
      * @return QueryGenerator The query generator.
      */
@@ -146,25 +155,15 @@ abstract class Connection
 
     /**
      * Execute a SQL query.
-     * @param string $query The SQL query.
+     * @param string $sql The SQL query.
      * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
      * @throws DBException if the query failed.
      */
-    public function query(string $query): ResultSet|bool
+    public function query(string $sql): ResultSet|bool
     {
-        $result = $this->rawQuery($query);
+        $result = $this->rawQuery($sql);
 
-        if ($result === true) {
-            return $result;
-        }
-
-        if ($result === false) {
-            $error = $this->getError();
-
-            throw DBException::forQueryError($error);
-        }
-
-        return $this->results($result);
+        return $this->result($result);
     }
 
     /**
@@ -176,17 +175,17 @@ abstract class Connection
 
     /**
      * Execute a raw SQL query.
-     * @param string $query The SQL query.
+     * @param string $sql The SQL query.
      * @return mixed The raw result.
      */
-    abstract public function rawQuery(string $query);
+    abstract public function rawQuery(string $sql);
 
     /**
-     * Build a result set from a raw result.
+     * Generate a result set from a raw result.
      * @param mixed $result The raw result.
-     * @return ResultSet The result set.
+     * @return ResultSet|bool The result set or TRUE if the query was successful.
      */
-    abstract public function results($result): ResultSet;
+    abstract public function result($result): ResultSet|bool;
 
     /**
      * Rollback a transaction.

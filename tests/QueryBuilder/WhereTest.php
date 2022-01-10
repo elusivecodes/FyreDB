@@ -24,7 +24,7 @@ trait WhereTest
     public function testWhereArray()
     {
         $this->assertSame(
-            'SELECT * FROM test WHERE name = "test"',
+            'SELECT * FROM test WHERE name = \'test\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
@@ -38,7 +38,7 @@ trait WhereTest
     public function testWhereMultipleCalls()
     {
         $this->assertSame(
-            'SELECT * FROM test WHERE name = "test" AND value = 1',
+            'SELECT * FROM test WHERE name = \'test\' AND value = 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
@@ -224,7 +224,7 @@ trait WhereTest
     public function testWhereLike()
     {
         $this->assertSame(
-            'SELECT * FROM test WHERE name LIKE "%test%"',
+            'SELECT * FROM test WHERE name LIKE \'%test%\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
@@ -238,7 +238,7 @@ trait WhereTest
     public function testWhereNotLike()
     {
         $this->assertSame(
-            'SELECT * FROM test WHERE name NOT LIKE "%test%"',
+            'SELECT * FROM test WHERE name NOT LIKE \'%test%\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
@@ -280,13 +280,13 @@ trait WhereTest
     public function testWhereMultiple()
     {
         $this->assertSame(
-            'SELECT * FROM test WHERE value = 1 AND name = "test"',
+            'SELECT * FROM test WHERE value = 1 AND name = \'test\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
                 ->where([
                     'value' => 1,
-                    'name' => "test"
+                    'name' => 'test'
                 ])
                 ->sql()
         );
@@ -295,14 +295,14 @@ trait WhereTest
     public function testWhereAnd()
     {
         $this->assertSame(
-            'SELECT * FROM test WHERE (value = 1 AND name = "test")',
+            'SELECT * FROM test WHERE (value = 1 AND name = \'test\')',
             $this->db->builder()
                 ->table('test')
                 ->select()
                 ->where([
                     'and' => [
                         'value' => 1,
-                        'name' => "test"
+                        'name' => 'test'
                     ]
                 ])
                 ->sql()
@@ -312,14 +312,14 @@ trait WhereTest
     public function testWhereOr()
     {
         $this->assertSame(
-            'SELECT * FROM test WHERE (value = 1 OR name = "test")',
+            'SELECT * FROM test WHERE (value = 1 OR name = \'test\')',
             $this->db->builder()
                 ->table('test')
                 ->select()
                 ->where([
                     'or' => [
                         'value' => 1,
-                        'name' => "test"
+                        'name' => 'test'
                     ]
                 ])
                 ->sql()
@@ -329,7 +329,7 @@ trait WhereTest
     public function testWhereGroups()
     {
         $this->assertSame(
-            'SELECT * FROM test WHERE (value = 1 AND (name = "test" OR name IS NULL))',
+            'SELECT * FROM test WHERE (value = 1 AND (name = \'test\' OR name IS NULL))',
             $this->db->builder()
                 ->table('test')
                 ->select()
@@ -337,7 +337,7 @@ trait WhereTest
                     [
                         'value' => 1,
                         'or' => [
-                            'name' => "test",
+                            'name' => 'test',
                             'name IS NULL'
                         ]
                     ]

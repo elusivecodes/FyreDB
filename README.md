@@ -128,6 +128,21 @@ Disconnect from the database.
 $connection->disconnect();
 ```
 
+**Execute**
+
+Execute a SQL query with bound parameters.
+
+- `$sql` is a string representing the SQL query.
+- `$params` is an array containing the bound parameters.
+
+```php
+$result = $connection->execute($sql, $params);
+```
+
+The SQL query can use either *?* as a placeholder (for numerically indexed paramaters), or the array key prefixed with *:*.
+
+This method will return a *ResultSet* for SELECT queries. Other query types will return a boolean value.
+
 **Get Charset**
 
 Get the connection character set.
@@ -164,10 +179,10 @@ $id = $connection->insertId();
 
 Execute a SQL query.
 
-- `$query` is a string representing the SQL query.
+- `$sql` is a string representing the SQL query.
 
 ```php
-$result = $connection->query($query);
+$result = $connection->query($sql);
 ```
 
 This method will return a *ResultSet* for SELECT queries. Other query types will return a boolean value.
@@ -217,7 +232,8 @@ The MySQL connection can be loaded using custom configuration.
     - `port` is a number indicating the MySQL port, and will default to *3306*.
     - `collation` is a string representing the collation, and will default to "*utf8mb4_unicode_ci*".
     - `charset` is a string representing the character set, and will default to "*utf8mb4*".
-    - `compress` is a boolean indicating whether to enable compression, and will default to *true*.
+    - `compress` is a boolean indicating whether to enable compression, and will default to *false*.
+    - `persist` is a boolean indicating whether to use a persistent connection, and will default to *false*.
     - `timeout` is a number indicating the connection timeout.
     - `ssl` is an array containing SSL options.
         - `key` is a string representing the path to the key file.

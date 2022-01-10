@@ -5,24 +5,28 @@ namespace Fyre\DB\Handlers\MySQL;
 
 use
     Fyre\DB\ResultSet,
-    mysqli_result;
-
-use const
-    MYSQLI_ASSOC;
+    PDO,
+    PDOStatement;
 
 use function
-    array_map;
+    array_filter,
+    array_map,
+    array_merge,
+    count,
+    range;
 
 class MySQLResultSet extends ResultSet
 {
 
-    protected mysqli_result $result;
+    protected PDOStatement $result;
+
+    protected array|null $buffer = null;
 
     /**
      * New MySQLResultSet constructor.
-     * @param mysqli_result $result The raw result.
+     * @param PDOStatement $result The raw result.
      */
-    public function __construct(mysqli_result $result)
+    public function __construct(PDOStatement $result)
     {
         $this->result = $result;
     }
@@ -33,7 +37,15 @@ class MySQLResultSet extends ResultSet
      */
     public function all(): array
     {
-        return $this->result->fetch_all(MYSQLI_ASSOC);
+        if (!$this->buffer) {
+            $this->buffer = $this->result->fetchAll(PDO::FETCH_ASSOC);
+        } else if (count($this->buffer) < $this->count()) {
+            $results = $this->result->fetchAll(PDO::FETCH_ASSOC);
+            $results = array_filter($results);
+            $this->buffer = array_merge($this->buffer, $results);
+        }
+
+        return $this->buffer;
     }
 
     /**
@@ -42,7 +54,7 @@ class MySQLResultSet extends ResultSet
      */
     public function columnCount(): int
     {
-        return $this->result->field_count;
+        return $this->result->columnCount();
     }
 
     /**
@@ -52,8 +64,8 @@ class MySQLResultSet extends ResultSet
     public function columns(): array
     {
         return array_map(
-            fn($field) => $field->name,
-            $this->result->fetch_fields()
+            fn($index) => $this->result->getColumnMeta($index)['name'],
+            range(0, $this->columnCount() - 1)
         );
     }
 
@@ -63,7 +75,7 @@ class MySQLResultSet extends ResultSet
      */
     public function count(): int
     {
-        return $this->result->num_rows;
+        return $this->result->rowCount();
     }
 
     /**
@@ -73,9 +85,21 @@ class MySQLResultSet extends ResultSet
      */
     public function fetch(int $index = 0): array|null
     {
-        $this->result->data_seek($index);
+        if ($index >= $this->count()) {
+            return null;
+        }
 
-        return $this->row();
+        if ($index === $this->count() - 1) {
+            return $this->all()[$index];
+        }
+
+        $this->buffer ??= [];
+
+        while (count($this->buffer) <= $index) {
+            $this->buffer[] = $this->result->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return $this->buffer[$index] ?? null;
     }
 
     /**
@@ -83,16 +107,7 @@ class MySQLResultSet extends ResultSet
      */
     public function free(): void
     {
-        $this->result->free();
-    }
-
-    /**
-     * Get the current result.
-     * @return array|null The current result.
-     */
-    public function row(): array|null
-    {
-        return $this->result->fetch_array(MYSQLI_ASSOC);
+        $this->result->closeCursor();
     }
 
 }

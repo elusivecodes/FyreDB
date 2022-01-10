@@ -23,7 +23,9 @@ trait ConnectionTrait
             'database' => getenv('DB_NAME'),
             'port' => getenv('DB_PORT'),
             'collation' => 'utf8mb4_unicode_ci',
-            'charset' => 'utf8mb4'
+            'charset' => 'utf8mb4',
+            'compress' => true,
+            'persist' => true
         ]);
 
         ConnectionManager::setConfig('invalid', [

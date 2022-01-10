@@ -16,20 +16,20 @@ final class ResultSetTest extends TestCase
     use
         ConnectionTrait;
 
-    public function testToArray(): void
+    public function testAll(): void
     {
         $this->assertSame(
             [
                 [
-                    'id' => '1',
+                    'id' => 1,
                     'name' => 'Test 1'
                 ],
                 [
-                    'id' => '2',
+                    'id' => 2,
                     'name' => 'Test 2'
                 ],
                 [
-                    'id' => '3',
+                    'id' => 3,
                     'name' => 'Test 3'
                 ]
             ],
@@ -57,7 +57,7 @@ final class ResultSetTest extends TestCase
     {
         $this->assertSame(
             [
-                'id' => '2',
+                'id' => 2,
                 'name' => 'Test 2'
             ],
             $this->db->builder()
@@ -72,7 +72,7 @@ final class ResultSetTest extends TestCase
     {
         $this->assertSame(
             [
-                'id' => '1',
+                'id' => 1,
                 'name' => 'Test 1'
             ],
             $this->db->builder()
@@ -87,7 +87,7 @@ final class ResultSetTest extends TestCase
     {
         $this->assertSame(
             [
-                'id' => '3',
+                'id' => 3,
                 'name' => 'Test 3'
             ],
             $this->db->builder()
@@ -141,15 +141,15 @@ final class ResultSetTest extends TestCase
         $this->assertSame(
             [
                 [
-                    'id' => '1',
+                    'id' => 1,
                     'name' => 'Test 1'
                 ],
                 [
-                    'id' => '2',
+                    'id' => 2,
                     'name' => 'Test 2'
                 ],
                 [
-                    'id' => '3',
+                    'id' => 3,
                     'name' => 'Test 3'
                 ]
             ],

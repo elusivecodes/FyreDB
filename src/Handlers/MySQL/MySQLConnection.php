@@ -7,17 +7,14 @@ use
     Fyre\DB\Connection,
     Fyre\DB\Exceptions\DBException,
     Fyre\DB\ResultSet,
-    mysqli,
-    mysqli_sql_exception;
-
-use const
-    MYSQLI_CLIENT_COMPRESS,
-    MYSQLI_INIT_COMMAND,
-    MYSQLI_OPT_CONNECT_TIMEOUT,
-    MYSQLI_SET_CHARSET_NAME;
+    PDO,
+    PDOException,
+    PDOStatement;
 
 use function
-    mysql_init;
+    array_is_list,
+    class_exists,
+    implode;
 
 /**
  * MySQLConnection
@@ -27,7 +24,9 @@ class MySQLConnection extends Connection
 
     protected array $config;
 
-    protected mysqli|null $connection = null;
+    protected PDO|null $connection = null;
+
+    protected int|null $affectedRows = null;
 
     /**
      * Get the number of affected rows.
@@ -35,7 +34,7 @@ class MySQLConnection extends Connection
      */
     public function affectedRows(): int
     {
-        return (int) $this->connection->affected_rows;
+        return (int) $this->affectedRows;
     }
 
     /**
@@ -48,47 +47,61 @@ class MySQLConnection extends Connection
             return;
         }
 
-        $this->connection = mysqli_init();
+        if (!class_exists('PDO')) {
+            throw new RuntimeException('MySQL handler requires PDO extension');
+        }
 
-        if ($this->config['ssl'] && $this->config['ssl']['key']) {
-            $this->connection->ssl_set(
-                $this->config['ssl']['key'] ?? null,
-                $this->config['ssl']['cert'] ?? null,
-                $this->config['ssl']['ca'] ?? null,
-                $this->config['ssl']['capath'] ?? null,
-                $this->config['ssl']['cipher'] ?? null
-            );
+        $dsn = 'mysql:host='.$this->config['host'].';dbname='.$this->config['database'];
+
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ];
+
+        if ($this->config['port']) {
+            $dsn .= ';port='.$this->config['port'];
         }
 
         if ($this->config['timeout']) {
-            $this->connection->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->config['timeout']);
+            $options[PDO::ATTR_TIMEOUT] = $this->config['timeout'];
         }
 
         if ($this->config['charset']) {
-            $this->connection->options(MYSQLI_SET_CHARSET_NAME, $this->config['charset']);
+            $dsn .= ';charset='.$this->config['charset'];
         }
 
         if ($this->config['collation']) {
-            $this->connection->options(MYSQLI_INIT_COMMAND, 'SET collation_connection = '.$this->config['collation']);
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET collation_connection = '.$this->config['collation'];
         }
 
-        $flags = 0;
-
         if ($this->config['compress']) {
-            $flags |= MYSQLI_CLIENT_COMPRESS;
+            $options[PDO::MYSQL_ATTR_COMPRESS] = true;
+        }
+
+        if ($this->config['persist']) {
+            $options[PDO::ATTR_PERSISTENT] = true;
+        }
+
+        if ($this->config['ssl']) {
+            if ($this->config['ssl']['key']) {
+                $options[PDO::MYSQL_ATTR_SSL_KEY] = $this->config['ssl']['key'];
+            }
+            if ($this->config['ssl']['cert']) {
+                $options[PDO::MYSQL_ATTR_SSL_CERT] = $this->config['ssl']['cert'];
+            }
+            if ($this->config['ssl']['ca']) {
+                $options[PDO::MYSQL_ATTR_SSL_CA] = $this->config['ssl']['ca'];
+            }
+            if ($this->config['ssl']['capath']) {
+                $options[PDO::MYSQL_ATTR_SSL_CAPATH] = $this->config['ssl']['capath'];
+            }
+            if ($this->config['ssl']['cipher']) {
+                $options[PDO::MYSQL_ATTR_SSL_CIPHER] = $this->config['ssl']['cipher'];
+            }
         }
 
         try {
-            $this->connection->real_connect(
-                $this->config['host'],
-                $this->config['username'],
-                $this->config['password'],
-                $this->config['database'],
-                (int) $this->config['port'],
-                '',
-                $flags
-            );
-        } catch (mysqli_sql_exception $e) {
+            $this->connection = new PDO($dsn, $this->config['username'], $this->config['password'], $options);
+        } catch (PDOException $e) {
             throw DBException::forConnectionFailed($e->getMessage());
         }
     }
@@ -98,7 +111,36 @@ class MySQLConnection extends Connection
      */
     public function disconnect(): bool
     {
-        return $this->connection->close();
+        $this->connection = null;
+
+        return true;
+    }
+
+    /**
+     * Execute a SQL query with bound parameters.
+     * @param string $sql The SQL query.
+     * @param array $params The parameters to bind.
+     * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
+     */
+    public function execute(string $sql, array $params): ResultSet|bool
+    {
+        try {
+            $query = $this->connection->prepare($sql);
+
+            if (array_is_list($params)) {
+                $query->execute($params);
+            } else {
+                foreach ($params AS $name => $value) {
+                    $query->bindParam($name, $value);
+                }
+
+                $query->execute();
+            }
+
+            return $this->result($query);
+        } catch (PDOException $e) {
+            throw DBException::forQueryError($e->getMessage());
+        }
     }
 
     /**
@@ -107,7 +149,7 @@ class MySQLConnection extends Connection
      */
     public function getCharset(): string
     {
-        return $this->connection->get_charset()->charset;
+        return $this->rawQuery('SELECT CHARSET("")')->fetchColumn();
     }
 
     /**
@@ -116,7 +158,7 @@ class MySQLConnection extends Connection
      */
     public function getCollation(): string
     {
-        return $this->connection->get_charset()->collation;
+        return $this->rawQuery('SELECT COLLATION("")')->fetchColumn();
     }
 
     /**
@@ -125,7 +167,9 @@ class MySQLConnection extends Connection
      */
     public function getError(): string
     {
-        return $this->connection->error;
+        $info = $this->connection->errorInfo();
+
+        return implode(' ', $info);
     }
 
     /**
@@ -134,7 +178,7 @@ class MySQLConnection extends Connection
      */
     public function insertId(): int
     {
-        return (int) $this->connection->insert_id;
+        return (int) $this->connection->lastInsertId();
     }
 
     /**
@@ -144,31 +188,37 @@ class MySQLConnection extends Connection
      */
     public function quote(string $value): string
     {
-        return '"'.$this->connection->real_escape_string($value).'"';
+        return $this->connection->quote($value);
     }
 
     /**
      * Execute a raw SQL query.
-     * @param string $query The SQL query.
+     * @param string $sql The SQL query.
      * @return mixed The raw result.
      * @throws DBException if the query threw an error.
      */
-    public function rawQuery(string $query)
+    public function rawQuery(string $sql): PDOStatement
     {
         try {
-            return $this->connection->query($query);
-        } catch (mysqli_sql_exception $e) {
+            return $this->connection->query($sql);
+        } catch (PDOException $e) {
             throw DBException::forQueryError($e->getMessage());
         }
     }
 
     /**
-     * Build a result set from a raw result.
-     * @param mixed $result The raw result.
-     * @return ResultSet The result set.
+     * Generate a result set from a raw result.
+     * @param $result The raw result.
+     * @return MySQLResultSet|bool The result set or TRUE if the query was successful.
      */
-    public function results($result): ResultSet
+    public function result($result): MySQLResultSet|bool
     {
+        if (!$result || $result->columnCount() === 0) {
+            $this->affectedRows = $result->rowCount();
+
+            return true;
+        }
+
         return new MySQLResultSet($result);
     }
 

@@ -28,7 +28,7 @@ final class ConnectionTest extends TestCase
     public function testCollation(): void
     {
         $this->assertSame(
-            'utf8mb4_general_ci',
+            'utf8mb4_unicode_ci',
             $this->db->getCollation()
         );
     }

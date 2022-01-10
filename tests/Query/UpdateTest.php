@@ -34,7 +34,7 @@ trait UpdateTest
 
         $this->assertSame(
             [
-                'id' => '1',
+                'id' => 1,
                 'name' => 'Test 2'
             ],
             $this->db->builder()
@@ -78,11 +78,11 @@ trait UpdateTest
         $this->assertSame(
             [
                 [
-                    'id' => '1',
+                    'id' => 1,
                     'name' => 'Test 3'
                 ],
                 [
-                    'id' => '2',
+                    'id' => 2,
                     'name' => 'Test 4'
                 ]
             ],

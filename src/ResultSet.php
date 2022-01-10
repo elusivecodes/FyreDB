@@ -107,7 +107,10 @@ abstract class ResultSet implements Countable, Iterator
      * Get the current result.
      * @return array|null The current result.
      */
-    abstract public function row(): array|null;
+    public function row(): array|null
+    {
+        return $this->fetch($this->index++);
+    }
 
     /**
      * Determine if the current index is valid.

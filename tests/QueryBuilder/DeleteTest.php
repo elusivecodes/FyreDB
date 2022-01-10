@@ -131,7 +131,7 @@ trait DeleteTest
     public function testDeleteFull()
     {
         $this->assertSame(
-            'DELETE FROM test USING test INNER JOIN test2 ON test2.id = test.id WHERE test.name = "test" ORDER BY test.id ASC LIMIT 10, 20',
+            'DELETE FROM test USING test INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\' ORDER BY test.id ASC LIMIT 10, 20',
             $this->db->builder()
                 ->table('test')
                 ->delete()

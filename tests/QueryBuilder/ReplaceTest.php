@@ -12,7 +12,7 @@ trait ReplaceTest
     public function testReplace()
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (1, "Test", 1)',
+            'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', 1)',
             $this->db->builder()
                 ->table('test')
                 ->replace([
@@ -27,7 +27,7 @@ trait ReplaceTest
     public function testReplaceQueryBuilder()
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (1, "Test", (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
                 ->replace([
@@ -45,7 +45,7 @@ trait ReplaceTest
     public function testReplaceClosure()
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (1, "Test", (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
                 ->replace([
@@ -65,7 +65,7 @@ trait ReplaceTest
     public function testReplaceLiteral()
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (1, "Test", 2 * 10)',
+            'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', 2 * 10)',
             $this->db->builder()
                 ->table('test')
                 ->replace([
@@ -82,7 +82,7 @@ trait ReplaceTest
     public function testReplaceBatch()
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (1, "Test 1", 1), (2, "Test 2", 2)',
+            'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
             $this->db->builder()
                 ->table('test')
                 ->replaceBatch([
@@ -104,7 +104,7 @@ trait ReplaceTest
     public function testReplaceBatchQueryBuilder()
     {
         $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
                 ->replaceBatch([
@@ -130,7 +130,7 @@ trait ReplaceTest
     public function testReplaceBatchClosure()
     {
         $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
                 ->replaceBatch([
@@ -160,7 +160,7 @@ trait ReplaceTest
     public function testReplaceBatchLiteral()
     {
         $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES ("Test 1", 2 * 10), ("Test 2", 2 * 20)',
+            'REPLACE INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
             $this->db->builder()
                 ->table('test')
                 ->replaceBatch([

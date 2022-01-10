@@ -465,7 +465,7 @@ trait JoinTest
     public function testJoinConditionsLike()
     {
         $this->assertSame(
-            'SELECT * FROM test INNER JOIN test2 ON test2.name LIKE "%test%"',
+            'SELECT * FROM test INNER JOIN test2 ON test2.name LIKE \'%test%\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
@@ -484,7 +484,7 @@ trait JoinTest
     public function testJoinConditionsNotLike()
     {
         $this->assertSame(
-            'SELECT * FROM test INNER JOIN test2 ON test2.name NOT LIKE "%test%"',
+            'SELECT * FROM test INNER JOIN test2 ON test2.name NOT LIKE \'%test%\'',
             $this->db->builder()
                 ->table('test')
                 ->select()

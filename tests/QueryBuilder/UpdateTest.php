@@ -57,7 +57,7 @@ trait UpdateTest
     public function testUpdateJoin()
     {
         $this->assertSame(
-            'UPDATE test SET name = "Test", value = 1 INNER JOIN test2 ON test2.id = test.id',
+            'UPDATE test SET name = \'Test\', value = 1 INNER JOIN test2 ON test2.id = test.id',
             $this->db->builder()
                 ->table('test')
                 ->update([
@@ -79,7 +79,7 @@ trait UpdateTest
     public function testUpdateWhere()
     {
         $this->assertSame(
-            'UPDATE test SET name = "Test", value = 1 WHERE id = 1',
+            'UPDATE test SET name = \'Test\', value = 1 WHERE id = 1',
             $this->db->builder()
                 ->table('test')
                 ->update([
@@ -96,7 +96,7 @@ trait UpdateTest
     public function testUpdateQueryBuilder()
     {
         $this->assertSame(
-            'UPDATE test SET name = "Test", value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
+            'UPDATE test SET name = \'Test\', value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
             $this->db->builder()
                 ->table('test')
                 ->update([
@@ -116,7 +116,7 @@ trait UpdateTest
     public function testUpdateClosure()
     {
         $this->assertSame(
-            'UPDATE test SET name = "Test", value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
+            'UPDATE test SET name = \'Test\', value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
             $this->db->builder()
                 ->table('test')
                 ->update([
@@ -138,7 +138,7 @@ trait UpdateTest
     public function testUpdateLiteral()
     {
         $this->assertSame(
-            'UPDATE test SET name = "Test", value = 2 * 10 WHERE id = 1',
+            'UPDATE test SET name = \'Test\', value = 2 * 10 WHERE id = 1',
             $this->db->builder()
                 ->table('test')
                 ->update([
@@ -157,7 +157,7 @@ trait UpdateTest
     public function testUpdateBatch()
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN 1 WHEN id = 2 THEN 2 END WHERE id IN (1, 2)',
+            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN 1 WHEN id = 2 THEN 2 END WHERE id IN (1, 2)',
             $this->db->builder()
                 ->table('test')
                 ->updateBatch([
@@ -179,7 +179,7 @@ trait UpdateTest
     public function testUpdateBatchQueryBuilder()
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
+            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
             $this->db->builder()
                 ->table('test')
                 ->updateBatch([
@@ -207,7 +207,7 @@ trait UpdateTest
     public function testUpdateBatchClosure()
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
+            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
             $this->db->builder()
                 ->table('test')
                 ->updateBatch([
@@ -239,7 +239,7 @@ trait UpdateTest
     public function testUpdateBatchLiteral()
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN "Test 1" WHEN id = 2 THEN "Test 2" END, value = CASE WHEN id = 1 THEN 2 * 10 WHEN id = 2 THEN 2 * 20 END WHERE id IN (1, 2)',
+            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN 2 * 10 WHEN id = 2 THEN 2 * 20 END WHERE id IN (1, 2)',
             $this->db->builder()
                 ->table('test')
                 ->updateBatch([
@@ -265,7 +265,7 @@ trait UpdateTest
     public function testUpdateFull()
     {
         $this->assertSame(
-            'UPDATE test SET name = "Test", value = 1 INNER JOIN test2 ON test2.id = test.id WHERE test.name = "test"',
+            'UPDATE test SET name = \'Test\', value = 1 INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\'',
             $this->db->builder()
                 ->table('test')
                 ->update([

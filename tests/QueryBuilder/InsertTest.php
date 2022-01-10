@@ -12,7 +12,7 @@ trait InsertTest
     public function testInsert()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES ("Test", 1)',
+            'INSERT INTO test (name, value) VALUES (\'Test\', 1)',
             $this->db->builder()
                 ->table('test')
                 ->insert([
@@ -26,7 +26,7 @@ trait InsertTest
     public function testInsertQueryBuilder()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES ("Test", (SELECT id FROM test LIMIT 1))',
+            'INSERT INTO test (name, value) VALUES (\'Test\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
                 ->insert([
@@ -43,7 +43,7 @@ trait InsertTest
     public function testInsertClosure()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES ("Test", (SELECT id FROM test LIMIT 1))',
+            'INSERT INTO test (name, value) VALUES (\'Test\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
                 ->insert([
@@ -62,7 +62,7 @@ trait InsertTest
     public function testInsertLiteral()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES ("Test", 2 * 10)',
+            'INSERT INTO test (name, value) VALUES (\'Test\', 2 * 10)',
             $this->db->builder()
                 ->table('test')
                 ->insert([
@@ -78,7 +78,7 @@ trait InsertTest
     public function testInsertBatch()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES ("Test 1", 1), ("Test 2", 2)',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
             $this->db->builder()
                 ->table('test')
                 ->insertBatch([
@@ -98,7 +98,7 @@ trait InsertTest
     public function testInsertBatchQueryBuilder()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
                 ->insertBatch([
@@ -124,7 +124,7 @@ trait InsertTest
     public function testInsertBatchClosure()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES ("Test 1", (SELECT id FROM test LIMIT 1)), ("Test 2", (SELECT id FROM test LIMIT 1))',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
                 ->insertBatch([
@@ -154,7 +154,7 @@ trait InsertTest
     public function testInsertBatchLiteral()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES ("Test 1", 2 * 10), ("Test 2", 2 * 20)',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
             $this->db->builder()
                 ->table('test')
                 ->insertBatch([
