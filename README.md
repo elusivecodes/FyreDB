@@ -516,10 +516,10 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 Set query as a batch UPDATE.
 
 - `$data` is a 2-dimensional array of values to update.
-- `$updateKey` is a string representing the key to use for updating.
+- `$updateKeys` is a string or array containing the keys to use for updating.
 
 ```php
-$builder->updateBatch($data, $updateKey);
+$builder->updateBatch($data, $updateKeys);
 ```
 
 Array keys will be used for the column names, and the values will be escaped automatically.

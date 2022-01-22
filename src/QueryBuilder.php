@@ -35,7 +35,7 @@ class QueryBuilder
     protected string $epilog = '';
     protected array $unions = [];
     protected bool $unionAll = false;
-    protected string $updateKey = '';
+    protected array $updateKeys = [];
 
     /**
      * New QueryBuilder constructor.
@@ -322,7 +322,7 @@ class QueryBuilder
                 $query .= $generator->buildWhere($this->conditions);
                 break;
             case 'updateBatch':
-                $query = $generator->buildUpdateBatch($this->tables, $this->data, $this->updateKey);
+                $query = $generator->buildUpdateBatch($this->tables, $this->data, $this->updateKeys);
                 break;
             case 'delete':
                 $query = $generator->buildDelete($this->tables);
@@ -379,14 +379,14 @@ class QueryBuilder
     /**
      * Set query as a batch UPDATE.
      * @param array $data The data.
-     * @param string $updateKey The key to use for updating.
+     * @param string|array $updateKeys The key to use for updating.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function updateBatch(array $data, string $updateKey): static
+    public function updateBatch(array $data, string|array $updateKeys): static
     {
         $this->action = 'updateBatch';
         $this->data = $data;
-        $this->updateKey = $updateKey;
+        $this->updateKeys = (array) $updateKeys;
 
         return $this;
     }

@@ -11,10 +11,13 @@ use const
 
 use function
     array_column,
+    array_combine,
     array_filter,
     array_key_exists,
     array_keys,
     array_map,
+    array_values,
+    count,
     filter_var,
     implode,
     in_array,
@@ -354,52 +357,75 @@ class QueryGenerator
      * Generate a batch UPDATE query.
      * @param array $tables The tables.
      * @param array $data The data.
-     * @param string $updateKey The key to use for updating.
+     * @param array $updateKeys The key to use for updating.
      * @return string The query string.
      */
-    public function buildUpdateBatch(array $tables, array $data, string $updateKey): string
+    public function buildUpdateBatch(array $tables, array $data, array $updateKeys): string
     {
         $columns = array_filter(
             array_keys($data[0] ?? []),
-            fn($column) => $column !== $updateKey
+            fn($column) => !in_array($column, $updateKeys)
         );
 
-        $values = array_map(
-            function($column) use ($data, $updateKey) {
-                $sql = $column.' = CASE';
+        $columns = array_values($columns);
 
-                $useElse = false;
-                foreach ($data AS $values) {
-                    if (!array_key_exists($column, $values)) {
-                        $useElse = true;
-                        continue;
-                    }
+        $conditions = [];
+        $updateData = [];
 
-                    $sql .= ' WHEN '.$updateKey.' = ';
-                    $sql .= $this->parseExpression($values[$updateKey]);
-                    $sql .= ' THEN ';
-                    $sql .= $this->parseExpression($values[$column]);
+        foreach ($columns AS $i => $column) {
+            $sql = $column.' = CASE';
+
+            $useElse = false;
+            foreach ($data AS $j => $values) {
+                if (!array_key_exists($column, $values)) {
+                    $useElse = true;
+                    continue;
                 }
 
-                if ($useElse) {
-                    $sql .= ' ELSE '.$column;
+                if ($i === 0) {
+                    $updateValues = array_map(
+                        fn($column) => $values[$column] ?? null,
+                        $updateKeys
+                    );
+
+                    $rowConditions = array_combine($updateKeys, $updateValues);
+
+                    $conditions[] = $rowConditions;
+                } else {
+                    $rowConditions = $conditions[$j];
                 }
 
-                $sql .= ' END';
+                $sql .= ' WHEN ';
+                $sql .= $this->buildConditions($rowConditions);
+                $sql .= ' THEN ';
+                $sql .= $this->parseExpression($values[$column]);
+            }
 
-                return $sql;
-            },
-            $columns
-        );
+            if ($useElse) {
+                $sql .= ' ELSE '.$column;
+            }
+
+            $sql .= ' END';
+
+            $updateData[] = $sql;
+        }
 
         $query = 'UPDATE ';
         $query .= $this->buildTables($tables);
         $query .= ' SET ';
-        $query .= implode(', ', $values);
+        $query .= implode(', ', $updateData);
 
-        $query .= $this->buildWhere([
-            $updateKey.' IN' => array_column($data, $updateKey)
-        ]);
+        if (count($updateKeys) === 1) {
+            [$updateKey] = $updateKeys;
+
+            $query .= $this->buildWhere([
+                $updateKey.' IN' => array_column($conditions, $updateKey)
+            ]);
+        } else {
+            $query .= $this->buildWhere([
+                'or' => $conditions
+            ]);
+        }
 
         return $query;
     }
