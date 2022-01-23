@@ -5,6 +5,8 @@ namespace Fyre\DB;
 
 use
     Countable,
+    Fyre\DB\TypeParser,
+    Fyre\DB\Types\Type,
     Iterator;
 
 /**
@@ -70,6 +72,22 @@ abstract class ResultSet implements Countable, Iterator
     abstract public function free(): void;
 
     /**
+     * Get a Type class for a column.
+     * @param string $name The column name.
+     * @return Type|null The Type.
+     */
+    public function getType(string $name): Type|null
+    {
+        $type = $this->getColumnType($name);
+
+        if (!$type) {
+            return null;
+        }
+
+        return TypeParser::getType($type);
+    }
+
+    /**
      * Get the current index.
      * @return int The current index.
      */
@@ -120,5 +138,12 @@ abstract class ResultSet implements Countable, Iterator
     {
         return $this->index < $this->count();
     }
+
+    /**
+     * Get the database type for a column.
+     * @param string $name The column name.
+     * @return string|null The database type.
+     */
+    abstract protected function getColumnType(string $name): string|null;
 
 }

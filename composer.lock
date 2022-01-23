@@ -4,8 +4,92 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9836b0972b922b18e6837e8c0965f74",
-    "packages": [],
+    "content-hash": "363b7eb522224ad94c11513ae24c2bb5",
+    "packages": [
+        {
+            "name": "fyre/datetime",
+            "version": "v1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreDateTime.git",
+                "reference": "3b547189f379017f9faacc3e39a14d2ffc922d3c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreDateTime/zipball/3b547189f379017f9faacc3e39a14d2ffc922d3c",
+                "reference": "3b547189f379017f9faacc3e39a14d2ffc922d3c",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\DateTime\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "A DateTime library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreDateTime/issues",
+                "source": "https://github.com/elusivecodes/FyreDateTime/tree/v1.0.5"
+            },
+            "time": "2022-01-09T10:19:51+00:00"
+        },
+        {
+            "name": "fyre/typeparser",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreTypeParser.git",
+                "reference": "23fb86d6d29e376f7376c1d5b8040fe698d5e07d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreTypeParser/zipball/23fb86d6d29e376f7376c1d5b8040fe698d5e07d",
+                "reference": "23fb86d6d29e376f7376c1d5b8040fe698d5e07d",
+                "shasum": ""
+            },
+            "require": {
+                "fyre/datetime": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\DB\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "A database type parser library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreTypeParser/issues",
+                "source": "https://github.com/elusivecodes/FyreTypeParser/tree/v1.0"
+            },
+            "time": "2022-01-20T12:09:50+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "doctrine/instantiator",

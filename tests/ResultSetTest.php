@@ -6,6 +6,8 @@ namespace Tests;
 use
     Fyre\DB\Connection,
     Fyre\DB\ConnectionManager,
+    Fyre\DB\Types\DateTimeType,
+    Fyre\DB\Types\StringType,
     PHPUnit\Framework\TestCase;
 
 final class ResultSetTest extends TestCase
@@ -127,7 +129,7 @@ final class ResultSetTest extends TestCase
 
     public function testIteration(): void
     {
-        $query =  $this->db->builder()
+        $query = $this->db->builder()
             ->table('test')
             ->select()
             ->execute();
@@ -154,6 +156,32 @@ final class ResultSetTest extends TestCase
                 ]
             ],
             $results
+        );
+    }
+
+    public function testType(): void
+    {
+        $this->assertInstanceOf(
+            StringType::class,
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->execute()
+                ->getType('name')
+        );
+    }
+
+
+    public function testTypeVirtualField(): void
+    {
+        $this->assertInstanceOf(
+            DateTimeType::class,
+            $this->db->builder()
+                ->select([
+                    'virtual' => 'NOW()'
+                ])
+                ->execute()
+                ->getType('virtual')
         );
     }
 

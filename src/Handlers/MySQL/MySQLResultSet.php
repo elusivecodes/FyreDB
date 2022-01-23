@@ -10,13 +10,25 @@ use
 
 use function
     array_filter,
-    array_map,
+    array_keys,
     array_merge,
-    count,
-    range;
+    count;
 
 class MySQLResultSet extends ResultSet
 {
+
+    protected static array $types = [
+        'DATE' => 'date',
+        'DATETIME' => 'datetime',
+        'DOUBLE' => 'decimal',
+        'FLOAT' => 'float',
+        'LONG' => 'integer',
+        'LONGLONG' => 'integer',
+        'SHORT' => 'integer',
+        'TIME' => 'time',
+        'TIMESTAMP' => 'datetime',
+        'TINY' => 'integer'
+    ];
 
     protected PDOStatement $result;
 
@@ -63,10 +75,9 @@ class MySQLResultSet extends ResultSet
      */
     public function columns(): array
     {
-        return array_map(
-            fn($index) => $this->result->getColumnMeta($index)['name'],
-            range(0, $this->columnCount() - 1)
-        );
+        $columns = $this->getColumnMeta();
+
+        return array_keys($columns);
     }
 
     /**
@@ -108,6 +119,49 @@ class MySQLResultSet extends ResultSet
     public function free(): void
     {
         $this->result->closeCursor();
+    }
+
+    /**
+     * Get column meta data.
+     * @return array The column meta data.
+     */
+    protected function getColumnMeta(): array
+    {
+        $columnCount = $this->columnCount();
+
+        $columns = [];
+
+        for ($i = 0; $i < $columnCount; $i++) {
+            $column = $this->result->getColumnMeta($i);
+            $name = $column['name'];
+
+            $columns[$name] = $column;
+        }
+
+        return $columns;
+    }
+
+    /**
+     * Get the database type for a column.
+     * @param string $name The column name.
+     * @return string|null The database type.
+     */
+    protected function getColumnType(string $name): string|null
+    {
+        $columns = $this->getColumnMeta();
+        $column = $columns[$name];
+
+        if (!$column) {
+            return null;
+        }
+
+        $nativeType = $column['native_type'];
+
+        if ($nativeType === 'TINY' && $column['length'] === 1) {
+            return 'boolean';
+        }
+
+        return static::$types[$nativeType] ?? 'string';
     }
 
 }

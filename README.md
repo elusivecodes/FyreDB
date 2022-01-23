@@ -636,6 +636,16 @@ Free the result from memory.
 $result->free();
 ```
 
+**Get Type**
+
+Get the [*Type*](https://github.com/elusivecodes/FyreTypeParser) parser for a column.
+
+- `$name` is a string representing the column name.
+
+```php
+$parser = $result->getType($name);
+```
+
 **Last**
 
 Get the last result.

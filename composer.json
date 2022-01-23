@@ -19,7 +19,9 @@
             "Tests\\": "tests/"
         }
     },
-    "require": {},
+    "require": {
+        "fyre/typeparser": "^1.0"
+    },
     "require-dev": {
         "phpunit/phpunit": "^9"
     }
