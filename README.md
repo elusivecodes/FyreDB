@@ -212,7 +212,7 @@ Execute a callback inside a database transaction.
 - `$callback` is a *Closure* that will be executed inside the transaction.
 
 ```php
-$connection->transactional($callback);
+$result = $connection->transactional($callback);
 ```
 
 If the callback returns *false* or throws an *Exception* the transaction will be rolled back, otherwise it will be committed.
@@ -254,8 +254,10 @@ $connection = ConnectionManager::use($key);
 
 Set query as DELETE.
 
+- `$aliases` is a string or array containing the table aliases to delete, and will default to *null*.
+
 ```php
-$builder->delete();
+$builder->delete($aliases);
 ```
 
 **Distinct**

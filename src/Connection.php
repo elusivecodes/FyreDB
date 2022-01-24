@@ -42,6 +42,8 @@ abstract class Connection
 
     protected QueryGenerator $generator;
 
+    protected int $savePointLevel = 0;
+
     /**
      * New Connection constructor.
      * @param array $options Options for the handler.
@@ -69,11 +71,19 @@ abstract class Connection
 
     /**
      * Begin a transaction.
-     * @return bool TRUE if successful, otherwise FALSE.
+     * @return Connection The Connection.
      */
-    public function begin(): bool
+    public function begin(): static
     {
-        return $this->query('START TRANSACTION');
+        if ($this->savePointLevel === 0) {
+            $this->transBegin();
+        } else {
+            $this->transSavepoint((string) $this->savePointLevel);
+        }
+
+        $this->savePointLevel++;
+
+        return $this;
     }
 
     /**
@@ -87,11 +97,19 @@ abstract class Connection
 
     /**
      * Commit a transaction.
-     * @return bool TRUE if successful, otherwise FALSE.
+     * @return Connection The Connection.
      */
-    public function commit(): bool
+    public function commit(): static
     {
-        return $this->query('COMMIT');
+        $this->savePointLevel--;
+
+        if ($this->savePointLevel === 0) {
+            $this->transCommit();
+        } else {
+            $this->transRelease((string) $this->savePointLevel);
+        }
+
+        return $this;
     }
 
     /**
@@ -189,19 +207,28 @@ abstract class Connection
 
     /**
      * Rollback a transaction.
-     * @return bool TRUE if successful, otherwise FALSE.
+     * @return Connection The Connection.
      */
-    public function rollback(): bool
+    public function rollback(): static
     {
-        return $this->query('ROLLBACK');
+        $this->savePointLevel--;
+
+        if ($this->savePointLevel === 0) {
+            $this->transRollback();
+        } else {
+            $this->transRollbackTo((string) $this->savePointLevel);
+        }
+
+        return $this;
     }
 
     /**
      * Execute a callback inside a database transaction.
      * @param Closure $callback The callback.
+     * @return bool TRUE if the transaction was successful, otherwise FALSE.
      * @throws Throwable if the callback throws an exception.
      */
-    public function transactional(Closure $callback): void
+    public function transactional(Closure $callback): bool
     {
         try {
             $this->begin();
@@ -213,11 +240,48 @@ abstract class Connection
             throw $e;
         }
 
-        if ($result !== false) {
-            $this->commit();
-        } else {
+        if ($result === false) {
             $this->rollback();
+
+            return false;
         }
+
+        $this->commit();
+
+        return true;
     }
+
+    /**
+     * Begin a transaction.
+     */
+    abstract protected function transBegin(): void;
+
+    /**
+     * Commit a transaction.
+     */
+    abstract protected function transCommit(): void;
+
+    /**
+     * Release a transaction savepoint.
+     * @param string $savePoint The save point name.
+     */
+    abstract protected function transRelease(string $savePoint): void;
+
+    /**
+     * Rollback a transaction.
+     */
+    abstract protected function transRollback(): void;
+
+    /**
+     * Rollback to a transaction savepoint.
+     * @param string $savePoint The save point name.
+     */
+    abstract protected function transRollbackTo(string $savePoint): void;
+
+    /**
+     * Save a transaction save point.
+     * @param string $savePoint The save point name.
+     */
+    abstract protected function transSavepoint(string $savePoint): void;
 
 }

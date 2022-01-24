@@ -19,6 +19,7 @@ class QueryBuilder
     protected Connection $connection;
 
     protected string $action = 'select';
+    protected array|null $deleteAliases = null;
     protected array $tables = [];
     protected array $data = [];
     protected Closure|QueryBuilder|QueryLiteral|string $insertQuery = '';
@@ -48,11 +49,20 @@ class QueryBuilder
 
     /**
      * Set query as DELETE.
+     * @param string|array $aliases The table aliases to delete.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function delete(): static
+    public function delete(string|array|null $aliases = null): static
     {
         $this->action = 'delete';
+
+        if (is_array($aliases)) {
+            $this->deleteAliases = array_merge($this->deleteAliases ?? [], $aliases);
+        } else if ($aliases) {
+            $this->deleteAliases ??= [];
+            $this->deleteAliases[] = $aliases;
+        }
+
 
         return $this;
     }
@@ -325,7 +335,7 @@ class QueryBuilder
                 $query = $generator->buildUpdateBatch($this->tables, $this->data, $this->updateKeys);
                 break;
             case 'delete':
-                $query = $generator->buildDelete($this->tables);
+                $query = $generator->buildDelete($this->tables, $this->deleteAliases);
                 $query .= $generator->buildJoin($this->joins);
                 $query .= $generator->buildWhere($this->conditions);
                 $query .= $generator->buildOrderBy($this->orderBy);

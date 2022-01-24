@@ -47,27 +47,32 @@ class QueryGenerator
     /**
      * Generate the DELETE portion of the query.
      * @param array $tables The tables.
+     * @param array $aliases The table aliases to delete.
      * @return string The query string.
      */
-    public function buildDelete(array $tables): string
+    public function buildDelete(array $tables, array|null $aliases = null): string
     {
-        $deletes = array_map(
-            function($alias, $table) {
-                if (is_numeric($alias)) {
-                    return $table;
-                }
+        $query = 'DELETE';
 
-                return $alias;
-            },
-            array_keys($tables),
-            $tables
-        );
+        if ($aliases || count($tables) > 1) {
+            $aliases ??= array_map(
+                function($alias, $table) {
+                    if (is_numeric($alias)) {
+                        return $table;
+                    }
+    
+                    return $alias;
+                },
+                array_keys($tables),
+                $tables
+            );
 
-        $query = 'DELETE FROM ';
+            $query .= ' ';
+            $query .= implode(', ', $aliases);
+        }
+
+        $query .= ' FROM ';
         $query .= $this->buildTables($tables);
-
-        $query .= ' USING ';
-        $query .= implode(', ', $deletes);
 
         return $query;
     }

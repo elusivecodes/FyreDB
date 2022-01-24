@@ -222,4 +222,55 @@ class MySQLConnection extends Connection
         return new MySQLResultSet($result);
     }
 
+    /**
+     * Begin a transaction.
+     */
+    protected function transBegin(): void
+    {
+        $this->query('BEGIN');
+    }
+
+    /**
+     * Commit a transaction.
+     */
+    protected function transCommit(): void
+    {
+        $this->query('COMMIT');
+    }
+
+    /**
+     * Release a transaction savepoint.
+     * @param string $savePoint The save point name.
+     */
+    protected function transRelease(string $savePoint): void
+    {
+        $this->query('RELEASE SAVEPOINT sp_'.$savePoint);
+    }
+
+    /**
+     * Rollback a transaction.
+     */
+    protected function transRollback(): void
+    {
+        $this->query('ROLLBACK');
+    }
+
+    /**
+     * Rollback to a transaction savepoint.
+     * @param string $savePoint The save point name.
+     */
+    protected function transRollbackTo(string $savePoint): void
+    {
+        $this->query('ROLLBACK TO SAVEPOINT sp_'.$savePoint);
+    }
+
+    /**
+     * Save a transaction save point.
+     * @param string $savePoint The save point name.
+     */
+    protected function transSavepoint(string $savePoint): void
+    {
+        $this->query('SAVEPOINT sp_'.$savePoint);
+    }
+
 }

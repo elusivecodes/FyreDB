@@ -75,21 +75,96 @@ trait TransactionTest
         );
     }
 
+    public function testTransactionNested()
+    {
+        $this->db->begin();
+
+        $this->db->builder()
+            ->table('test')
+            ->insert([
+                'name' => 'Test 1'
+            ])
+            ->execute();
+
+        $this->db->begin();
+
+        $this->db->builder()
+            ->table('test')
+            ->insert([
+                'name' => 'Test 2'
+            ])
+            ->execute();
+
+        $this->db->rollback();
+
+        $this->db->commit();
+
+        $this->assertSame(
+            [
+                [
+                    'id' => 1,
+                    'name' => 'Test 1'
+                ]
+            ],
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->execute()
+                ->all()
+        );
+    }
+
+    public function testTransactionNestedRollback()
+    {
+        $this->db->begin();
+
+        $this->db->builder()
+            ->table('test')
+            ->insert([
+                'name' => 'Test 1'
+            ])
+            ->execute();
+
+        $this->db->begin();
+
+        $this->db->builder()
+            ->table('test')
+            ->insert([
+                'name' => 'Test 2'
+            ])
+            ->execute();
+
+        $this->db->rollback();
+
+        $this->db->rollback();
+
+        $this->assertSame(
+            [],
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->execute()
+                ->all()
+        );
+    }
+
     public function testTransactionalCommit()
     {
-        $this->db->transactional(function(Connection $db) {
-            $db->builder()
-                ->table('test')
-                ->insertBatch([
-                    [
-                        'name' => 'Test 1'
-                    ],
-                    [
-                        'name' => 'Test 2'
-                    ]
-                ])
-                ->execute();
-        });
+        $this->assertTrue(
+            $this->db->transactional(function(Connection $db) {
+                $db->builder()
+                    ->table('test')
+                    ->insertBatch([
+                        [
+                            'name' => 'Test 1'
+                        ],
+                        [
+                            'name' => 'Test 2'
+                        ]
+                    ])
+                    ->execute();
+            })
+        );
 
         $this->assertSame(
             [
@@ -112,21 +187,23 @@ trait TransactionTest
 
     public function testTransactionalRollback()
     {
-        $this->db->transactional(function(Connection $db) {
-            $db->builder()
-                ->table('test')
-                ->insertBatch([
-                    [
-                        'name' => 'Test 1'
-                    ],
-                    [
-                        'name' => 'Test 2'
-                    ]
-                ])
-                ->execute();
-
-            return false;
-        });
+        $this->assertFalse(
+            $this->db->transactional(function(Connection $db) {
+                $db->builder()
+                    ->table('test')
+                    ->insertBatch([
+                        [
+                            'name' => 'Test 1'
+                        ],
+                        [
+                            'name' => 'Test 2'
+                        ]
+                    ])
+                    ->execute();
+    
+                return false;
+            })
+        );
 
         $this->assertSame(
             [],
