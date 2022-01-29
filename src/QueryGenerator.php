@@ -511,6 +511,8 @@ class QueryGenerator
 
                 if (in_array($subType, ['AND', 'OR'])) {
                     $query .= '('.$this->buildConditions($value, $subType).')';
+                } else if ($subType === 'NOT') {
+                    $query .= 'NOT ('.$this->buildConditions($value).')';
                 } else {
                     $field = trim($field);
 

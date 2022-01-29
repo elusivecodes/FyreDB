@@ -309,6 +309,23 @@ trait HavingTest
         );
     }
 
+    public function testHavingNot()
+    {
+        $this->assertSame(
+            'SELECT * FROM test HAVING NOT (value = 1 AND name = \'test\')',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->having([
+                    'not' => [
+                        'value' => 1,
+                        'name' => 'test'
+                    ]
+                ])
+                ->sql()
+        );
+    }
+
     public function testHavingGroups()
     {
         $this->assertSame(

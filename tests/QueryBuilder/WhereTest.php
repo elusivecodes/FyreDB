@@ -326,6 +326,23 @@ trait WhereTest
         );
     }
 
+    public function testWhereNot()
+    {
+        $this->assertSame(
+            'SELECT * FROM test WHERE NOT (value = 1 AND name = \'test\')',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->where([
+                    'not' => [
+                        'value' => 1,
+                        'name' => 'test'
+                    ]
+                ])
+                ->sql()
+        );
+    }
+
     public function testWhereGroups()
     {
         $this->assertSame(

@@ -563,7 +563,7 @@ $builder->where($conditions);
 Array conditions can contain:
 - Literal values with numeric keys.
 - Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped.
-- Array values containing a group of conditions. These will be joined using the AND operator unless the array key is OR.
+- Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
 
 If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 

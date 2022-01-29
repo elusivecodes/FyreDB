@@ -602,6 +602,28 @@ trait JoinTest
         );
     }
 
+    public function testJoinConditionsNot()
+    {
+        $this->assertSame(
+            'SELECT * FROM test INNER JOIN test2 ON NOT (test2.id = test.id AND test2.value = 1)',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->join([
+                    [
+                        'table' => 'test2',
+                        'conditions' => [
+                            'not' => [
+                                'test2.id = test.id',
+                                'test2.value' => 1
+                            ]
+                        ]
+                    ]
+                ])
+                ->sql()
+        );
+    }
+
     public function testJoinConditionsGroups()
     {
         $this->assertSame(
