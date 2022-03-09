@@ -19,6 +19,8 @@ class QueryBuilder
     protected Connection $connection;
 
     protected string $action = 'select';
+    protected array $with = [];
+    protected bool $recursive = false;
     protected array|null $deleteAliases = null;
     protected array $tables = [];
     protected array $data = [];
@@ -243,6 +245,18 @@ class QueryBuilder
     }
 
     /**
+     * Set the LIMIT and OFFSET clauses.
+     * @param int $offset The offset.
+     * @return ModelQuery The ModelQuery.
+     */
+    public function offset(int $offset = 0): static
+    {
+        $this->offset = $offset;
+
+        return $this;
+    }
+
+    /**
      * Set the ORDER BY fields.
      * @param string|array $fields The fields.
      * @return QueryBuilder The QueryBuilder.
@@ -327,7 +341,7 @@ class QueryBuilder
                 $query = $generator->buildReplaceBatch($this->tables, $this->data);
                 break;
             case 'update':
-                $query = $generator->buildUpdate($this->tables, $this->data);
+                $query = $generator->buildUpdate($this->tables, $this->data, $this->with, $this->recursive);
                 $query .= $generator->buildJoin($this->joins);
                 $query .= $generator->buildWhere($this->conditions);
                 break;
@@ -335,14 +349,14 @@ class QueryBuilder
                 $query = $generator->buildUpdateBatch($this->tables, $this->data, $this->updateKeys);
                 break;
             case 'delete':
-                $query = $generator->buildDelete($this->tables, $this->deleteAliases);
+                $query = $generator->buildDelete($this->tables, $this->deleteAliases, $this->with, $this->recursive);
                 $query .= $generator->buildJoin($this->joins);
                 $query .= $generator->buildWhere($this->conditions);
                 $query .= $generator->buildOrderBy($this->orderBy);
                 $query .= $generator->buildLimit($this->limit, $this->offset);
                 break;
             case 'select':
-                $query = $generator->buildSelect($this->tables, $this->fields, $this->distinct);
+                $query = $generator->buildSelect($this->tables, $this->fields, $this->distinct, $this->with, $this->recursive);
                 $query .= $generator->buildJoin($this->joins);
                 $query .= $generator->buildWhere($this->conditions);
                 $query .= $generator->buildOrderBy($this->orderBy);
@@ -445,6 +459,30 @@ class QueryBuilder
         }
 
         return $this;
+    }
+
+    /**
+     * Set the WITH clause.
+     * @param array $with The common table expressions.
+     * @param bool $recursive Whether the WITH is recursive.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function with(array $with, bool $recursive = false): static
+    {
+        $this->with = $with;
+        $this->recursive = $recursive;
+    
+        return $this;
+    }
+
+    /**
+     * Set the WITH RECURSIVE clause.
+     * @param array $with The common table expressions.
+     * @return QueryBuilder The QueryBuilder.
+     */
+    public function withRecursive(array $with): static
+    {
+        return $this->with($with, true);
     }
 
 }

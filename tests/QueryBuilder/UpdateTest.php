@@ -198,6 +198,28 @@ trait UpdateTest
         );
     }
 
+    public function testUpdateBatchArrayNull()
+    {
+        $this->assertSame(
+            'UPDATE test SET name = CASE WHEN id = 1 AND value = 1 THEN \'Test 1\' WHEN id = 2 AND value IS NULL THEN \'Test 2\' END WHERE ((id = 1 AND value = 1) OR (id = 2 AND value IS NULL))',
+            $this->db->builder()
+                ->table('test')
+                ->updateBatch([
+                    [
+                        'id' => 1,
+                        'name' => 'Test 1',
+                        'value' => 1
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Test 2',
+                        'value' => null
+                    ]
+                ], ['id', 'value'])
+                ->sql()
+        );
+    }
+
     public function testUpdateBatchQueryBuilder()
     {
         $this->assertSame(

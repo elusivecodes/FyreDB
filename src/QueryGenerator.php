@@ -10,12 +10,12 @@ use const
     FILTER_VALIDATE_FLOAT;
 
 use function
-    array_column,
-    array_combine,
     array_filter,
     array_key_exists,
     array_keys,
     array_map,
+    array_shift,
+    array_slice,
     array_values,
     count,
     filter_var,
@@ -60,7 +60,7 @@ class QueryGenerator
                     if (is_numeric($alias)) {
                         return $table;
                     }
-    
+
                     return $alias;
                 },
                 array_keys($tables),
@@ -292,13 +292,15 @@ class QueryGenerator
     }
 
     /**
-     * Generate the SELECT BY portion of the query.
+     * Generate the SELECT portion of the query.
      * @param array $tables The tables.
      * @param array $fields The fields.
      * @param bool $distinct Whether to use a DISTINCT clause.
+     * @param array $with The common table expressions.
+     * @param bool $recursive Whether to use a RECURSIVE clause.
      * @return string The query string.
      */
-    public function buildSelect(array $tables, array $fields, bool $distinct): string
+    public function buildSelect(array $tables, array $fields, bool $distinct = false, array $with = [], bool $recursive = false): string
     {
         $fields = array_map(
             function($key, $value) {
@@ -314,7 +316,19 @@ class QueryGenerator
             $fields
         );
 
-        $query = 'SELECT ';
+        $query = '';
+
+        if ($with !== []) {
+            $query .= 'WITH ';
+            if ($recursive) {
+                $query .= 'RECURSIVE ';
+            }
+
+            $query .= $this->buildTables($with, true);
+            $query .= ' ';
+        }
+
+        $query .= 'SELECT ';
 
         if ($distinct) {
             $query .= 'DISTINCT ';
@@ -374,7 +388,8 @@ class QueryGenerator
 
         $columns = array_values($columns);
 
-        $conditions = [];
+        $allConditions = [];
+        $allValues = [];
         $updateData = [];
 
         foreach ($columns AS $i => $column) {
@@ -393,11 +408,12 @@ class QueryGenerator
                         $updateKeys
                     );
 
-                    $rowConditions = array_combine($updateKeys, $updateValues);
+                    $rowConditions = static::combineConditions($updateKeys, $updateValues);
 
-                    $conditions[] = $rowConditions;
+                    $allConditions[] = $rowConditions;
+                    $allValues[] = $updateValues;
                 } else {
-                    $rowConditions = $conditions[$j];
+                    $rowConditions = $allConditions[$j];
                 }
 
                 $sql .= ' WHEN ';
@@ -420,17 +436,8 @@ class QueryGenerator
         $query .= ' SET ';
         $query .= implode(', ', $updateData);
 
-        if (count($updateKeys) === 1) {
-            [$updateKey] = $updateKeys;
-
-            $query .= $this->buildWhere([
-                $updateKey.' IN' => array_column($conditions, $updateKey)
-            ]);
-        } else {
-            $query .= $this->buildWhere([
-                'or' => $conditions
-            ]);
-        }
+        $conditions = static::normalizeConditions($updateKeys, $allValues);
+        $query .= $this->buildWhere($conditions);
 
         return $query;
     }
@@ -555,15 +562,18 @@ class QueryGenerator
     /**
      * Build query tables.
      * @param array $tables The tables.
+     * @param bool $with Whether this is a WITH clause.
      * @return string The table string.
      */
-    protected function buildTables(array $tables): string
+    protected function buildTables(array $tables, bool $with = false): string
     {
         $tables = array_map(
-            function($alias, $table) {
-                $query = $this->parseExpression($table, false);
+            function($alias, $table) use ($with) {
+                $query = $this->parseExpression($table, $with);
 
-                if ($alias !== $table && !is_numeric($alias)) {
+                if ($with) {
+                    $query = $alias.' AS '.$query;
+                } else if ($alias !== $table && !is_numeric($alias)) {
                     $query .= ' AS '.$alias;
                 }
 
@@ -622,6 +632,98 @@ class QueryGenerator
         }
 
         return $this->connection->quote($value);
+    }
+
+    /**
+     * Combine conditions.
+     * @param array $fields The fields.
+     * @param array $values The values.
+     * @return array The combined conditions.
+     */
+    public static function combineConditions(array $fields, array $values): array
+    {
+        $fields = array_values($fields);
+        $values = array_values($values);
+
+        $fields = array_slice($fields, 0, count($values));
+
+        $conditions = [];
+
+        foreach ($fields AS $i => $field) {
+            $value = $values[$i] ?? null;
+
+            if ($value === null) {
+                $conditions[] = $field.' IS NULL';
+            } else {
+                $conditions[$field] = $value;
+            }
+        }
+
+        return $conditions;
+    }
+
+    /**
+     * Normalize conditions.
+     * @param array $fields The fields.
+     * @param array $allValues The values.
+     * @return array The normalized conditions.
+     */
+    public static function normalizeConditions(array $fields, array $allValues): array
+    {
+        if ($fields === [] || $allValues === []) {
+            return [];
+        }
+
+        $allConditions =  array_map(
+            fn($values) => static::combineConditions($fields, $values),
+            $allValues
+        );
+
+        if (count($allConditions) === 1) {
+            return array_shift($allConditions);
+        }
+
+        if (count($fields) > 1) {
+            return [
+                'or' => $allConditions
+            ];
+        }
+
+        $nullCondition = null;
+        $values = [];
+
+        foreach ($allConditions AS $conditions) {
+            foreach ($conditions AS $key => $value) {
+                if (is_numeric($key)) {
+                    $nullCondition ??= $value;
+                } else if (!in_array($value, $values)) {
+                    $values[] = $value;
+                }
+            }
+        }
+
+        $valueCount = count($values);
+
+        $conditions = [];
+
+        $field = array_shift($fields);
+        if ($valueCount === 1) {
+            $conditions[$field] = array_shift($values);
+        } else if ($valueCount > 1) {
+            $conditions[$field.' IN'] = $values;
+        }
+
+        if ($nullCondition) {
+            $conditions[] = $nullCondition;
+        }
+
+        if (count($conditions) > 1) {
+            return [
+                'or' => $conditions
+            ];
+        }
+
+        return $conditions;
     }
 
 }

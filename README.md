@@ -415,6 +415,16 @@ Create a *QueryLiteral*.
 $literal = $builder->literal($string);
 ```
 
+**Offset**
+
+Set the OFFSET clause.
+
+- `$offset` is a number indicating the query offset.
+
+```php
+$builder->offset($offset);
+```
+
 **Order By**
 
 Set the ORDER BY fields.
@@ -564,6 +574,38 @@ Array conditions can contain:
 - Literal values with numeric keys.
 - Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped.
 - Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
+
+If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
+
+**With**
+
+Set the WITH clause.
+
+- `$with` is an array of common table expressions.
+
+```php
+$builder->with($with);
+```
+
+Array keys will be used as table aliases.
+
+If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
+
+**With Recursive**
+
+Set the WITH RECURSIVE clause.
+
+- `$with` is an array of common table expressions.
+
+```php
+$builder->withRecursive($with);
+```
+
+Array keys will be used as table aliases.
 
 If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 

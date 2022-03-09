@@ -337,7 +337,7 @@ trait SelectTest
         );
     }
 
-    public function testSelectOffset()
+    public function testSelectLimitWithOffset()
     {
         $this->assertSame(
             'SELECT * FROM test LIMIT 10, 20',
@@ -345,6 +345,19 @@ trait SelectTest
                 ->table('test')
                 ->select()
                 ->limit(20, 10)
+                ->sql()
+        );
+    }
+
+    public function testSelectOffset()
+    {
+        $this->assertSame(
+            'SELECT * FROM test LIMIT 10, 20',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->limit(20)
+                ->offset(10)
                 ->sql()
         );
     }

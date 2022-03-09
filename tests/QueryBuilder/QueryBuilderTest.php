@@ -24,7 +24,8 @@ final class QueryBuilderTest extends TestCase
         SelectTest,
         UnionTest,
         UpdateTest,
-        WhereTest;
+        WhereTest,
+        WithTest;
 
     protected function setUp(): void
     {
