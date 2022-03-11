@@ -38,7 +38,7 @@ abstract class ConnectionManager
      */
     public static function getKey(Connection $connection): string|null
     {
-        return array_search($connection, $this->instances, true) ?: null;
+        return array_search($connection, static::$instances, true) ?: null;
     }
 
     /**
