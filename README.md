@@ -38,6 +38,16 @@ Clear and close connections.
 ConnectionManager::clear();
 ```
 
+**Get Key**
+
+Get the key for a connection instance.
+
+- `$connection` is a *Connection*.
+
+```php
+$key = ConnectionManager::getKey($connection);
+```
+
 **Load**
 
 Load a connection.

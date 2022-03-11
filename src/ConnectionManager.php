@@ -10,6 +10,7 @@ use
 
 use function
     array_key_exists,
+    array_search,
     class_exists;
 
 /**
@@ -28,6 +29,16 @@ abstract class ConnectionManager
     public static function clear(): void
     {
         static::$instances = [];
+    }
+
+    /**
+     * Get the key for a connection instance.
+     * @param Connection $connection The Connection.
+     * @return string|null The connection key.
+     */
+    public static function getKey(Connection $connection): string|null
+    {
+        return array_search($connection, $this->instances, true) ?: null;
     }
 
     /**

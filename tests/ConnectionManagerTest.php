@@ -15,6 +15,28 @@ final class ConnectionManagerTest extends TestCase
     use
         ConnectionTrait;
 
+    public function getKey(): void
+    {
+        $handler = ConnectionManager::use();
+
+        $this->assertSame(
+            'default',
+            ConnectionManager::getKey($handler)
+        );
+    }
+
+    public function getKeyInvalid(): void
+    {
+        $handler = ConnectionManager::load([
+            'className' => 'Invalid'
+        ]);
+
+        $this->assertSame(
+            null,
+            ConnectionManager::getKey($handler)
+        );
+    }
+
     public function testLoadInvalidHandler(): void
     {
         $this->expectException(DBException::class);

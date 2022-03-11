@@ -247,7 +247,7 @@ class QueryBuilder
     /**
      * Set the LIMIT and OFFSET clauses.
      * @param int $offset The offset.
-     * @return ModelQuery The ModelQuery.
+     * @return QueryBuilder The QueryBuilder.
      */
     public function offset(int $offset = 0): static
     {
