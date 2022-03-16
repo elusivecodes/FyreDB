@@ -108,7 +108,7 @@ abstract class ResultSet implements Countable, Iterator
     /**
      * Progress the index.
      */
-    public function next()
+    public function next(): void
     {
         $this->index++;
     }
@@ -116,7 +116,7 @@ abstract class ResultSet implements Countable, Iterator
     /**
      * Reset the index.
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->index = 0;
     }
