@@ -194,7 +194,7 @@ class MySQLConnection extends Connection
     /**
      * Execute a raw SQL query.
      * @param string $sql The SQL query.
-     * @return mixed The raw result.
+     * @return PDOStatement The raw result.
      * @throws DBException if the query threw an error.
      */
     public function rawQuery(string $sql): PDOStatement

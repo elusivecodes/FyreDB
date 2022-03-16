@@ -593,7 +593,7 @@ class QueryGenerator
      * @param bool $groupQuery Whether to group subqueries.
      * @return string The expression string.
      */
-    protected function parseExpression($value, bool $quote = true, bool $groupQuery = true): string
+    protected function parseExpression(mixed $value, bool $quote = true, bool $groupQuery = true): string
     {
         if ($value instanceof Closure) {
             $builder = new QueryBuilder($this->connection);

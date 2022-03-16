@@ -91,7 +91,7 @@ abstract class ResultSet implements Countable, Iterator
      * Get the current index.
      * @return int The current index.
      */
-    public function key()
+    public function key(): int
     {
         return $this->index;
     }

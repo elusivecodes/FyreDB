@@ -196,14 +196,14 @@ abstract class Connection
      * @param string $sql The SQL query.
      * @return mixed The raw result.
      */
-    abstract public function rawQuery(string $sql);
+    abstract public function rawQuery(string $sql): mixed;
 
     /**
      * Generate a result set from a raw result.
      * @param mixed $result The raw result.
      * @return ResultSet|bool The result set or TRUE if the query was successful.
      */
-    abstract public function result($result): ResultSet|bool;
+    abstract public function result(mixed $result): ResultSet|bool;
 
     /**
      * Rollback a transaction.
