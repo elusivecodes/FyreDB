@@ -56,7 +56,7 @@ class QueryGenerator
 
         if ($aliases || count($tables) > 1) {
             $aliases ??= array_map(
-                function($alias, $table) {
+                function(mixed $alias, string $table): string {
                     if (is_numeric($alias)) {
                         return $table;
                     }
@@ -147,8 +147,8 @@ class QueryGenerator
     {
         $columns = array_keys($data[0] ?? []);
         $values = array_map(
-            function($values) {
-                $values = array_map(fn($value) => $this->parseExpression($value), $values);
+            function(array $values): string {
+                $values = array_map(fn(mixed $value): string => $this->parseExpression($value), $values);
                 return '('.implode(', ', $values).')';
             },
             $data
@@ -256,7 +256,7 @@ class QueryGenerator
         }
 
         $fields = array_map(
-            fn($field, $dir) => is_numeric($field) ?
+            fn(mixed $field, string $dir): string => is_numeric($field) ?
                 $dir :
                 $field.' '.strtoupper($dir),
             array_keys($fields),
@@ -303,7 +303,7 @@ class QueryGenerator
     public function buildSelect(array $tables, array $fields, bool $distinct = false, array $with = [], bool $recursive = false): string
     {
         $fields = array_map(
-            function($key, $value) {
+            function(mixed $key, mixed $value) {
                 $value = $this->parseExpression($value, false);
 
                 if (is_numeric($key)) {
@@ -353,7 +353,7 @@ class QueryGenerator
     public function buildUpdate(array $tables, array $data): string
     {
         $data = array_map(
-            function($field, $value) {
+            function(mixed $field, mixed $value): string {
                 if (is_numeric($field)) {
                     return $this->parseExpression($value, false);
                 }
@@ -383,7 +383,7 @@ class QueryGenerator
     {
         $columns = array_filter(
             array_keys($data[0] ?? []),
-            fn($column) => !in_array($column, $updateKeys)
+            fn(string $column): bool => !in_array($column, $updateKeys)
         );
 
         $columns = array_values($columns);
@@ -404,7 +404,7 @@ class QueryGenerator
 
                 if ($i === 0) {
                     $updateValues = array_map(
-                        fn($column) => $values[$column] ?? null,
+                        fn(string $column): mixed => $values[$column] ?? null,
                         $updateKeys
                     );
 
@@ -532,7 +532,7 @@ class QueryGenerator
                         $comparison = '=';
                     }
 
-                    $value = array_map(fn($val) => $this->parseExpression($val), $value);
+                    $value = array_map(fn(mixed $val): string => $this->parseExpression($val), $value);
 
                     $query .= $field.' '.$comparison.' ('.implode(', ', $value).')';
                 }
@@ -568,7 +568,7 @@ class QueryGenerator
     protected function buildTables(array $tables, bool $with = false): string
     {
         $tables = array_map(
-            function($alias, $table) use ($with) {
+            function(mixed $alias, mixed $table) use ($with): string {
                 $query = $this->parseExpression($table, $with);
 
                 if ($with) {
@@ -675,7 +675,7 @@ class QueryGenerator
         }
 
         $allConditions =  array_map(
-            fn($values) => static::combineConditions($fields, $values),
+            fn(array $values): array => static::combineConditions($fields, $values),
             $allValues
         );
 
