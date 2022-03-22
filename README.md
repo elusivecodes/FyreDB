@@ -38,6 +38,22 @@ Clear and close connections.
 ConnectionManager::clear();
 ```
 
+**Get Config**
+
+Set a connection config.
+
+- `$key` is a string representing the connection key.
+
+```php
+$config = ConnectionManager::getConfig($key);
+```
+
+Alternatively, if the `$key` argument is omitted an array containing all configurations will be returned.
+
+```php
+$config = ConnectionManager::getConfig();
+```
+
 **Get Key**
 
 Get the key for a connection instance.
@@ -67,6 +83,22 @@ Set the connection config.
 
 ```php
 ConnectionManager::setConfig($key, $options);
+```
+
+Alternatively, a single array can be provided containing key/value of configuration options.
+
+```php
+ConnectionManager::setConfig($config);
+```
+
+**Unload**
+
+Unload a connection.
+
+- `$key` is a string representing the connection key, and will default to *"default"*.
+
+```php
+ConnectionManager::unload($key);
 ```
 
 **Use**
@@ -254,6 +286,7 @@ The MySQL connection can be loaded using custom configuration.
 
 ```php
 ConnectionManager::setConfig($key, $options);
+
 $connection = ConnectionManager::use($key);
 ```
 

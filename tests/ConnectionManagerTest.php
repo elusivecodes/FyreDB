@@ -9,12 +9,60 @@ use
     Fyre\DB\Handlers\MySQL\MySQLConnection,
     PHPUnit\Framework\TestCase;
 
+use function
+    getenv;
+
 final class ConnectionManagerTest extends TestCase
 {
 
     use
         ConnectionTrait;
 
+    public function getConfig(): void
+    {
+        $this->assertSame(
+            [
+                'default' => [
+                    'className' => MySQLConnection::class,
+                    'host' => getenv('DB_HOST'),
+                    'username' => getenv('DB_USERNAME'),
+                    'password' => getenv('DB_PASSWORD'),
+                    'database' => getenv('DB_NAME'),
+                    'port' => getenv('DB_PORT'),
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'charset' => 'utf8mb4',
+                    'compress' => true,
+                    'persist' => true
+                ],
+                'invalid' => [
+                    'className' => MySQLConnection::class,
+                    'username' => 'root',
+                    'database' => 'test'
+                ]
+            ],
+            ConnectionManager::getConfig()
+        );
+    }
+
+    public function getConfigKey(): void
+    {
+        $this->assertSame(
+            [
+                'className' => MySQLConnection::class,
+                'host' => getenv('DB_HOST'),
+                'username' => getenv('DB_USERNAME'),
+                'password' => getenv('DB_PASSWORD'),
+                'database' => getenv('DB_NAME'),
+                'port' => getenv('DB_PORT'),
+                'collation' => 'utf8mb4_unicode_ci',
+                'charset' => 'utf8mb4',
+                'compress' => true,
+                'persist' => true
+            ],
+            ConnectionManager::getConfig('invalid')
+        );
+    }
+    
     public function getKey(): void
     {
         $handler = ConnectionManager::use();
@@ -43,6 +91,33 @@ final class ConnectionManagerTest extends TestCase
 
         ConnectionManager::load([
             'className' => 'Invalid'
+        ]);
+    }
+
+    public function testSetConfig(): void
+    {
+        ConnectionManager::setConfig([
+            'test' => [
+                'className' => MySQLConnection::class
+            ]
+        ]);
+
+        $this->assertSame(
+            [
+                'className' => MySQLConnection::class
+            ],
+            ConnectionManager::getConfig('test')
+        );
+
+        ConnectionManager::unload('test');
+    }
+
+    public function testSetConfigExists(): void
+    {
+        $this->expectException(DBException::class);
+
+        ConnectionManager::setConfig('default', [
+            'className' => MySQLConnection::class
         ]);
     }
 
