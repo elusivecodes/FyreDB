@@ -6,7 +6,7 @@ namespace Fyre\DB;
 use
     Closure,
     Exception,
-    Fyre\DB\Exceptions\DBException,
+    Fyre\DB\Exceptions\DbException,
     Throwable;
 
 use function
@@ -175,7 +175,7 @@ abstract class Connection
      * Execute a SQL query.
      * @param string $sql The SQL query.
      * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
-     * @throws DBException if the query failed.
+     * @throws DbException if the query failed.
      */
     public function query(string $sql): ResultSet|bool
     {

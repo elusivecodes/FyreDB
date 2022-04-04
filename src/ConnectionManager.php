@@ -5,7 +5,7 @@ namespace Fyre\DB;
 
 use
     Fyre\DB\Connection,
-    Fyre\DB\Exceptions\DBException,
+    Fyre\DB\Exceptions\DbException,
     Fyre\DB\Handlers\MySQL\MySQLConnection;
 
 use function
@@ -61,16 +61,16 @@ abstract class ConnectionManager
      * Load a handler.
      * @param array $options Options for the handler.
      * @return Connection The handler.
-     * @throws DBException if the handler is invalid.
+     * @throws DbException if the handler is invalid.
      */
     public static function load(array $options = []): Connection
     {
         if (!array_key_exists('className', $options)) {
-            throw DBException::forInvalidClass();
+            throw DbException::forInvalidClass();
         }
 
         if (!class_exists($options['className'], true)) {
-            throw DBException::forInvalidClass($options['className']);
+            throw DbException::forInvalidClass($options['className']);
         }
 
         return new $options['className']($options);
@@ -80,7 +80,7 @@ abstract class ConnectionManager
      * Set handler config.
      * @param string|array $key The config key.
      * @param array|null $options The config options.
-     * @throws DBException if the config is invalid.
+     * @throws DbException if the config is invalid.
      */
     public static function setConfig(string|array $key, array|null $options = null): void
     {
@@ -93,11 +93,11 @@ abstract class ConnectionManager
         }
 
         if (!is_array($options)) {
-            throw DBException::forInvalidConfig($key);
+            throw DbException::forInvalidConfig($key);
         }
 
         if (array_key_exists($key, static::$config)) {
-            throw DBException::forConfigExists($key);
+            throw DbException::forConfigExists($key);
         }
 
         static::$config[$key] = $options;

@@ -111,7 +111,7 @@ class QueryBuilder
     /**
      * Execute the query.
      * @return ResultSet|bool The query result.
-     * @throws DBException if the query failed.
+     * @throws DbException if the query failed.
      */
     public function execute(): ResultSet|bool
     {

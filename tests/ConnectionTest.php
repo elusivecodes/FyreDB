@@ -6,7 +6,7 @@ namespace Tests;
 use
     Fyre\DB\Connection,
     Fyre\DB\ConnectionManager,
-    Fyre\DB\Exceptions\DBException,
+    Fyre\DB\Exceptions\DbException,
     PHPUnit\Framework\TestCase;
 
 final class ConnectionTest extends TestCase
@@ -35,14 +35,14 @@ final class ConnectionTest extends TestCase
 
     public function testFailedConnection(): void
     {
-        $this->expectException(DBException::class);
+        $this->expectException(DbException::class);
 
         ConnectionManager::use('invalid');
     }
 
     public function testFailedQuery(): void
     {
-        $this->expectException(DBException::class);
+        $this->expectException(DbException::class);
 
         $this->db->query('INVALID');
     }

@@ -5,7 +5,7 @@ namespace Fyre\DB\Handlers\MySQL;
 
 use
     Fyre\DB\Connection,
-    Fyre\DB\Exceptions\DBException,
+    Fyre\DB\Exceptions\DbException,
     Fyre\DB\ResultSet,
     PDO,
     PDOException,
@@ -39,7 +39,7 @@ class MySQLConnection extends Connection
 
     /**
      * Connect to the database.
-     * @throws DBException if the connection failed.
+     * @throws DbException if the connection failed.
      */
     public function connect(): void
     {
@@ -102,7 +102,7 @@ class MySQLConnection extends Connection
         try {
             $this->connection = new PDO($dsn, $this->config['username'], $this->config['password'], $options);
         } catch (PDOException $e) {
-            throw DBException::forConnectionFailed($e->getMessage());
+            throw DbException::forConnectionFailed($e->getMessage());
         }
     }
 
@@ -139,7 +139,7 @@ class MySQLConnection extends Connection
 
             return $this->result($query);
         } catch (PDOException $e) {
-            throw DBException::forQueryError($e->getMessage());
+            throw DbException::forQueryError($e->getMessage());
         }
     }
 
@@ -195,14 +195,14 @@ class MySQLConnection extends Connection
      * Execute a raw SQL query.
      * @param string $sql The SQL query.
      * @return PDOStatement The raw result.
-     * @throws DBException if the query threw an error.
+     * @throws DbException if the query threw an error.
      */
     public function rawQuery(string $sql): PDOStatement
     {
         try {
             return $this->connection->query($sql);
         } catch (PDOException $e) {
-            throw DBException::forQueryError($e->getMessage());
+            throw DbException::forQueryError($e->getMessage());
         }
     }
 

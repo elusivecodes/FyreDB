@@ -36,7 +36,6 @@ trait ConnectionTrait
             'database' => 'test'
         ]);
 
-        
         $connection = ConnectionManager::use();
 
         $connection->query('DROP TABLE IF EXISTS `test`');

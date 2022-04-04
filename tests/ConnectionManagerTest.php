@@ -5,7 +5,7 @@ namespace Tests;
 
 use
     Fyre\DB\ConnectionManager,
-    Fyre\DB\Exceptions\DBException,
+    Fyre\DB\Exceptions\DbException,
     Fyre\DB\Handlers\MySQL\MySQLConnection,
     PHPUnit\Framework\TestCase;
 
@@ -87,7 +87,7 @@ final class ConnectionManagerTest extends TestCase
 
     public function testLoadInvalidHandler(): void
     {
-        $this->expectException(DBException::class);
+        $this->expectException(DbException::class);
 
         ConnectionManager::load([
             'className' => 'Invalid'
@@ -114,7 +114,7 @@ final class ConnectionManagerTest extends TestCase
 
     public function testSetConfigExists(): void
     {
-        $this->expectException(DBException::class);
+        $this->expectException(DbException::class);
 
         ConnectionManager::setConfig('default', [
             'className' => MySQLConnection::class
