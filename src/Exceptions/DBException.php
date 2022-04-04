@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Fyre\DB\Exceptions;
 
 use
-    Fyre\Error\Exceptions\Exception;
+    RuntimeException;
 
 /**
  * DbException
  */
-class DbException extends Exception
+class DbException extends RuntimeException
 {
 
     public static function forConfigExists(string $key)
