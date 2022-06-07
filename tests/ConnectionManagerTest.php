@@ -18,7 +18,7 @@ final class ConnectionManagerTest extends TestCase
     use
         ConnectionTrait;
 
-    public function getConfig(): void
+    public function testGetConfig(): void
     {
         $this->assertSame(
             [
@@ -44,7 +44,7 @@ final class ConnectionManagerTest extends TestCase
         );
     }
 
-    public function getConfigKey(): void
+    public function testGetConfigKey(): void
     {
         $this->assertSame(
             [
@@ -59,11 +59,11 @@ final class ConnectionManagerTest extends TestCase
                 'compress' => true,
                 'persist' => true
             ],
-            ConnectionManager::getConfig('invalid')
+            ConnectionManager::getConfig('default')
         );
     }
     
-    public function getKey(): void
+    public function testGetKey(): void
     {
         $handler = ConnectionManager::use();
 
@@ -73,10 +73,15 @@ final class ConnectionManagerTest extends TestCase
         );
     }
 
-    public function getKeyInvalid(): void
+    public function testGetKeyInvalid(): void
     {
         $handler = ConnectionManager::load([
-            'className' => 'Invalid'
+            'className' => MySQLConnection::class,
+            'host' => getenv('DB_HOST'),
+            'username' => getenv('DB_USERNAME'),
+            'password' => getenv('DB_PASSWORD'),
+            'database' => getenv('DB_NAME'),
+            'port' => getenv('DB_PORT')
         ]);
 
         $this->assertSame(
