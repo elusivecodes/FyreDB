@@ -40,9 +40,9 @@ ConnectionManager::clear();
 
 **Get Config**
 
-Set a connection config.
+Set a [*Connection*](#connections) config.
 
-- `$key` is a string representing the connection key.
+- `$key` is a string representing the [*Connection*](#connections) key.
 
 ```php
 $config = ConnectionManager::getConfig($key);
@@ -56,9 +56,9 @@ $config = ConnectionManager::getConfig();
 
 **Get Key**
 
-Get the key for a connection instance.
+Get the key for a [*Connection*](#connections) instance.
 
-- `$connection` is a *Connection*.
+- `$connection` is a [*Connection*](#connections).
 
 ```php
 $key = ConnectionManager::getKey($connection);
@@ -66,7 +66,7 @@ $key = ConnectionManager::getKey($connection);
 
 **Load**
 
-Load a connection.
+Load a [*Connection*](#connections).
 
 - `$options` is an array containing configuration options.
 
@@ -76,9 +76,9 @@ $connection = ConnectionManager::load($options);
 
 **Set Config**
 
-Set the connection config.
+Set the [*Connection*](#connections) config.
 
-- `$key` is a string representing the connection key.
+- `$key` is a string representing the [*Connection*](#connections) key.
 - `$options` is an array containing configuration options.
 
 ```php
@@ -93,9 +93,9 @@ ConnectionManager::setConfig($config);
 
 **Unload**
 
-Unload a connection.
+Unload a [*Connection*](#connections).
 
-- `$key` is a string representing the connection key, and will default to *"default"*.
+- `$key` is a string representing the [*Connection*](#connections) key, and will default to *"default"*.
 
 ```php
 ConnectionManager::unload($key);
@@ -103,9 +103,9 @@ ConnectionManager::unload($key);
 
 **Use**
 
-Load a shared connection instance.
+Load a shared [*Connection*](#connections) instance.
 
-- `$key` is a string representing the connection key, and will default to *"default"*.
+- `$key` is a string representing the [*Connection*](#connections) key, and will default to *"default"*.
 
 ```php
 $connection = ConnectionManager::use($key);
@@ -118,7 +118,7 @@ You can load a specific connection handler by specifying the `className` option 
 
 Custom connection handlers can be created by extending `\Fyre\DB\Connection`, ensuring all below methods are implemented.
 
-Custom handlers should also implement a `results` method that returns a new *ResultSet* and a `generator` method that returns a new *QueryGenerator* (if required).
+Custom handlers should also implement a `results` method that returns a new [*ResultSet*](#results) and a `generator` method that returns a new *QueryGenerator* (if required).
 
 **Affected Rows**
 
@@ -138,7 +138,7 @@ $connection->begin();
 
 **Builder**
 
-Create a *QueryBuilder*.
+Create a [*QueryBuilder*](#queries).
 
 ```php
 $builder = $connection->builder();
@@ -183,7 +183,7 @@ $result = $connection->execute($sql, $params);
 
 The SQL query can use either *?* as a placeholder (for numerically indexed paramaters), or the array key prefixed with *:*.
 
-This method will return a *ResultSet* for SELECT queries. Other query types will return a boolean value.
+This method will return a [*ResultSet*](#results) for SELECT queries. Other query types will return a boolean value.
 
 **Get Charset**
 
@@ -227,7 +227,7 @@ Execute a SQL query.
 $result = $connection->query($sql);
 ```
 
-This method will return a *ResultSet* for SELECT queries. Other query types will return a boolean value.
+This method will return a [*ResultSet*](#results) for SELECT queries. Other query types will return a boolean value.
 
 **Quote**
 
@@ -341,7 +341,7 @@ Execute the query.
 $result = $builder->execute();
 ```
 
-This method will return a *ResultSet* for SELECT queries. Other query types will return a boolean value.
+This method will return a [*ResultSet*](#results) for SELECT queries. Other query types will return a boolean value.
 
 **Group By**
 
