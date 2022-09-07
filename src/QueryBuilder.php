@@ -359,12 +359,17 @@ class QueryBuilder
                 $query = $generator->buildSelect($this->tables, $this->fields, $this->distinct, $this->with, $this->recursive);
                 $query .= $generator->buildJoin($this->joins);
                 $query .= $generator->buildWhere($this->conditions);
+
+                if ($this->unions !== []) {
+                    $query = '('.$query.')';
+                    $query .= $generator->buildUnion($this->unions);
+                }
+
                 $query .= $generator->buildOrderBy($this->orderBy);
                 $query .= $generator->buildGroupBy($this->groupBy);
                 $query .= $generator->buildHaving($this->having);
                 $query .= $generator->buildLimit($this->limit, $this->offset);
                 $query .= $generator->buildEpilog($this->epilog);
-                $query .= $generator->buildUnion($this->unions);
                 break;
         }
 

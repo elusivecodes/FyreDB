@@ -181,7 +181,8 @@ class QueryGenerator
         }
 
         $query .= ' VALUES ';
-        $query .= $this->parseExpression($insertQuery, false, false);
+
+        $query .= $this->parseExpression($insertQuery, false);
 
         return $query;
     }
@@ -471,7 +472,7 @@ class QueryGenerator
                     break;
             }
 
-            $query .= $this->parseExpression($union['query'], false, false);
+            $query .= $this->parseExpression($union['query'], false);
         }
 
         return  $query;
@@ -590,10 +591,9 @@ class QueryGenerator
      * Parse an expression string.
      * @param mixed $value The value to parse.
      * @param bool $quote Whether to quote the string.
-     * @param bool $groupQuery Whether to group subqueries.
      * @return string The expression string.
      */
-    protected function parseExpression(mixed $value, bool $quote = true, bool $groupQuery = true): string
+    protected function parseExpression(mixed $value, bool $quote = true): string
     {
         if ($value instanceof Closure) {
             $builder = new QueryBuilder($this->connection);
@@ -601,8 +601,7 @@ class QueryGenerator
         }
 
         if ($value instanceof QueryBuilder) {
-            $sql = $value->sql();
-            return $groupQuery ? '('.$sql.')' : $sql;
+            return '('.$value->sql().')';
         }
 
         if ($value instanceof QueryLiteral) {

@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace Tests\QueryBuilder;
 
 use
-    Fyre\DB\QueryBuilder;
+    Fyre\DB\QueryBuilder,
+    Fyre\DB\QueryLiteral;
 
 trait HavingTest
 {
@@ -370,11 +371,9 @@ trait HavingTest
                 ->table('test')
                 ->select()
                 ->having([
-                    'value IN' => function(QueryBuilder $builder) {
-                        return $builder
-                            ->table('test')
-                            ->select(['id']);
-                    }
+                    'value IN' => fn(QueryBuilder $builder): QueryBuilder => $builder
+                        ->table('test')
+                        ->select(['id'])
                 ])
                 ->sql()
         );
@@ -388,9 +387,8 @@ trait HavingTest
                 ->table('test')
                 ->select()
                 ->having([
-                    'value' => function(QueryBuilder $builder) {
-                        return $builder->literal('UPPER(test)');
-                    }
+                    'value' => fn(QueryBuilder $builder): QueryLiteral => $builder
+                        ->literal('UPPER(test)')
                 ])
                 ->sql()
         );

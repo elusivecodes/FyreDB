@@ -182,7 +182,7 @@ trait InsertTest
             ->select();
 
         $this->assertSame(
-            'INSERT INTO test VALUES SELECT * FROM test2',
+            'INSERT INTO test VALUES (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
                 ->insertFrom($query)
@@ -193,10 +193,10 @@ trait InsertTest
     public function testInsertFromClosure()
     {
         $this->assertSame(
-            'INSERT INTO test VALUES SELECT * FROM test2',
+            'INSERT INTO test VALUES (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
-                ->insertFrom(function($builder) {
+                ->insertFrom(function(QueryBuilder $builder) {
                     return $builder->table('test2')
                         ->select();
                 })
@@ -207,11 +207,11 @@ trait InsertTest
     public function testInsertFromLiteral()
     {
         $this->assertSame(
-            'INSERT INTO test VALUES SELECT * FROM test2',
+            'INSERT INTO test VALUES (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
-                ->insertFrom(function($builder) {
-                    return $builder->literal('SELECT * FROM test2');
+                ->insertFrom(function(QueryBuilder $builder) {
+                    return $builder->literal('(SELECT * FROM test2)');
                 })
                 ->sql()
         );
@@ -220,10 +220,10 @@ trait InsertTest
     public function testInsertFromString()
     {
         $this->assertSame(
-            'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
-                ->insertFrom('SELECT * FROM test2', ['id', 'name'])
+                ->insertFrom('(SELECT * FROM test2)', ['id', 'name'])
                 ->sql()
         );
     }
@@ -235,7 +235,7 @@ trait InsertTest
             ->select();
 
         $this->assertSame(
-            'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
                 ->insertFrom($query, ['id', 'name'])
@@ -246,10 +246,10 @@ trait InsertTest
     public function testInsertFromColumnsClosure()
     {
         $this->assertSame(
-            'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
-                ->insertFrom(function($builder) {
+                ->insertFrom(function(QueryBuilder $builder) {
                     return $builder->table('test2')
                         ->select();
                 }, ['id', 'name'])
@@ -260,11 +260,11 @@ trait InsertTest
     public function testInsertFromColumnsLiteral()
     {
         $this->assertSame(
-            'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
-                ->insertFrom(function($builder) {
-                    return $builder->literal('SELECT * FROM test2');
+                ->insertFrom(function(QueryBuilder $builder) {
+                    return $builder->literal('(SELECT * FROM test2)');
                 }, ['id', 'name'])
                 ->sql()
         );
@@ -273,10 +273,10 @@ trait InsertTest
     public function testInsertFromColumnsString()
     {
         $this->assertSame(
-            'INSERT INTO test (id, name) VALUES SELECT * FROM test2',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
-                ->insertFrom('SELECT * FROM test2', ['id', 'name'])
+                ->insertFrom('(SELECT * FROM test2)', ['id', 'name'])
                 ->sql()
         );
     }
