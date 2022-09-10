@@ -17,6 +17,7 @@ final class QueryBuilderTest extends TestCase
     use
         ConnectionTrait,
         DeleteTest,
+        GetTest,
         HavingTest,
         InsertTest,
         JoinTest,
@@ -26,6 +27,16 @@ final class QueryBuilderTest extends TestCase
         UpdateTest,
         WhereTest,
         WithTest;
+
+    public function testToString()
+    {
+        $this->assertSame(
+            'SELECT * FROM test',
+            (string) $this->db->builder()
+                ->table('test')
+                ->select()
+        );
+    }
 
     protected function setUp(): void
     {

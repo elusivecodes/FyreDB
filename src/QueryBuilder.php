@@ -37,7 +37,6 @@ class QueryBuilder
     protected int|null $limit = null;
     protected string $epilog = '';
     protected array $unions = [];
-    protected bool $unionAll = false;
     protected array $updateKeys = [];
 
     /**
@@ -47,6 +46,15 @@ class QueryBuilder
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
+    }
+
+    /**
+     * Generate the SQL query.
+     * @return string The SQL query.
+     */
+    public function __toString(): string
+    {
+        return $this->sql();
     }
 
     /**
@@ -118,6 +126,123 @@ class QueryBuilder
         $query = $this->sql();
 
         return $this->connection->query($query);
+    }
+
+    /**
+     * Get the INSERT/UPDATE data.
+     * @return array The INSERT/UPDATE data.
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * Get the DISTINCT clause.
+     * @return bool The DISTINCT clause.
+     */
+    public function getDistinct(): bool
+    {
+        return $this->distinct;
+    }
+
+    /**
+     * Get the GROUP BY fields.
+     * @return array The GROUP BY fields.
+     */
+    public function getGroupBy(): array
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * Get the HAVING conditions.
+     * @return array The HAVING conditions.
+     */
+    public function getHaving(): array
+    {
+        return $this->having;
+    }
+
+    /**
+     * Get the JOIN tables.
+     * @return array The JOIN tables.
+     */
+    public function getJoin(): array
+    {
+        return $this->joins;
+    }
+
+    /**
+     * Get the LIMIT clause.
+     * @return int|null The LIMIT clause.
+     */
+    public function getLimit(): int|null
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Get the OFFSET clause.
+     * @return int The OFFSET clause.
+     */
+    public function getOffset(): int
+    {
+        return $this->offset;
+    }
+
+    /**
+     * Get the ORDER BY fields.
+     * @return array The ORDER BY fields.
+     */
+    public function getOrderBy(): array
+    {
+        return $this->orderBy;
+    }
+
+    /**
+     * Get the SELECT fields.
+     * @return array The SELECT fields.
+     */
+    public function getSelect(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * Get the tables.
+     * @return array The tables.
+     */
+    public function getTable(): array
+    {
+        return $this->tables;
+    }
+
+    /**
+     * Get the UNION queries.
+     * @return array The UNION queries.
+     */
+    public function getUnion(): array
+    {
+        return $this->unions;
+    }
+
+    /**
+     * Get the WHERE conditions.
+     * @return array The WHERE conditions.
+     */
+    public function getWhere(): array
+    {
+        return $this->conditions;
+    }
+
+    /**
+     * Get the WITH queries.
+     * @return array The WITH queries.
+     */
+    public function getWith(): array
+    {
+        return $this->with;
     }
 
     /**

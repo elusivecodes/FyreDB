@@ -343,6 +343,110 @@ $result = $builder->execute();
 
 This method will return a [*ResultSet*](#results) for SELECT queries. Other query types will return a boolean value.
 
+**Get Data**
+
+Get the INSERT/UPDATE data.`
+
+```php
+$data = $builder->getData();
+```
+
+**Get Distinct**
+
+Get the DISTINCT clause.
+
+```php
+$distinct = $builder->getDistinct();
+```
+
+**Get Group By**
+
+Get the GROUP BY fields.
+
+```php
+$groupBy = $builder->getGroupBy();
+```
+
+**Get Having**
+
+Get the HAVING conditions.
+
+```php
+$having = $builder->getHaving();
+```
+
+**Get Join**
+
+Get the JOIN tables.
+
+```php
+$joins = $builder->getJoin();
+```
+
+**Get Limit**
+
+Get the LIMIT clause.
+
+```php
+$limit = $builder->getLimit();
+```
+
+**Get Offset**
+
+Get the OFFSET clause.
+
+```php
+$offset = $builder->getOffset();
+```
+
+**Get Order By**
+
+Get the ORDER BY fields.
+
+```php
+$orderBy = $builder->getOrderBy();
+```
+
+**Get Select**
+
+Get the SELECT fields.
+
+```php
+$fields = $builder->getSelect();
+```
+
+**Get Table**
+
+Get the tables.
+
+```php
+$tables = $builder->getTable();
+```
+
+**Get Union**
+
+Get the UNION queries.
+
+```php
+$unions = $builder->getUnion();
+```
+
+**Get Where**
+
+Get the WHERE conditions.
+
+```php
+$conditions = $builder->getWhere();
+```
+
+**Get With**
+
+Get the WITH queries.
+
+```php
+$with = $builder->getWith();
+```
+
 **Group By**
 
 Set the GROUP BY fields.
