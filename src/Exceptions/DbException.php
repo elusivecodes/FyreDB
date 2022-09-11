@@ -37,4 +37,9 @@ class DbException extends RuntimeException
         return new static('Database handler invalid config: '.$key);
     }
 
+    public static function forInvalidJoinAlias()
+    {
+        return new static('Database error: invalid join alias');
+    }
+
 }

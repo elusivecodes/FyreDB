@@ -65,7 +65,7 @@ trait GetTest
     {
         $this->assertSame(
             [
-                [
+                'test2' => [
                     'table' => 'test2',
                     'using' => 'id'
                 ]
@@ -184,7 +184,12 @@ trait GetTest
 
         $this->assertSame(
             [
-                'alt' => $query
+                [
+                    'cte' => [
+                        'alt' => $query
+                    ],
+                    'recursive' => false
+                ]
             ],
             $this->db->builder()
                 ->with([

@@ -298,9 +298,10 @@ $connection = ConnectionManager::use($key);
 Set query as DELETE.
 
 - `$aliases` is a string or array containing the table aliases to delete, and will default to *null*.
+- `$overwrite` is a boolean indicating whether to overwrite existing aliases, and will default to *false*.
 
 ```php
-$builder->delete($aliases);
+$builder->delete($aliases, $overwrite);
 ```
 
 **Distinct**
@@ -328,9 +329,10 @@ $builder->epilog($epilog);
 Add an EXCEPT query.
 
 - `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
+- `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
 
 ```php
-$builder->except($query);
+$builder->except($query, $overwrite);
 ```
 
 **Execute**
@@ -342,6 +344,14 @@ $result = $builder->execute();
 ```
 
 This method will return a [*ResultSet*](#results) for SELECT queries. Other query types will return a boolean value.
+
+**Connection**
+
+Get the [*Connection*](#connections).
+
+```php
+$connection = $builder->getConnection();
+```
 
 **Get Data**
 
@@ -452,9 +462,10 @@ $with = $builder->getWith();
 Set the GROUP BY fields.
 
 - `$fields` is an array or string representing the fields to group by.
+- `$overwrite` is a boolean indicating whether to overwrite existing fields, and will default to *false*.
 
 ```php
-$builder->groupBy($fields);
+$builder->groupBy($fields, $overwrite);
 ```
 
 **Having**
@@ -462,9 +473,10 @@ $builder->groupBy($fields);
 Set the HAVING conditions.
 
 - `$conditions` is an array or string representing the having conditions.
+- `$overwrite` is a boolean indicating whether to overwrite existing conditions, and will default to *false*.
 
 ```php
-$builder->having($conditions);
+$builder->having($conditions, $overwrite);
 ```
 
 Array conditions can contain:
@@ -481,9 +493,10 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 Set query as an INSERT.
 
 - `$data` is an array of values to insert.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
 
 ```php
-$builder->insert($data);
+$builder->insert($data, $overwrite);
 ```
 
 Array keys will be used for the column names, and the values will be escaped automatically.
@@ -497,9 +510,10 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 Set query as a batch INSERT.
 
 - `$data` is a 2-dimensional array of values to insert.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
 
 ```php
-$builder->insertBatch($data);
+$builder->insertBatch($data, $overwrite);
 ```
 
 Array keys will be used for the column names, and the values will be escaped automatically.
@@ -524,9 +538,10 @@ $builder->insertFrom($query, $columns);
 Add an INTERSECT query.
 
 - `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
+- `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
 
 ```php
-$builder->intersect($query);
+$builder->intersect($query, $overwrite);
 ```
 
 **Join**
@@ -534,9 +549,10 @@ $builder->intersect($query);
 Set the JOIN tables.
 
 - `$joins` is a 2-dimensional array of joins.
+- `$overwrite` is a boolean indicating whether to overwrite existing joins, and will default to *false*.
 
 ```php
-$builder->join($joins);
+$builder->join($joins, $overwrite);
 ```
 
 Each join array can contain a `table`, `alias`, `type` and an array of `conditions`. If the `type` is not specified it will default to INNER.
@@ -577,9 +593,10 @@ $builder->offset($offset);
 Set the ORDER BY fields.
 
 - `$fields` is an array or string representing the fields to order by.
+- `$overwrite` is a boolean indicating whether to overwrite existing fields, and will default to *false*.
 
 ```php
-$builder->orderBy($fields);
+$builder->orderBy($fields, $overwrite);
 ```
 
 **Replace**
@@ -587,9 +604,10 @@ $builder->orderBy($fields);
 Set query as a REPLACE.
 
 - `$data` is an array of values to replace.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
 
 ```php
-$builder->replace($data);
+$builder->replace($data, $overwrite);
 ```
 
 Array keys will be used for the column names, and the values will be escaped automatically.
@@ -603,9 +621,10 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 Set query as a batch REPLACE.
 
 - `$data` is a 2-dimensional array of values to replace.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
 
 ```php
-$builder->replaceBatch($data);
+$builder->replaceBatch($data, $overwrite);
 ```
 
 Array keys will be used for the column names, and the values will be escaped automatically.
@@ -619,9 +638,10 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 Set the SELECT fields.
 
 - `$fields` is an array or string representing the fields to select.
+- `$overwrite` is a boolean indicating whether to overwrite existing fields, and will default to *false*.
 
 ```php
-$builder->select($fields);
+$builder->select($fields, $overwrite);
 ```
 
 Non-numeric array keys will be used as field aliases.
@@ -643,9 +663,10 @@ $query = $builder->sql();
 Set the table(s).
 
 - `$tables` is an array or string representing the tables.
+- `$overwrite` is a boolean indicating whether to overwrite existing tables, and will default to *false*.
 
 ```php
-$builder->table($tables);
+$builder->table($tables, $overwrite);
 ```
 
 Non-numeric array keys will be used as table aliases.
@@ -659,9 +680,10 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 Set query as an UPDATE.
 
 - `$data` is an array of values to update.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
 
 ```php
-$builder->update($data);
+$builder->update($data, $overwrite);
 ```
 
 Array keys will be used for the column names, and the values will be escaped automatically.
@@ -676,9 +698,10 @@ Set query as a batch UPDATE.
 
 - `$data` is a 2-dimensional array of values to update.
 - `$updateKeys` is a string or array containing the keys to use for updating.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
 
 ```php
-$builder->updateBatch($data, $updateKeys);
+$builder->updateBatch($data, $updateKeys, $overwrite);
 ```
 
 Array keys will be used for the column names, and the values will be escaped automatically.
@@ -692,9 +715,10 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 Add a UNION DISTINCT query.
 
 - `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
+- `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
 
 ```php
-$builder->union($query);
+$builder->union($query, $overwrite);
 ```
 
 **Union All**
@@ -702,9 +726,10 @@ $builder->union($query);
 Add a UNION ALL query.
 
 - `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
+- `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
 
 ```php
-$builder->unionAll($query);
+$builder->unionAll($query, $overwrite);
 ```
 
 **Where**
@@ -712,9 +737,10 @@ $builder->unionAll($query);
 Set the WHERE conditions.
 
 - `$conditions` is an array or string representing the where conditions.
+- `$overwrite` is a boolean indicating whether to overwrite existing conditions, and will default to *false*.
 
 ```php
-$builder->where($conditions);
+$builder->where($conditions, $overwrite);
 ```
 
 Array conditions can contain:
@@ -731,9 +757,10 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 Set the WITH clause.
 
 - `$with` is an array of common table expressions.
+- `$overwrite` is a boolean indicating whether to overwrite existing expressions, and will default to *false*.
 
 ```php
-$builder->with($with);
+$builder->with($with, $overwrite);
 ```
 
 Array keys will be used as table aliases.
@@ -746,10 +773,11 @@ A *Closure* can also be supplied as an array value, where a new *QueryBuilder* w
 
 Set the WITH RECURSIVE clause.
 
-- `$with` is an array of common table expressions.
+- `$with` is an array of expressions.
+- `$overwrite` is a boolean indicating whether to overwrite existing common table expressions, and will default to *false*.
 
 ```php
-$builder->withRecursive($with);
+$builder->withRecursive($with, $overwrite);
 ```
 
 Array keys will be used as table aliases.

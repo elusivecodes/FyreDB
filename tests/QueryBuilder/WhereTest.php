@@ -35,23 +35,6 @@ trait WhereTest
         );
     }
 
-    public function testWhereMultipleCalls()
-    {
-        $this->assertSame(
-            'SELECT * FROM test WHERE name = \'test\' AND value = 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
-                ->where([
-                    'name' => 'test'
-                ])
-                ->where([
-                    'value' => 1
-                ])
-                ->sql()
-        );
-    }
-
     public function testWhereInteger()
     {
         $this->assertSame(
@@ -409,6 +392,40 @@ trait WhereTest
                         return $builder->literal('UPPER(test)');
                     }
                 ])
+                ->sql()
+        );
+    }
+
+    public function testWhereMerge()
+    {
+        $this->assertSame(
+            'SELECT * FROM test WHERE name = \'test\' AND value = 1',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->where([
+                    'name' => 'test'
+                ])
+                ->where([
+                    'value' => 1
+                ])
+                ->sql()
+        );
+    }
+
+    public function testWhereOverwrite()
+    {
+        $this->assertSame(
+            'SELECT * FROM test WHERE value = 1',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->where([
+                    'name' => 'test'
+                ])
+                ->where([
+                    'value' => 1
+                ], true)
                 ->sql()
         );
     }

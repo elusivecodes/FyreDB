@@ -7,8 +7,11 @@ use
     Closure;
 
 use function
+    array_filter,
     array_merge,
-    is_array;
+    array_unique,
+    is_numeric,
+    is_string;
 
 /**
  * QueryBuilder
@@ -19,13 +22,12 @@ class QueryBuilder
     protected Connection $connection;
 
     protected string $action = 'select';
+    protected bool $dirty = false;
+
     protected array $with = [];
-    protected bool $recursive = false;
-    protected array|null $deleteAliases = null;
     protected array $tables = [];
     protected array $data = [];
-    protected Closure|QueryBuilder|QueryLiteral|string $insertQuery = '';
-    protected array $insertColumns = [];
+
     protected bool $distinct = false;
     protected array $fields = [];
     protected array $joins = [];
@@ -37,6 +39,10 @@ class QueryBuilder
     protected int|null $limit = null;
     protected string $epilog = '';
     protected array $unions = [];
+
+    protected array $deleteAliases = [];
+    protected array $insertColumns = [];
+    protected Closure|QueryBuilder|QueryLiteral|string $insertQuery = '';
     protected array $updateKeys = [];
 
     /**
@@ -60,19 +66,22 @@ class QueryBuilder
     /**
      * Set query as DELETE.
      * @param string|array $aliases The table aliases to delete.
+     * @param bool $overwrite Whether to overwrite the existing aliases.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function delete(string|array|null $aliases = null): static
+    public function delete(string|array|null $aliases = null, bool $overwrite = false): static
     {
-        $this->action = 'delete';
+        $aliases = (array) $aliases;
+        $aliases = array_filter($aliases);
 
-        if (is_array($aliases)) {
-            $this->deleteAliases = array_merge($this->deleteAliases ?? [], $aliases);
-        } else if ($aliases) {
-            $this->deleteAliases ??= [];
-            $this->deleteAliases[] = $aliases;
+        if ($overwrite) {
+            $this->deleteAliases = $aliases;
+        } else {
+            $this->deleteAliases = array_merge($this->deleteAliases, $aliases);
         }
 
+        $this->action = 'delete';
+        $this->dirty = true;
 
         return $this;
     }
@@ -85,6 +94,7 @@ class QueryBuilder
     public function distinct(bool $distinct = true): static
     {
         $this->distinct = $distinct;
+        $this->dirty = true;
 
         return $this;
     }
@@ -97,6 +107,7 @@ class QueryBuilder
     public function epilog(string $epilog = ''): static
     {
         $this->epilog = $epilog;
+        $this->dirty = true;
 
         return $this;
     }
@@ -104,16 +115,12 @@ class QueryBuilder
     /**
      * Add an EXCEPT query.
      * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @param bool $overwrite Whether to overwrite the existing unions.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function except(Closure|QueryBuilder|QueryLiteral|string $query): static
+    public function except(Closure|QueryBuilder|QueryLiteral|string $query, bool $overwrite = false): static
     {
-        $this->unions[] = [
-            'type' => 'except',
-            'query' => $query,
-        ];
-
-        return $this;
+        return $this->union($query, $overwrite, 'except');
     }
 
     /**
@@ -124,8 +131,20 @@ class QueryBuilder
     public function execute(): ResultSet|bool
     {
         $query = $this->sql();
+        $result = $this->connection->query($query);
 
-        return $this->connection->query($query);
+        $this->dirty = false;
+
+        return $result;
+    }
+
+    /**
+     * Get the Connection.
+     * @return Connection The Connection.
+     */
+    public function getConnection(): Connection
+    {
+        return $this->connection;
     }
 
     /**
@@ -248,15 +267,20 @@ class QueryBuilder
     /**
      * Set the GROUP BY fields.
      * @param string|array $fields The fields.
+     * @param bool $overwrite Whether to overwrite the existing fields.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function groupBy(string|array $fields): static
+    public function groupBy(string|array $fields, bool $overwrite = false): static
     {
-        if (is_array($fields)) {
-            $this->groupBy = array_merge($this->groupBy, $fields);
+        $fields = (array) $fields;
+
+        if ($overwrite) {
+            $this->groupBy = $fields;
         } else {
-            $this->groupBy[] = $fields;
+            $this->groupBy = array_merge($this->groupBy, $fields);
         }
+
+        $this->dirty = true;
 
         return $this;
     }
@@ -264,15 +288,20 @@ class QueryBuilder
     /**
      * Set the HAVING conditions.
      * @param string|array $conditions The conditions.
+     * @param bool $overwrite Whether to overwrite the existing conditions.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function having(string|array $conditions): static
+    public function having(string|array $conditions, bool $overwrite = false): static
     {
-        if (is_array($conditions)) {
-            $this->having = array_merge($this->having, $conditions);
+        $conditions = (array) $conditions;
+
+        if ($overwrite) {
+            $this->having = $conditions;
         } else {
-            $this->having[] = $conditions;
+            $this->having = array_merge($this->having, $conditions);
         }
+
+        $this->dirty = true;
 
         return $this;
     }
@@ -280,12 +309,19 @@ class QueryBuilder
     /**
      * Set query as an INSERT.
      * @param array $data The data.
+     * @param bool $overwrite Whether to overwrite the existing data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function insert(array $data): static
+    public function insert(array $data, bool $overwrite = false): static
     {
+        if ($overwrite) {
+            $this->data = $data;
+        } else {
+            $this->data = array_merge($this->data, $data);
+        }
+
         $this->action = 'insert';
-        $this->data = $data;
+        $this->dirty = true;
 
         return $this;
     }
@@ -293,12 +329,19 @@ class QueryBuilder
     /**
      * Set query as a batch INSERT.
      * @param array $data The data.
+     * @param bool $overwrite Whether to overwrite the existing data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function insertBatch(array $data): static
+    public function insertBatch(array $data, bool $overwrite = false): static
     {
+        if ($overwrite) {
+            $this->data = $data;
+        } else {
+            $this->data = array_merge($this->data, $data);
+        }
+
         $this->action = 'insertBatch';
-        $this->data = $data;
+        $this->dirty = true;
 
         return $this;
     }
@@ -311,9 +354,11 @@ class QueryBuilder
      */
     public function insertFrom(Closure|QueryBuilder|QueryLiteral|string $query, array $columns = []): static
     {
-        $this->action = 'insertFrom';
         $this->insertQuery = $query;
         $this->insertColumns = $columns;
+
+        $this->action = 'insertFrom';
+        $this->dirty = true;
 
         return $this;
     }
@@ -321,26 +366,31 @@ class QueryBuilder
     /**
      * Add an INTERSECT query.
      * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @param bool $overwrite Whether to overwrite the existing unions.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function intersect(Closure|QueryBuilder|QueryLiteral|string $query): static
+    public function intersect(Closure|QueryBuilder|QueryLiteral|string $query, bool $overwrite = false): static
     {
-        $this->unions[] = [
-            'type' => 'intersect',
-            'query' => $query,
-        ];
-
-        return $this;
+        return $this->union($query, $overwrite, 'intersect');
     }
 
     /**
      * Set the JOIN tables.
      * @param array $joins The joins.
+     * @param bool $overwrite Whether to overwrite the existing joins.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function join(array $joins): static
+    public function join(array $joins, bool $overwrite = false): static
     {
-        $this->joins = array_merge($this->joins, $joins);
+        $joins = static::normalizeJoins($joins);
+
+        if ($overwrite) {
+            $this->joins = $joins;
+        } else {
+            $this->joins = array_merge($this->joins, $joins);
+        }
+
+        $this->dirty = true;
 
         return $this;
     }
@@ -348,13 +398,18 @@ class QueryBuilder
     /**
      * Set the LIMIT and OFFSET clauses.
      * @param int|null $limit The limit.
-     * @param int $offset The offset.
+     * @param int|null $offset The offset.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function limit(int|null $limit = null, int $offset = 0): static
+    public function limit(int|null $limit = null, int|null $offset = null): static
     {
         $this->limit = $limit;
-        $this->offset = $offset;
+
+        if ($offset !== null) {
+            $this->offset = $offset;
+        }
+
+        $this->dirty = true;
 
         return $this;
     }
@@ -378,21 +433,28 @@ class QueryBuilder
     {
         $this->offset = $offset;
 
+        $this->dirty = true;
+
         return $this;
     }
 
     /**
      * Set the ORDER BY fields.
      * @param string|array $fields The fields.
+     * @param bool $overwrite Whether to overwrite the existing fields.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function orderBy(string|array $fields): static
+    public function orderBy(string|array $fields, bool $overwrite = false): static
     {
-        if (is_array($fields)) {
-            $this->orderBy = array_merge($this->orderBy, $fields);
+        $fields = (array) $fields;
+
+        if ($overwrite) {
+            $this->orderBy = $fields;
         } else {
-            $this->orderBy[] = $fields;
+            $this->orderBy = array_merge($this->orderBy, $fields);
         }
+
+        $this->dirty = true;
 
         return $this;
     }
@@ -400,12 +462,19 @@ class QueryBuilder
     /**
      * Set query as a REPLACE.
      * @param array $data The data.
+     * @param bool $overwrite Whether to overwrite the existing data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function replace(array $data): static
+    public function replace(array $data, bool $overwrite = false): static
     {
+        if ($overwrite) {
+            $this->data = $data;
+        } else {
+            $this->data = array_merge($this->data, $data);
+        }
+
         $this->action = 'replace';
-        $this->data = $data;
+        $this->dirty = true;
 
         return $this;
     }
@@ -413,12 +482,19 @@ class QueryBuilder
     /**
      * Set query as a batch REPLACE.
      * @param array $data The data.
+     * @param bool $overwrite Whether to overwrite the existing data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function replaceBatch(array $data): static
+    public function replaceBatch(array $data, bool $overwrite = false): static
     {
+        if ($overwrite) {
+            $this->data = $data;
+        } else {
+            $this->data = array_merge($this->data, $data);
+        }
+
         $this->action = 'replaceBatch';
-        $this->data = $data;
+        $this->dirty = true;
 
         return $this;
     }
@@ -426,17 +502,21 @@ class QueryBuilder
     /**
      * Set the SELECT fields.
      * @param string|array $fields The fields.
+     * @param bool $overwrite Whether to overwrite the existing fields.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function select(string|array $fields = '*'): static
+    public function select(string|array $fields = '*', bool $overwrite = false): static
     {
-        $this->action = 'select';
+        $fields = (array) $fields;
 
-        if (is_array($fields)) {
-            $this->fields = array_merge($this->fields, $fields);
+        if ($overwrite) {
+            $this->fields = $fields;
         } else {
-            $this->fields[] = $fields;
+            $this->fields = array_merge($this->fields, $fields);
         }
+
+        $this->action = 'select';
+        $this->dirty = true;
 
         return $this;
     }
@@ -466,7 +546,8 @@ class QueryBuilder
                 $query = $generator->buildReplaceBatch($this->tables, $this->data);
                 break;
             case 'update':
-                $query = $generator->buildUpdate($this->tables, $this->data, $this->with, $this->recursive);
+                $query = $generator->buildWith($this->with);
+                $query .= $generator->buildUpdate($this->tables, $this->data);
                 $query .= $generator->buildJoin($this->joins);
                 $query .= $generator->buildWhere($this->conditions);
                 break;
@@ -474,14 +555,16 @@ class QueryBuilder
                 $query = $generator->buildUpdateBatch($this->tables, $this->data, $this->updateKeys);
                 break;
             case 'delete':
-                $query = $generator->buildDelete($this->tables, $this->deleteAliases, $this->with, $this->recursive);
+                $query = $generator->buildWith($this->with);
+                $query .= $generator->buildDelete($this->tables, $this->deleteAliases);
                 $query .= $generator->buildJoin($this->joins);
                 $query .= $generator->buildWhere($this->conditions);
                 $query .= $generator->buildOrderBy($this->orderBy);
                 $query .= $generator->buildLimit($this->limit, $this->offset);
                 break;
             case 'select':
-                $query = $generator->buildSelect($this->tables, $this->fields, $this->distinct, $this->with, $this->recursive);
+                $query = $generator->buildWith($this->with);
+                $query .= $generator->buildSelect($this->tables, $this->fields, $this->distinct);
                 $query .= $generator->buildJoin($this->joins);
                 $query .= $generator->buildWhere($this->conditions);
 
@@ -504,15 +587,20 @@ class QueryBuilder
     /**
      * Set the tables.
      * @param string|array $tables The tables.
+     * @param bool $overwrite Whether to overwrite the existing tables.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function table(string|array $tables): static
+    public function table(string|array $tables, bool $overwrite = false): static
     {
-        if (is_array($tables)) {
-            $this->tables = array_merge($this->tables, $tables);
+        $tables = (array) $tables;
+
+        if ($overwrite) {
+            $this->tables = $tables;
         } else {
-            $this->tables[] = $tables;
+            $this->tables = array_merge($this->tables, $tables);
         }
+
+        $this->dirty = true;
 
         return $this;
     }
@@ -520,12 +608,19 @@ class QueryBuilder
     /**
      * Set query as an UPDATE.
      * @param array $data The data.
+     * @param bool $overwrite Whether to overwrite the existing data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function update(array $data): static
+    public function update(array $data, bool $overwrite = false): static
     {
+        if ($overwrite) {
+            $this->data = $data;
+        } else {
+            $this->data = array_merge($this->data, $data);
+        }
+
         $this->action = 'update';
-        $this->data = $data;
+        $this->dirty = true;
 
         return $this;
     }
@@ -534,13 +629,25 @@ class QueryBuilder
      * Set query as a batch UPDATE.
      * @param array $data The data.
      * @param string|array $updateKeys The key to use for updating.
+     * @param bool $overwrite Whether to overwrite the existing data.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function updateBatch(array $data, string|array $updateKeys): static
+    public function updateBatch(array $data, string|array $updateKeys, bool $overwrite = false): static
     {
+        $updateKeys = (array) $updateKeys;
+
+        if ($overwrite) {
+            $this->data = $data;
+            $this->updateKeys = $updateKeys;
+        } else {
+            $this->data = array_merge($this->data, $data);
+            $this->updateKeys = array_merge($this->updateKeys, $updateKeys);
+        }
+
+        $this->updateKeys = array_unique($this->updateKeys);
+
         $this->action = 'updateBatch';
-        $this->data = $data;
-        $this->updateKeys = (array) $updateKeys;
+        $this->dirty = true;
 
         return $this;
     }
@@ -548,14 +655,24 @@ class QueryBuilder
     /**
      * Add an UNION DISTINCT query.
      * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @param bool $overwrite Whether to overwrite the existing unions.
+     * @param string $type The union type.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function union(Closure|QueryBuilder|QueryLiteral|string $query): static
+    public function union(Closure|QueryBuilder|QueryLiteral|string $query, bool $overwrite = false, string $type = 'distinct'): static
     {
-        $this->unions[] = [
-            'type' => 'distinct',
-            'query' => $query,
+        $union = [
+            'type' => $type,
+            'query' => $query
         ];
+
+        if ($overwrite) {
+            $this->unions = [$union];
+        } else {
+            $this->unions[] = $union;
+        }
+
+        $this->dirty = true;
 
         return $this;
     }
@@ -563,56 +680,94 @@ class QueryBuilder
     /**
      * Add an UNION ALL query.
      * @param Closure|QueryBuilder|QueryLiteral|string $query The query.
+     * @param bool $overwrite Whether to overwrite the existing unions.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function unionAll(Closure|QueryBuilder|QueryLiteral|string $query): static
+    public function unionAll(Closure|QueryBuilder|QueryLiteral|string $query, bool $overwrite = false): static
     {
-        $this->unions[] = [
-            'type' => 'all',
-            'query' => $query
-        ];
-
-        return $this;
+        return $this->union($query, $overwrite, 'all');
     }
 
     /**
      * Set the WHERE conditions.
      * @param string|array $conditions The conditions.
+     * @param bool $overwrite Whether to overwrite the existing conditions.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function where(string|array $conditions): static
+    public function where(string|array $conditions, bool $overwrite = false): static
     {
-        if (is_array($conditions)) {
-            $this->conditions = array_merge($this->conditions, $conditions);
+        $conditions = (array) $conditions;
+
+        if ($overwrite) {
+            $this->conditions = $conditions;
         } else {
-            $this->conditions[] = $conditions;
+            $this->conditions = array_merge($this->conditions, $conditions);
         }
+
+        $this->dirty = true;
 
         return $this;
     }
 
     /**
      * Set the WITH clause.
-     * @param array $with The common table expressions.
+     * @param array $cte The common table expressions.
+     * @param bool $overwrite Whether to overwrite the existing expressions.
      * @param bool $recursive Whether the WITH is recursive.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function with(array $with, bool $recursive = false): static
+    public function with(array $cte, bool $overwrite = false, bool $recursive = false): static
     {
-        $this->with = $with;
-        $this->recursive = $recursive;
+        $with = [
+            'cte' => $cte,
+            'recursive' => $recursive
+        ];
+
+        if ($overwrite) {
+            $this->with = [$with];
+        } else {
+            $this->with[] = $with;
+        }
     
+        $this->dirty = true;
+
         return $this;
     }
 
     /**
      * Set the WITH RECURSIVE clause.
-     * @param array $with The common table expressions.
+     * @param array $cte The common table expressions.
+     * @param bool $overwrite Whether to overwrite the existing common table expressions.
      * @return QueryBuilder The QueryBuilder.
      */
-    public function withRecursive(array $with): static
+    public function withRecursive(array $cte, bool $overwrite = false): static
     {
-        return $this->with($with, true);
+        return $this->with($cte, $overwrite, true);
+    }
+
+    /**
+     * Normalize a joins array.
+     * @param array $joins The joins.
+     * @return array The normalize joins.
+     */
+    protected static function normalizeJoins(array $joins): array
+    {
+        $results = [];
+        foreach ($joins AS $alias => $join) {
+            if (is_numeric($alias)) {
+                $alias = $join['alias'] ?? $join['table'] ?? null;
+            }
+
+            if (!is_string($alias)) {
+                throw DbException::forInvalidJoinAlias();
+            }
+
+            $join['table'] ??= $alias;
+
+            $results[$alias] = $join;
+        }
+
+        return $results;
     }
 
 }

@@ -47,22 +47,6 @@ trait SelectTest
         );
     }
 
-    public function testSelectMultipleTableCalls()
-    {
-        $this->assertSame(
-            'SELECT * FROM test AS alt, test2 AS alt2',
-            $this->db->builder()
-                ->table([
-                    'alt' => 'test'
-                ])
-                ->table([
-                    'alt2' => 'test2'
-                ])
-                ->select()
-                ->sql()
-        );
-    }
-
     public function testSelectQueryBuilder()
     {
         $this->assertSame(
@@ -205,18 +189,6 @@ trait SelectTest
         );
     }
 
-    public function testSelectFieldsMultipleCalls()
-    {
-        $this->assertSame(
-            'SELECT id, name FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select('id')
-                ->select('name')
-                ->sql()
-        );
-    }
-
     public function testSelectDistinct()
     {
         $this->assertSame(
@@ -268,19 +240,6 @@ trait SelectTest
         );
     }
 
-    public function testSelectGroupByMultipleCalls()
-    {
-        $this->assertSame(
-            'SELECT * FROM test GROUP BY id, name',
-            $this->db->builder()
-                ->table('test')
-                ->select()
-                ->groupBy('id')
-                ->groupBy('name')
-                ->sql()
-        );
-    }
-
     public function testSelectOrderBy()
     {
         $this->assertSame(
@@ -302,23 +261,6 @@ trait SelectTest
                 ->select()
                 ->orderBy([
                     'id' => 'ASC',
-                    'value' => 'DESC'
-                ])
-                ->sql()
-        );
-    }
-
-    public function testSelectOrderByMultipleCalls()
-    {
-        $this->assertSame(
-            'SELECT * FROM test ORDER BY id ASC, value DESC',
-            $this->db->builder()
-                ->table('test')
-                ->select()
-                ->orderBy([
-                    'id' => 'ASC'
-                ])
-                ->orderBy([
                     'value' => 'DESC'
                 ])
                 ->sql()
@@ -395,6 +337,122 @@ trait SelectTest
                 ])
                 ->limit(20, 10)
                 ->epilog('FOR UPDATE')
+                ->sql()
+        );
+    }
+
+    public function testSelectMerge()
+    {
+        $this->assertSame(
+            'SELECT id, name FROM test',
+            $this->db->builder()
+                ->table('test')
+                ->select('id')
+                ->select('name')
+                ->sql()
+        );
+    }
+
+    public function testSelectOverwrite()
+    {
+        $this->assertSame(
+            'SELECT name FROM test',
+            $this->db->builder()
+                ->table('test')
+                ->select('id')
+                ->select('name', true)
+                ->sql()
+        );
+    }
+
+    public function testSelectTableMerge()
+    {
+        $this->assertSame(
+            'SELECT * FROM test AS alt, test2 AS alt2',
+            $this->db->builder()
+                ->table([
+                    'alt' => 'test'
+                ])
+                ->table([
+                    'alt2' => 'test2'
+                ])
+                ->select()
+                ->sql()
+        );
+    }
+
+    public function testSelectTableOverwrite()
+    {
+        $this->assertSame(
+            'SELECT * FROM test2 AS alt2',
+            $this->db->builder()
+                ->table([
+                    'alt' => 'test'
+                ])
+                ->table([
+                    'alt2' => 'test2'
+                ], true)
+                ->select()
+                ->sql()
+        );
+    }
+
+    public function testSelectOrderByMerge()
+    {
+        $this->assertSame(
+            'SELECT * FROM test ORDER BY id ASC, value DESC',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->orderBy([
+                    'id' => 'ASC'
+                ])
+                ->orderBy([
+                    'value' => 'DESC'
+                ])
+                ->sql()
+        );
+    }
+
+    public function testSelectOrderByOverwrite()
+    {
+        $this->assertSame(
+            'SELECT * FROM test ORDER BY value DESC',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->orderBy([
+                    'id' => 'ASC'
+                ])
+                ->orderBy([
+                    'value' => 'DESC'
+                ], true)
+                ->sql()
+        );
+    }
+
+    public function testSelectGroupByMerge()
+    {
+        $this->assertSame(
+            'SELECT * FROM test GROUP BY id, name',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->groupBy('id')
+                ->groupBy('name')
+                ->sql()
+        );
+    }
+
+    public function testSelectGroupByOverwrite()
+    {
+        $this->assertSame(
+            'SELECT * FROM test GROUP BY name',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->groupBy('id')
+                ->groupBy('name', true)
                 ->sql()
         );
     }

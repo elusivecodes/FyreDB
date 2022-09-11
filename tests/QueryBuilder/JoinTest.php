@@ -209,31 +209,6 @@ trait JoinTest
         );
     }
 
-    public function testJoinMultipleJoinCalls()
-    {
-        $this->assertSame(
-            'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id INNER JOIN test3 ON test3.id = test.id',
-            $this->db->builder()
-                ->table('test')
-                ->select()
-                ->join([
-                    'test2' => [
-                        'conditions' => [
-                            'test2.id = test.id'
-                        ]
-                    ]
-                ])
-                ->join([
-                    'test3' => [
-                        'conditions' => [
-                            'test3.id = test.id'
-                        ]
-                    ]
-                ])
-                ->sql()
-        );
-    }
-
     public function testJoinConditionsInteger()
     {
         $this->assertSame(
@@ -710,6 +685,56 @@ trait JoinTest
                         ]
                     ]
                 ])
+                ->sql()
+        );
+    }
+
+    public function testJoinConditionsMerge()
+    {
+        $this->assertSame(
+            'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id INNER JOIN test3 ON test3.id = test.id',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->join([
+                    'test2' => [
+                        'conditions' => [
+                            'test2.id = test.id'
+                        ]
+                    ]
+                ])
+                ->join([
+                    'test3' => [
+                        'conditions' => [
+                            'test3.id = test.id'
+                        ]
+                    ]
+                ])
+                ->sql()
+        );
+    }
+
+    public function testJoinConditionsOverwrite()
+    {
+        $this->assertSame(
+            'SELECT * FROM test INNER JOIN test3 ON test3.id = test.id',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->join([
+                    'test2' => [
+                        'conditions' => [
+                            'test2.id = test.id'
+                        ]
+                    ]
+                ])
+                ->join([
+                    'test3' => [
+                        'conditions' => [
+                            'test3.id = test.id'
+                        ]
+                    ]
+                ], true)
                 ->sql()
         );
     }

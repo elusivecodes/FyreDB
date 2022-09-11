@@ -394,4 +394,38 @@ trait HavingTest
         );
     }
 
+    public function testHavingMerge()
+    {
+        $this->assertSame(
+            'SELECT * FROM test HAVING name = \'test\' AND value = 1',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->having([
+                    'name' => 'test'
+                ])
+                ->having([
+                    'value' => 1
+                ])
+                ->sql()
+        );
+    }
+
+    public function testHavingOverwrite()
+    {
+        $this->assertSame(
+            'SELECT * FROM test HAVING value = 1',
+            $this->db->builder()
+                ->table('test')
+                ->select()
+                ->having([
+                    'name' => 'test'
+                ])
+                ->having([
+                    'value' => 1
+                ], true)
+                ->sql()
+        );
+    }
+
 }

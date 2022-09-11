@@ -50,12 +50,12 @@ class QueryGenerator
      * @param array $aliases The table aliases to delete.
      * @return string The query string.
      */
-    public function buildDelete(array $tables, array|null $aliases = null): string
+    public function buildDelete(array $tables, array $aliases = []): string
     {
         $query = 'DELETE';
 
-        if ($aliases || count($tables) > 1) {
-            $aliases ??= array_map(
+        if ($aliases === [] && count($tables) > 1) {
+            $aliases = array_map(
                 function(mixed $alias, string $table): string {
                     if (is_numeric($alias)) {
                         return $table;
@@ -66,7 +66,9 @@ class QueryGenerator
                 array_keys($tables),
                 $tables
             );
+        }
 
+        if ($aliases !== []) {
             $query .= ' ';
             $query .= implode(', ', $aliases);
         }
@@ -200,16 +202,14 @@ class QueryGenerator
 
         $query = '';
 
-        foreach ($joins AS $table => $join) {
-            $join['table'] ??= $table;
-            $join['alias'] ??= $table;
+        foreach ($joins AS $alias => $join) {
             $join['type'] ??= 'INNER';
             $join['using'] ??= null;
             $join['conditions'] ??= [];
 
             $query .= ' '.strtoupper($join['type']).' JOIN ';
             $query .= $this->buildTables([
-                $join['alias'] => $join['table']
+                $alias => $join['table']
             ]);
 
             if ($join['using']) {
@@ -297,11 +297,9 @@ class QueryGenerator
      * @param array $tables The tables.
      * @param array $fields The fields.
      * @param bool $distinct Whether to use a DISTINCT clause.
-     * @param array $with The common table expressions.
-     * @param bool $recursive Whether to use a RECURSIVE clause.
      * @return string The query string.
      */
-    public function buildSelect(array $tables, array $fields, bool $distinct = false, array $with = [], bool $recursive = false): string
+    public function buildSelect(array $tables, array $fields, bool $distinct = false): string
     {
         $fields = array_map(
             function(mixed $key, mixed $value) {
@@ -317,19 +315,7 @@ class QueryGenerator
             $fields
         );
 
-        $query = '';
-
-        if ($with !== []) {
-            $query .= 'WITH ';
-            if ($recursive) {
-                $query .= 'RECURSIVE ';
-            }
-
-            $query .= $this->buildTables($with, true);
-            $query .= ' ';
-        }
-
-        $query .= 'SELECT ';
+        $query = 'SELECT ';
 
         if ($distinct) {
             $query .= 'DISTINCT ';
@@ -491,6 +477,39 @@ class QueryGenerator
 
         $query = ' WHERE ';
         $query .= $this->buildConditions($conditions);
+
+        return $query;
+    }
+
+    /**
+     * Generate the WITH portion of the query.
+     * @param array $withs The common table expressions.
+     * @return string The query string.
+     */
+    public function buildWith(array $withs): string
+    {
+        if ($withs === []) {
+            return '';
+        }
+
+        $query = 'WITH ';
+
+        foreach ($withs AS $with) {
+            if (!$with['recursive']) {
+                continue;
+            }
+
+            $query .= 'RECURSIVE ';
+            break;
+        }
+
+        $withs = array_map(
+            fn(array $with): string => $this->buildTables($with['cte'], true),
+            $withs
+        );
+
+        $query .= implode(', ', $withs);
+        $query .= ' ';
 
         return $query;
     }

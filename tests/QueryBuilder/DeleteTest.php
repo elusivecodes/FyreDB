@@ -193,4 +193,68 @@ trait DeleteTest
         );
     }
 
+    public function testDeleteMerge()
+    {
+        $this->assertSame(
+            'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
+            $this->db->builder()
+                ->table([
+                    'alt1' => 'test'
+                ])
+                ->delete('alt1')
+                ->delete('alt2')
+                ->join([
+                    'alt2' => [
+                        'table' => 'test2',
+                        'type' => 'LEFT',
+                        'conditions' => [
+                            'alt2.id = alt.id'
+                        ]
+                    ]
+                ])
+                ->sql()
+        );
+    }
+
+    public function testDeleteOverwrite()
+    {
+        $this->assertSame(
+            'DELETE alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
+            $this->db->builder()
+                ->table([
+                    'alt1' => 'test'
+                ])
+                ->delete('alt1')
+                ->delete('alt2', true)
+                ->join([
+                    'alt2' => [
+                        'table' => 'test2',
+                        'type' => 'LEFT',
+                        'conditions' => [
+                            'alt2.id = alt.id'
+                        ]
+                    ]
+                ])
+                ->sql()
+        );
+    }
+
+    public function testDeleteWith()
+    {
+        $query = $this->db->builder()
+            ->table('test')
+            ->select();
+
+        $this->assertSame(
+            'WITH alt AS (SELECT * FROM test) DELETE FROM alt',
+            $this->db->builder()
+                ->with([
+                    'alt' => $query
+                ])
+                ->table('alt')
+                ->delete()
+                ->sql()
+        );
+    }
+
 }

@@ -79,104 +79,38 @@ trait ReplaceTest
         );
     }
 
-    public function testReplaceBatch()
+    public function testReplaceMerge()
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
+            'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', 1)',
             $this->db->builder()
                 ->table('test')
-                ->replaceBatch([
-                    [
-                        'id' => 1,
-                        'name' => 'Test 1',
-                        'value' => 1
-                    ],
-                    [
-                        'id' => 2,
-                        'name' => 'Test 2',
-                        'value' => 2
-                    ]
+                ->replace([
+                    'id' => 1,
+                    'name' => 'Test'
+                ])
+                ->replace([
+                    'id' => 1,
+                    'value' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testReplaceBatchQueryBuilder()
+    public function testReplaceOverwrite()
     {
         $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO test (id, value) VALUES (1, 1)',
             $this->db->builder()
                 ->table('test')
-                ->replaceBatch([
-                    [
-                        'name' => 'Test 1',
-                        'value' => $this->db->builder()
-                            ->table('test')
-                            ->select(['id'])
-                            ->limit(1)
-                    ],
-                    [
-                        'name' => 'Test 2',
-                        'value' => $this->db->builder()
-                            ->table('test')
-                            ->select(['id'])
-                            ->limit(1)
-                    ]
+                ->replace([
+                    'id' => 1,
+                    'name' => 'Test'
                 ])
-                ->sql()
-        );
-    }
-
-    public function testReplaceBatchClosure()
-    {
-        $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
-                    [
-                        'name' => 'Test 1',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder
-                                ->table('test')
-                                ->select(['id'])
-                                ->limit(1);
-                        }
-                    ],
-                    [
-                        'name' => 'Test 2',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder
-                                ->table('test')
-                                ->select(['id'])
-                                ->limit(1);
-                        }
-                    ]
-                ])
-                ->sql()
-        );
-    }
-
-    public function testReplaceBatchLiteral()
-    {
-        $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
-                    [
-                        'name' => 'Test 1',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder->literal('2 * 10');
-                        }
-                    ],
-                    [
-                        'name' => 'Test 2',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder->literal('2 * 20');
-                        }
-                    ]
-                ])
+                ->replace([
+                    'id' => 1,
+                    'value' => 1
+                ], true)
                 ->sql()
         );
     }

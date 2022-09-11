@@ -17,17 +17,33 @@ final class QueryBuilderTest extends TestCase
     use
         ConnectionTrait,
         DeleteTest,
+        ExceptTest,
         GetTest,
         HavingTest,
         InsertTest,
+        InsertBatchTest,
+        InsertFromTest,
+        IntersectTest,
         JoinTest,
         ReplaceTest,
+        ReplaceBatchTest,
         SelectTest,
         UnionTest,
+        UnionAllTest,
         UpdateTest,
+        UpdateBatchTest,
         WhereTest,
         WithTest;
 
+    public function testGetConnection()
+    {
+        $this->assertSame(
+            $this->db,
+            $this->db->builder()
+                ->getConnection()
+        );
+    }
+    
     public function testToString()
     {
         $this->assertSame(
