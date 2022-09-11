@@ -81,7 +81,7 @@ class QueryBuilder
         }
 
         $this->action = 'delete';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -94,7 +94,7 @@ class QueryBuilder
     public function distinct(bool $distinct = true): static
     {
         $this->distinct = $distinct;
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -107,7 +107,7 @@ class QueryBuilder
     public function epilog(string $epilog = ''): static
     {
         $this->epilog = $epilog;
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -280,7 +280,7 @@ class QueryBuilder
             $this->groupBy = array_merge($this->groupBy, $fields);
         }
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -301,7 +301,7 @@ class QueryBuilder
             $this->having = array_merge($this->having, $conditions);
         }
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -321,7 +321,7 @@ class QueryBuilder
         }
 
         $this->action = 'insert';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -341,7 +341,7 @@ class QueryBuilder
         }
 
         $this->action = 'insertBatch';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -358,7 +358,7 @@ class QueryBuilder
         $this->insertColumns = $columns;
 
         $this->action = 'insertFrom';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -390,7 +390,7 @@ class QueryBuilder
             $this->joins = array_merge($this->joins, $joins);
         }
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -409,7 +409,7 @@ class QueryBuilder
             $this->offset = $offset;
         }
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -433,7 +433,7 @@ class QueryBuilder
     {
         $this->offset = $offset;
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -454,7 +454,7 @@ class QueryBuilder
             $this->orderBy = array_merge($this->orderBy, $fields);
         }
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -474,7 +474,7 @@ class QueryBuilder
         }
 
         $this->action = 'replace';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -494,7 +494,7 @@ class QueryBuilder
         }
 
         $this->action = 'replaceBatch';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -516,7 +516,7 @@ class QueryBuilder
         }
 
         $this->action = 'select';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -600,7 +600,7 @@ class QueryBuilder
             $this->tables = array_merge($this->tables, $tables);
         }
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -620,7 +620,7 @@ class QueryBuilder
         }
 
         $this->action = 'update';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -647,7 +647,7 @@ class QueryBuilder
         $this->updateKeys = array_unique($this->updateKeys);
 
         $this->action = 'updateBatch';
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -672,7 +672,7 @@ class QueryBuilder
             $this->unions[] = $union;
         }
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -704,7 +704,7 @@ class QueryBuilder
             $this->conditions = array_merge($this->conditions, $conditions);
         }
 
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -729,7 +729,7 @@ class QueryBuilder
             $this->with[] = $with;
         }
     
-        $this->dirty = true;
+        $this->dirty();
 
         return $this;
     }
@@ -743,6 +743,14 @@ class QueryBuilder
     public function withRecursive(array $cte, bool $overwrite = false): static
     {
         return $this->with($cte, $overwrite, true);
+    }
+
+    /**
+     * Mark the query as dirty.
+     */
+    protected function dirty(): void
+    {
+        $this->dirty = true;
     }
 
     /**
