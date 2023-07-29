@@ -3,20 +3,18 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use
-    Fyre\DB\Connection,
-    Fyre\DB\ConnectionManager,
-    Fyre\DB\Types\DateTimeType,
-    Fyre\DB\Types\StringType,
-    PHPUnit\Framework\TestCase;
+use Fyre\DB\Connection;
+use Fyre\DB\ConnectionManager;
+use Fyre\DB\Types\DateTimeType;
+use Fyre\DB\Types\StringType;
+use PHPUnit\Framework\TestCase;
 
 final class ResultSetTest extends TestCase
 {
 
     protected Connection $db;
 
-    use
-        ConnectionTrait;
+    use ConnectionTrait;
 
     public function testAll(): void
     {

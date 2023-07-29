@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Tests\Query;
 
-use
-    Exception,
-    Fyre\DB\Connection;
+use Exception;
+use Fyre\DB\Connection;
 
-trait TransactionTest
+trait TransactionTestTrait
 {
 
     public function testTransactionCommit()

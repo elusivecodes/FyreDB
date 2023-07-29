@@ -3,25 +3,23 @@ declare(strict_types=1);
 
 namespace Tests\Query;
 
-use
-    Fyre\DB\Connection,
-    Fyre\DB\ConnectionManager,
-    PHPUnit\Framework\TestCase,
-    Tests\ConnectionTrait;
+use Fyre\DB\Connection;
+use Fyre\DB\ConnectionManager;
+use PHPUnit\Framework\TestCase;
+use Tests\ConnectionTrait;
 
 final class QueryTest extends TestCase
 {
 
     protected Connection $db;
 
-    use
-        ConnectionTrait,
-        DeleteTest,
-        ExecuteTest,
-        InsertTest,
-        ReplaceTest,
-        TransactionTest,
-        UpdateTest;
+    use ConnectionTrait;
+    use DeleteTestTrait;
+    use ExecuteTestTrait;
+    use InsertTestTrait;
+    use ReplaceTestTrait;
+    use TransactionTestTrait;
+    use UpdateTestTrait;
 
     protected function setUp(): void
     {

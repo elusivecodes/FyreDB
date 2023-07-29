@@ -3,48 +3,47 @@ declare(strict_types=1);
 
 namespace Tests\QueryBuilder;
 
-use
-    Fyre\DB\QueryBuilder;
+use Fyre\DB\QueryBuilder;
 
-trait UnionAllTest
+trait UnionTestTrait
 {
 
-    public function testUnionAll()
+    public function testUnion()
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->unionAll('(SELECT * FROM test2)')
+                ->union('(SELECT * FROM test2)')
                 ->sql()
         );
     }
 
-    public function testUnionAllQueryBuilder()
+    public function testUnionQueryBuilder()
     {
         $query = $this->db->builder()
             ->table('test2')
             ->select();
 
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->unionAll($query)
+                ->union($query)
                 ->sql()
         );
     }
 
-    public function testUnionAllClosure()
+    public function testUnionClosure()
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->unionAll(function(QueryBuilder $builder) {
+                ->union(function(QueryBuilder $builder) {
                     return $builder->table('test2')
                         ->select();
                 })
@@ -52,46 +51,46 @@ trait UnionAllTest
         );
     }
 
-    public function testUnionAllLiteral()
+    public function testUnionLiteral()
     {
         $query = $this->db->builder()
             ->table('test2')
             ->select();
 
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->unionAll(function(QueryBuilder $builder) {
+                ->union(function(QueryBuilder $builder) {
                     return $builder->literal('(SELECT * FROM test2)');
                 })
                 ->sql()
         );
     }
 
-    public function testUnionAllMerge()
+    public function testUnionMerge()
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2) UNION ALL (SELECT * FROM test3)',
+            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2) UNION DISTINCT (SELECT * FROM test3)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->unionAll('(SELECT * FROM test2)')
-                ->unionAll('(SELECT * FROM test3)')
+                ->union('(SELECT * FROM test2)')
+                ->union('(SELECT * FROM test3)')
                 ->sql()
         );
     }
 
-    public function testUnionAllOverwrite()
+    public function testUnionOverwrite()
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test3)',
+            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test3)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->unionAll('(SELECT * FROM test2)')
-                ->unionAll('(SELECT * FROM test3)', true)
+                ->union('(SELECT * FROM test2)')
+                ->union('(SELECT * FROM test3)', true)
                 ->sql()
         );
     }

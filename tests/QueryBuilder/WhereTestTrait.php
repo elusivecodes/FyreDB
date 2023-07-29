@@ -3,187 +3,185 @@ declare(strict_types=1);
 
 namespace Tests\QueryBuilder;
 
-use
-    Fyre\DB\QueryBuilder,
-    Fyre\DB\QueryLiteral;
+use Fyre\DB\QueryBuilder;
 
-trait HavingTest
+trait WhereTestTrait
 {
 
-    public function testHaving()
+    public function testWhere()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING name IS NULL',
+            'SELECT * FROM test WHERE name IS NULL',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having('name IS NULL')
+                ->where('name IS NULL')
                 ->sql()
         );
     }
 
-    public function testHavingArray()
+    public function testWhereArray()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING name = \'test\'',
+            'SELECT * FROM test WHERE name = \'test\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'name' => 'test'
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingInteger()
+    public function testWhereInteger()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING id = 1',
+            'SELECT * FROM test WHERE id = 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'id' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingFloat()
+    public function testWhereFloat()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value = 1.25',
+            'SELECT * FROM test WHERE value = 1.25',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value' => 1.25
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingBooleanTrue()
+    public function testWhereBooleanTrue()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value = 1',
+            'SELECT * FROM test WHERE value = 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value' => true
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingBooleanFalse()
+    public function testWhereBooleanFalse()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value = 0',
+            'SELECT * FROM test WHERE value = 0',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value' => false
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingEqual()
+    public function testWhereEqual()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value = 1',
+            'SELECT * FROM test WHERE value = 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value =' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingNotEqual()
+    public function testWhereNotEqual()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value != 1',
+            'SELECT * FROM test WHERE value != 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value !=' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingGreaterThan()
+    public function testWhereGreaterThan()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value > 1',
+            'SELECT * FROM test WHERE value > 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value >' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingLessThan()
+    public function testWhereLessThan()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value < 1',
+            'SELECT * FROM test WHERE value < 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value <' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingGreaterThanOrEqual()
+    public function testWhereGreaterThanOrEqual()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value >= 1',
+            'SELECT * FROM test WHERE value >= 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value >=' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingLessThanOrEqual()
+    public function testWhereLessThanOrEqual()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value <= 1',
+            'SELECT * FROM test WHERE value <= 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value <=' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingIsNull()
+    public function testWhereIsNull()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value IS NULL',
+            'SELECT * FROM test WHERE value IS NULL',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value IS' => null
                 ])
                 ->sql()
@@ -191,84 +189,84 @@ trait HavingTest
     }
 
 
-    public function testHavingIsNotNull()
+    public function testWhereIsNotNull()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value IS NOT NULL',
+            'SELECT * FROM test WHERE value IS NOT NULL',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value IS NOT' => null
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingLike()
+    public function testWhereLike()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING name LIKE \'%test%\'',
+            'SELECT * FROM test WHERE name LIKE \'%test%\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'name LIKE' => '%test%'
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingNotLike()
+    public function testWhereNotLike()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING name NOT LIKE \'%test%\'',
+            'SELECT * FROM test WHERE name NOT LIKE \'%test%\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'name NOT LIKE' => '%test%'
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingIn()
+    public function testWhereIn()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value IN (1, 2, 3)',
+            'SELECT * FROM test WHERE value IN (1, 2, 3)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value IN' => [1, 2, 3]
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingNotIn()
+    public function testWhereNotIn()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value NOT IN (1, 2, 3)',
+            'SELECT * FROM test WHERE value NOT IN (1, 2, 3)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value NOT IN' => [1, 2, 3]
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingMultiple()
+    public function testWhereMultiple()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value = 1 AND name = \'test\'',
+            'SELECT * FROM test WHERE value = 1 AND name = \'test\'',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value' => 1,
                     'name' => 'test'
                 ])
@@ -276,14 +274,14 @@ trait HavingTest
         );
     }
 
-    public function testHavingAnd()
+    public function testWhereAnd()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING (value = 1 AND name = \'test\')',
+            'SELECT * FROM test WHERE (value = 1 AND name = \'test\')',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'and' => [
                         'value' => 1,
                         'name' => 'test'
@@ -293,14 +291,14 @@ trait HavingTest
         );
     }
 
-    public function testHavingOr()
+    public function testWhereOr()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING (value = 1 OR name = \'test\')',
+            'SELECT * FROM test WHERE (value = 1 OR name = \'test\')',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'or' => [
                         'value' => 1,
                         'name' => 'test'
@@ -310,14 +308,14 @@ trait HavingTest
         );
     }
 
-    public function testHavingNot()
+    public function testWhereNot()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING NOT (value = 1 AND name = \'test\')',
+            'SELECT * FROM test WHERE NOT (value = 1 AND name = \'test\')',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'not' => [
                         'value' => 1,
                         'name' => 'test'
@@ -327,14 +325,14 @@ trait HavingTest
         );
     }
 
-    public function testHavingGroups()
+    public function testWhereGroups()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING (value = 1 AND (name = \'test\' OR name IS NULL))',
+            'SELECT * FROM test WHERE (value = 1 AND (name = \'test\' OR name IS NULL))',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     [
                         'value' => 1,
                         'or' => [
@@ -347,14 +345,14 @@ trait HavingTest
         );
     }
 
-    public function testHavingQueryBuilder()
+    public function testWhereQueryBuilder()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
+            'SELECT * FROM test WHERE value IN (SELECT id FROM test)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'value IN' => $this->db->builder()
                         ->table('test')
                         ->select(['id'])
@@ -363,65 +361,68 @@ trait HavingTest
         );
     }
 
-    public function testHavingClosure()
+    public function testWhereClosure()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
+            'SELECT * FROM test WHERE value IN (SELECT id FROM test)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
-                    'value IN' => fn(QueryBuilder $builder): QueryBuilder => $builder
-                        ->table('test')
-                        ->select(['id'])
+                ->where([
+                    'value IN' => function(QueryBuilder $builder) {
+                        return $builder
+                            ->table('test')
+                            ->select(['id']);
+                    }
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingLiteral()
+    public function testWhereLiteral()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value = UPPER(test)',
+            'SELECT * FROM test WHERE value = UPPER(test)',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
-                    'value' => fn(QueryBuilder $builder): QueryLiteral => $builder
-                        ->literal('UPPER(test)')
+                ->where([
+                    'value' => function(QueryBuilder $builder) {
+                        return $builder->literal('UPPER(test)');
+                    }
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingMerge()
+    public function testWhereMerge()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING name = \'test\' AND value = 1',
+            'SELECT * FROM test WHERE name = \'test\' AND value = 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'name' => 'test'
                 ])
-                ->having([
+                ->where([
                     'value' => 1
                 ])
                 ->sql()
         );
     }
 
-    public function testHavingOverwrite()
+    public function testWhereOverwrite()
     {
         $this->assertSame(
-            'SELECT * FROM test HAVING value = 1',
+            'SELECT * FROM test WHERE value = 1',
             $this->db->builder()
                 ->table('test')
                 ->select()
-                ->having([
+                ->where([
                     'name' => 'test'
                 ])
-                ->having([
+                ->where([
                     'value' => 1
                 ], true)
                 ->sql()

@@ -3,15 +3,13 @@ declare(strict_types=1);
 
 namespace Fyre\DB;
 
-use
-    Closure;
+use Closure;
 
-use function
-    array_filter,
-    array_merge,
-    array_unique,
-    is_numeric,
-    is_string;
+use function array_filter;
+use function array_merge;
+use function array_unique;
+use function is_numeric;
+use function is_string;
 
 /**
  * QueryBuilder
@@ -23,6 +21,7 @@ class QueryBuilder
 
     protected string $action = 'select';
     protected bool $dirty = false;
+    protected bool $useBinder = true;
 
     protected array $with = [];
     protected array $tables = [];
@@ -128,10 +127,19 @@ class QueryBuilder
      * @return ResultSet|bool The query result.
      * @throws DbException if the query failed.
      */
-    public function execute(): ResultSet|bool
+    public function execute(ValueBinder|null $binder = null): ResultSet|bool
     {
-        $query = $this->sql();
-        $result = $this->connection->query($query);
+        if ($this->useBinder) {
+            $binder ??= new ValueBinder();
+        }
+
+        $query = $this->sql($binder);
+
+        $bindings = $binder ? 
+            $binder->bindings() :
+            [];
+
+        $result = $this->connection->execute($query, $bindings);
 
         $this->dirty = false;
 
@@ -525,48 +533,48 @@ class QueryBuilder
      * Generate the SQL query.
      * @return string The SQL query.
      */
-    public function sql(): string
+    public function sql(ValueBinder|null $binder = null): string
     {
         $generator = $this->connection->generator();
 
         switch ($this->action) {
             case 'insert':
-                $query = $generator->buildInsert($this->tables, $this->data);
+                $query = $generator->buildInsert($this->tables, $this->data, $binder);
                 break;
             case 'insertBatch':
-                $query = $generator->buildInsertBatch($this->tables, $this->data);
+                $query = $generator->buildInsertBatch($this->tables, $this->data, $binder);
                 break;
             case 'insertFrom':
                 $query = $generator->buildInsertFrom($this->tables, $this->insertQuery, $this->insertColumns);
                 break;
             case 'replace':
-                $query = $generator->buildReplace($this->tables, $this->data);
+                $query = $generator->buildReplace($this->tables, $this->data, $binder);
                 break;
             case 'replaceBatch':
-                $query = $generator->buildReplaceBatch($this->tables, $this->data);
+                $query = $generator->buildReplaceBatch($this->tables, $this->data, $binder);
                 break;
             case 'update':
                 $query = $generator->buildWith($this->with);
-                $query .= $generator->buildUpdate($this->tables, $this->data);
-                $query .= $generator->buildJoin($this->joins);
-                $query .= $generator->buildWhere($this->conditions);
+                $query .= $generator->buildUpdate($this->tables, $this->data, $binder);
+                $query .= $generator->buildJoin($this->joins, $binder);
+                $query .= $generator->buildWhere($this->conditions, $binder);
                 break;
             case 'updateBatch':
-                $query = $generator->buildUpdateBatch($this->tables, $this->data, $this->updateKeys);
+                $query = $generator->buildUpdateBatch($this->tables, $this->data, $this->updateKeys, $binder);
                 break;
             case 'delete':
                 $query = $generator->buildWith($this->with);
                 $query .= $generator->buildDelete($this->tables, $this->deleteAliases);
-                $query .= $generator->buildJoin($this->joins);
-                $query .= $generator->buildWhere($this->conditions);
+                $query .= $generator->buildJoin($this->joins, $binder);
+                $query .= $generator->buildWhere($this->conditions, $binder);
                 $query .= $generator->buildOrderBy($this->orderBy);
                 $query .= $generator->buildLimit($this->limit, $this->offset);
                 break;
             case 'select':
                 $query = $generator->buildWith($this->with);
                 $query .= $generator->buildSelect($this->tables, $this->fields, $this->distinct);
-                $query .= $generator->buildJoin($this->joins);
-                $query .= $generator->buildWhere($this->conditions);
+                $query .= $generator->buildJoin($this->joins, $binder);
+                $query .= $generator->buildWhere($this->conditions, $binder);
 
                 if ($this->unions !== []) {
                     $query = '('.$query.')';
@@ -575,7 +583,7 @@ class QueryBuilder
 
                 $query .= $generator->buildOrderBy($this->orderBy);
                 $query .= $generator->buildGroupBy($this->groupBy);
-                $query .= $generator->buildHaving($this->having);
+                $query .= $generator->buildHaving($this->having, $binder);
                 $query .= $generator->buildLimit($this->limit, $this->offset);
                 $query .= $generator->buildEpilog($this->epilog);
                 break;

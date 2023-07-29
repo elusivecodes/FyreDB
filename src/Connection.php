@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 namespace Fyre\DB;
 
-use
-    Closure,
-    Exception,
-    Fyre\DB\Exceptions\DbException,
-    Throwable;
+use Closure;
+use Exception;
+use Fyre\DB\Exceptions\DbException;
+use Throwable;
 
-use function
-    array_replace_recursive;
+use function array_replace_recursive;
 
 /**
  * Connection

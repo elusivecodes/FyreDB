@@ -3,24 +3,25 @@ declare(strict_types=1);
 
 namespace Tests\QueryBuilder;
 
-use
-    Fyre\DB\QueryBuilder;
+use Fyre\DB\QueryBuilder;
 
-trait InsertBatchTest
+trait ReplaceBatchTestTrait
 {
 
-    public function testInsertBatch()
+    public function testReplaceBatch()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
+            'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
             $this->db->builder()
                 ->table('test')
-                ->insertBatch([
+                ->replaceBatch([
                     [
+                        'id' => 1,
                         'name' => 'Test 1',
                         'value' => 1
                     ],
                     [
+                        'id' => 2,
                         'name' => 'Test 2',
                         'value' => 2
                     ]
@@ -29,13 +30,13 @@ trait InsertBatchTest
         );
     }
 
-    public function testInsertBatchQueryBuilder()
+    public function testReplaceBatchQueryBuilder()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
-                ->insertBatch([
+                ->replaceBatch([
                     [
                         'name' => 'Test 1',
                         'value' => $this->db->builder()
@@ -55,13 +56,13 @@ trait InsertBatchTest
         );
     }
 
-    public function testInsertBatchClosure()
+    public function testReplaceBatchClosure()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
             $this->db->builder()
                 ->table('test')
-                ->insertBatch([
+                ->replaceBatch([
                     [
                         'name' => 'Test 1',
                         'value' => function(QueryBuilder $builder) {
@@ -85,13 +86,13 @@ trait InsertBatchTest
         );
     }
 
-    public function testInsertBatchLiteral()
+    public function testReplaceBatchLiteral()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
+            'REPLACE INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
             $this->db->builder()
                 ->table('test')
-                ->insertBatch([
+                ->replaceBatch([
                     [
                         'name' => 'Test 1',
                         'value' => function(QueryBuilder $builder) {
@@ -109,20 +110,22 @@ trait InsertBatchTest
         );
     }
 
-    public function testInsertBatchMerge()
+    public function testReplaceBatchMerge()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
+            'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
             $this->db->builder()
                 ->table('test')
-                ->insertBatch([
+                ->replaceBatch([
                     [
+                        'id' => 1,
                         'name' => 'Test 1',
                         'value' => 1
                     ]
                 ])
-                ->insertBatch([
+                ->replaceBatch([
                     [
+                        'id' => 2,
                         'name' => 'Test 2',
                         'value' => 2
                     ]
@@ -131,20 +134,22 @@ trait InsertBatchTest
         );
     }
 
-    public function testInsertBatchOverwrite()
+    public function testReplaceBatchOverwrite()
     {
         $this->assertSame(
-            'INSERT INTO test (name, value) VALUES (\'Test 2\', 2)',
+            'REPLACE INTO test (id, name, value) VALUES (2, \'Test 2\', 2)',
             $this->db->builder()
                 ->table('test')
-                ->insertBatch([
+                ->replaceBatch([
                     [
+                        'id' => 1,
                         'name' => 'Test 1',
                         'value' => 1
                     ]
                 ])
-                ->insertBatch([
+                ->replaceBatch([
                     [
+                        'id' => 2,
                         'name' => 'Test 2',
                         'value' => 2
                     ]

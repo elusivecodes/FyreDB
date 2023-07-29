@@ -3,19 +3,18 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use
-    Fyre\DB\Connection,
-    Fyre\DB\ConnectionManager,
-    Fyre\DB\Exceptions\DbException,
-    PHPUnit\Framework\TestCase;
+use Fyre\DB\Connection;
+use Fyre\DB\ConnectionManager;
+use Fyre\DB\Exceptions\DbException;
+use Fyre\DB\Handlers\MySQL\MySQLConnection;
+use PHPUnit\Framework\TestCase;
 
 final class ConnectionTest extends TestCase
 {
 
     protected Connection $db;
 
-    use
-        ConnectionTrait;
+    use ConnectionTrait;
 
     public function testCharset(): void
     {
@@ -36,6 +35,12 @@ final class ConnectionTest extends TestCase
     public function testFailedConnection(): void
     {
         $this->expectException(DbException::class);
+
+        ConnectionManager::setConfig('invalid', [
+            'className' => MySQLConnection::class,
+            'username' => 'root',
+            'database' => 'test'
+        ]);
 
         ConnectionManager::use('invalid');
     }

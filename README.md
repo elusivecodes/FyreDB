@@ -64,6 +64,26 @@ Get the key for a [*Connection*](#connections) instance.
 $key = ConnectionManager::getKey($connection);
 ```
 
+**Has Config**
+
+Check if a [*Connection*](#connections) config exists.
+
+- `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
+
+```php
+$hasConfig = ConnectionManager::hasConfig($key);
+```
+
+**Is Loaded**
+
+Check if a [*Connection*](#connections) instance is loaded.
+
+- `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
+
+```php
+$isLoaded = ConnectionManager::isLoaded($key);
+```
+
 **Load**
 
 Load a [*Connection*](#connections).
@@ -95,17 +115,17 @@ ConnectionManager::setConfig($config);
 
 Unload a [*Connection*](#connections).
 
-- `$key` is a string representing the [*Connection*](#connections) key, and will default to *"default"*.
+- `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
 
 ```php
-ConnectionManager::unload($key);
+$unloaded = ConnectionManager::unload($key);
 ```
 
 **Use**
 
 Load a shared [*Connection*](#connections) instance.
 
-- `$key` is a string representing the [*Connection*](#connections) key, and will default to *"default"*.
+- `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
 
 ```php
 $connection = ConnectionManager::use($key);

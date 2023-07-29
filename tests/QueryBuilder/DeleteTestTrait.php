@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\QueryBuilder;
 
-trait DeleteTest
+trait DeleteTestTrait
 {
 
     public function testDelete()

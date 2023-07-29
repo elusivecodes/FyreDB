@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use
-    Fyre\DB\ConnectionManager,
-    Fyre\DB\Handlers\MySQL\MySQLConnection;
+use Fyre\DB\ConnectionManager;
+use Fyre\DB\Handlers\MySQL\MySQLConnection;
 
-use function
-    getenv;
+use function getenv;
 
 trait ConnectionTrait
 {
@@ -17,23 +15,19 @@ trait ConnectionTrait
     {
         ConnectionManager::clear();
 
-        ConnectionManager::setConfig('default', [
-            'className' => MySQLConnection::class,
-            'host' => getenv('DB_HOST'),
-            'username' => getenv('DB_USERNAME'),
-            'password' => getenv('DB_PASSWORD'),
-            'database' => getenv('DB_NAME'),
-            'port' => getenv('DB_PORT'),
-            'collation' => 'utf8mb4_unicode_ci',
-            'charset' => 'utf8mb4',
-            'compress' => true,
-            'persist' => true
-        ]);
-
-        ConnectionManager::setConfig('invalid', [
-            'className' => MySQLConnection::class,
-            'username' => 'root',
-            'database' => 'test'
+        ConnectionManager::setConfig([
+            'default' => [
+                'className' => MySQLConnection::class,
+                'host' => getenv('DB_HOST'),
+                'username' => getenv('DB_USERNAME'),
+                'password' => getenv('DB_PASSWORD'),
+                'database' => getenv('DB_NAME'),
+                'port' => getenv('DB_PORT'),
+                'collation' => 'utf8mb4_unicode_ci',
+                'charset' => 'utf8mb4',
+                'compress' => true,
+                'persist' => true
+            ]
         ]);
 
         $connection = ConnectionManager::use();

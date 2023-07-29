@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Fyre\DB;
 
-use
-    Countable,
-    Fyre\DB\TypeParser,
-    Fyre\DB\Types\Type,
-    Iterator;
+use Countable;
+use Fyre\DB\TypeParser;
+use Fyre\DB\Types\Type;
+use Iterator;
 
 /**
  * ResultSet
@@ -84,7 +83,7 @@ abstract class ResultSet implements Countable, Iterator
             return null;
         }
 
-        return TypeParser::getType($type);
+        return TypeParser::use($type);
     }
 
     /**

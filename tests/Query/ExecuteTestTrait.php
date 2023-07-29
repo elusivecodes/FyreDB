@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Query;
 
-trait ExecuteTest
+trait ExecuteTestTrait
 {
 
     public function testExecute()

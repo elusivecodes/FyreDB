@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace Tests\QueryBuilder;
 
-use
-    Fyre\DB\QueryBuilder;
+use Fyre\DB\QueryBuilder;
 
-trait ReplaceTest
+trait ReplaceTestTrait
 {
 
     public function testReplace()

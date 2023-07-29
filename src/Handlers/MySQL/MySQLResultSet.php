@@ -3,16 +3,14 @@ declare(strict_types=1);
 
 namespace Fyre\DB\Handlers\MySQL;
 
-use
-    Fyre\DB\ResultSet,
-    PDO,
-    PDOStatement;
+use Fyre\DB\ResultSet;
+use PDO;
+use PDOStatement;
 
-use function
-    array_filter,
-    array_keys,
-    array_merge,
-    count;
+use function array_filter;
+use function array_keys;
+use function array_merge;
+use function count;
 
 class MySQLResultSet extends ResultSet
 {

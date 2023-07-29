@@ -3,18 +3,15 @@ declare(strict_types=1);
 
 namespace Fyre\DB\Handlers\MySQL;
 
-use
-    Fyre\DB\Connection,
-    Fyre\DB\Exceptions\DbException,
-    Fyre\DB\ResultSet,
-    PDO,
-    PDOException,
-    PDOStatement;
+use Fyre\DB\Connection;
+use Fyre\DB\Exceptions\DbException;
+use Fyre\DB\ResultSet;
+use PDO;
+use PDOException;
+use PDOStatement;
 
-use function
-    array_is_list,
-    class_exists,
-    implode;
+use function class_exists;
+use function implode;
 
 /**
  * MySQLConnection
@@ -127,15 +124,7 @@ class MySQLConnection extends Connection
         try {
             $query = $this->connection->prepare($sql);
 
-            if (array_is_list($params)) {
-                $query->execute($params);
-            } else {
-                foreach ($params AS $name => $value) {
-                    $query->bindParam($name, $value);
-                }
-
-                $query->execute();
-            }
+            $query->execute($params);
 
             return $this->result($query);
         } catch (PDOException $e) {

@@ -3,37 +3,35 @@ declare(strict_types=1);
 
 namespace Tests\QueryBuilder;
 
-use
-    Fyre\DB\Connection,
-    Fyre\DB\ConnectionManager,
-    PHPUnit\Framework\TestCase,
-    Tests\ConnectionTrait;
+use Fyre\DB\Connection;
+use Fyre\DB\ConnectionManager;
+use PHPUnit\Framework\TestCase;
+use Tests\ConnectionTrait;
 
 final class QueryBuilderTest extends TestCase
 {
 
     protected Connection $db;
 
-    use
-        ConnectionTrait,
-        DeleteTest,
-        ExceptTest,
-        GetTest,
-        HavingTest,
-        InsertTest,
-        InsertBatchTest,
-        InsertFromTest,
-        IntersectTest,
-        JoinTest,
-        ReplaceTest,
-        ReplaceBatchTest,
-        SelectTest,
-        UnionTest,
-        UnionAllTest,
-        UpdateTest,
-        UpdateBatchTest,
-        WhereTest,
-        WithTest;
+    use ConnectionTrait;
+    use DeleteTestTrait;
+    use ExceptTestTrait;
+    use GetTestTrait;
+    use HavingTestTrait;
+    use InsertTestTrait;
+    use InsertBatchTestTrait;
+    use InsertFromTestTrait;
+    use IntersectTestTrait;
+    use JoinTestTrait;
+    use ReplaceTestTrait;
+    use ReplaceBatchTestTrait;
+    use SelectTestTrait;
+    use UnionTestTrait;
+    use UnionAllTestTrait;
+    use UpdateTestTrait;
+    use UpdateBatchTestTrait;
+    use WhereTestTrait;
+    use WithTestTrait;
 
     public function testGetConnection()
     {

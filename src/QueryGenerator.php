@@ -3,29 +3,26 @@ declare(strict_types=1);
 
 namespace Fyre\DB;
 
-use
-    Closure;
+use Closure;
 
-use const
-    FILTER_VALIDATE_FLOAT;
+use const FILTER_VALIDATE_FLOAT;
 
-use function
-    array_filter,
-    array_key_exists,
-    array_keys,
-    array_map,
-    array_shift,
-    array_slice,
-    array_values,
-    count,
-    filter_var,
-    implode,
-    in_array,
-    is_array,
-    is_numeric,
-    preg_match,
-    strtoupper,
-    trim;
+use function array_filter;
+use function array_key_exists;
+use function array_keys;
+use function array_map;
+use function array_shift;
+use function array_slice;
+use function array_values;
+use function count;
+use function filter_var;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_numeric;
+use function preg_match;
+use function strtoupper;
+use function trim;
 
 /**
  * QueryGenerator
@@ -113,16 +110,17 @@ class QueryGenerator
     /**
      * Generate the HAVING portion of the query.
      * @param array $conditions The conditions.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildHaving(array $conditions): string
+    public function buildHaving(array $conditions, ValueBinder|null $binder = null): string
     {
         if ($conditions === []) {
             return '';
         }
 
         $query = ' HAVING ';
-        $query .= $this->buildConditions($conditions);
+        $query .= $this->buildConditions($conditions, $binder);
 
         return $query;
     }
@@ -131,26 +129,28 @@ class QueryGenerator
      * Generate an INSERT query.
      * @param array $tables The tables.
      * @param array $data The data.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildInsert(array $tables, array $data): string
+    public function buildInsert(array $tables, array $data, ValueBinder|null $binder = null): string
     {
-        return $this->buildInsertBatch($tables, [$data]);
+        return $this->buildInsertBatch($tables, [$data], $binder);
     }
 
     /**
      * Generate a batch INSERT query.
      * @param array $tables The tables.
      * @param array $data The data.
+     * @param ValueBinder|null $binder The value binder.
      * @param string $type The type of INSERT query.
      * @return string The query string.
      */
-    public function buildInsertBatch(array $tables, array $data, string $type = 'INSERT'): string
+    public function buildInsertBatch(array $tables, array $data, ValueBinder|null $binder = null, string $type = 'INSERT'): string
     {
         $columns = array_keys($data[0] ?? []);
         $values = array_map(
-            function(array $values): string {
-                $values = array_map(fn(mixed $value): string => $this->parseExpression($value), $values);
+            function(array $values) use ($binder): string {
+                $values = array_map(fn(mixed $value): string => $this->parseExpression($value, $binder), $values);
                 return '('.implode(', ', $values).')';
             },
             $data
@@ -184,7 +184,7 @@ class QueryGenerator
 
         $query .= ' VALUES ';
 
-        $query .= $this->parseExpression($insertQuery, false);
+        $query .= $this->parseExpression($insertQuery, quote: false);
 
         return $query;
     }
@@ -192,9 +192,10 @@ class QueryGenerator
     /**
      * Generate the JOIN portion of the query.
      * @param array $joins The joins.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildJoin(array $joins): string
+    public function buildJoin(array $joins, ValueBinder|null $binder = null): string
     {
         if ($joins === []) {
             return '';
@@ -215,7 +216,7 @@ class QueryGenerator
             if ($join['using']) {
                 $query .= ' USING '.$join['using'];
             } else {
-                $query .= ' ON '.$this->buildConditions($join['conditions']);
+                $query .= ' ON '.$this->buildConditions($join['conditions'], $binder);
             }
         }
 
@@ -274,22 +275,24 @@ class QueryGenerator
      * Generate a REPLACE query.
      * @param array $tables The tables.
      * @param array $data The data.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildReplace(array $tables, array $data): string
+    public function buildReplace(array $tables, array $data, ValueBinder|null $binder = null): string
     {
-        return $this->buildInsertBatch($tables, [$data], 'REPLACE');
+        return $this->buildInsertBatch($tables, [$data], $binder, 'REPLACE');
     }
 
     /**
      * Generate a batch REPLACE query.
      * @param array $tables The tables.
      * @param array $data The data.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildReplaceBatch(array $tables, array $data): string
+    public function buildReplaceBatch(array $tables, array $data, ValueBinder|null $binder = null): string
     {
-        return $this->buildInsertBatch($tables, $data, 'REPLACE');
+        return $this->buildInsertBatch($tables, $data, $binder, 'REPLACE');
     }
 
     /**
@@ -303,7 +306,7 @@ class QueryGenerator
     {
         $fields = array_map(
             function(mixed $key, mixed $value) {
-                $value = $this->parseExpression($value, false);
+                $value = $this->parseExpression($value, quote: false);
 
                 if (is_numeric($key)) {
                     return $value;
@@ -335,17 +338,18 @@ class QueryGenerator
      * Generate the UPDATE portion of the query.
      * @param array $tables The tables.
      * @param array $data The data.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildUpdate(array $tables, array $data): string
+    public function buildUpdate(array $tables, array $data, ValueBinder|null $binder = null): string
     {
         $data = array_map(
-            function(mixed $field, mixed $value): string {
+            function(mixed $field, mixed $value) use ($binder): string {
                 if (is_numeric($field)) {
-                    return $this->parseExpression($value, false);
+                    return $this->parseExpression($value, quote: false);
                 }
 
-                return $field.' = '.$this->parseExpression($value);
+                return $field.' = '.$this->parseExpression($value, $binder);
             },
             array_keys($data),
             $data
@@ -364,9 +368,10 @@ class QueryGenerator
      * @param array $tables The tables.
      * @param array $data The data.
      * @param array $updateKeys The key to use for updating.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildUpdateBatch(array $tables, array $data, array $updateKeys): string
+    public function buildUpdateBatch(array $tables, array $data, array $updateKeys, ValueBinder|null $binder = null): string
     {
         $columns = array_filter(
             array_keys($data[0] ?? []),
@@ -404,9 +409,9 @@ class QueryGenerator
                 }
 
                 $sql .= ' WHEN ';
-                $sql .= $this->buildConditions($rowConditions);
+                $sql .= $this->buildConditions($rowConditions, $binder);
                 $sql .= ' THEN ';
-                $sql .= $this->parseExpression($values[$column]);
+                $sql .= $this->parseExpression($values[$column], $binder);
             }
 
             if ($useElse) {
@@ -424,7 +429,7 @@ class QueryGenerator
         $query .= implode(', ', $updateData);
 
         $conditions = static::normalizeConditions($updateKeys, $allValues);
-        $query .= $this->buildWhere($conditions);
+        $query .= $this->buildWhere($conditions, $binder);
 
         return $query;
     }
@@ -458,7 +463,7 @@ class QueryGenerator
                     break;
             }
 
-            $query .= $this->parseExpression($union['query'], false);
+            $query .= $this->parseExpression($union['query'], quote: false);
         }
 
         return  $query;
@@ -467,16 +472,17 @@ class QueryGenerator
     /**
      * Generate the WHERE portion of the query.
      * @param array $conditions The conditions.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildWhere(array $conditions): string
+    public function buildWhere(array $conditions, ValueBinder|null $binder = null): string
     {
         if ($conditions === []) {
             return '';
         }
 
         $query = ' WHERE ';
-        $query .= $this->buildConditions($conditions);
+        $query .= $this->buildConditions($conditions, $binder);
 
         return $query;
     }
@@ -517,10 +523,11 @@ class QueryGenerator
     /**
      * Recursively build conditions.
      * @param array $conditions The conditions.
+     * @param ValueBinder|null $binder The value binder.
      * @param string $type The condition separator.
      * @return string The conditions.
      */
-    protected function buildConditions(array $conditions, string $type = 'AND'): string
+    protected function buildConditions(array $conditions, ValueBinder|null $binder = null, string $type = 'AND'): string
     {
         $query = '';
 
@@ -537,9 +544,9 @@ class QueryGenerator
                 }
 
                 if (in_array($subType, ['AND', 'OR'])) {
-                    $query .= '('.$this->buildConditions($value, $subType).')';
+                    $query .= '('.$this->buildConditions($value, $binder, $subType).')';
                 } else if ($subType === 'NOT') {
-                    $query .= 'NOT ('.$this->buildConditions($value).')';
+                    $query .= 'NOT ('.$this->buildConditions($value, $binder).')';
                 } else {
                     $field = trim($field);
 
@@ -552,12 +559,12 @@ class QueryGenerator
                         $comparison = '=';
                     }
 
-                    $value = array_map(fn(mixed $val): string => $this->parseExpression($val), $value);
+                    $value = array_map(fn(mixed $val): string => $this->parseExpression($val, $binder), $value);
 
                     $query .= $field.' '.$comparison.' ('.implode(', ', $value).')';
                 }
             } else if (is_numeric($field)) {
-                $query .= $this->parseExpression($value, false);
+                $query .= $this->parseExpression($value, quote: false);
             } else {
                 $field = trim($field);
 
@@ -570,7 +577,7 @@ class QueryGenerator
                     $comparison = '=';
                 }
 
-                $value = $this->parseExpression($value);
+                $value = $this->parseExpression($value, $binder);
         
                 $query .= $field.' '.$comparison.' '.$value;
             }
@@ -589,7 +596,7 @@ class QueryGenerator
     {
         $tables = array_map(
             function(mixed $alias, mixed $table) use ($with): string {
-                $query = $this->parseExpression($table, $with);
+                $query = $this->parseExpression($table, quote: $with);
 
                 if ($with) {
                     $query = $alias.' AS '.$query;
@@ -609,10 +616,11 @@ class QueryGenerator
     /**
      * Parse an expression string.
      * @param mixed $value The value to parse.
+     * @param ValueBinder|null $binder The value binder.
      * @param bool $quote Whether to quote the string.
      * @return string The expression string.
      */
-    protected function parseExpression(mixed $value, bool $quote = true): string
+    protected function parseExpression(mixed $value, ValueBinder|null $binder = null, bool $quote = true): string
     {
         if ($value instanceof Closure) {
             $builder = new QueryBuilder($this->connection);
@@ -620,7 +628,7 @@ class QueryGenerator
         }
 
         if ($value instanceof QueryBuilder) {
-            return '('.$value->sql().')';
+            return '('.$value->sql($binder).')';
         }
 
         if ($value instanceof QueryLiteral) {
@@ -632,11 +640,15 @@ class QueryGenerator
         }
 
         if ($value === false) {
-            return '0';
+            $value = '0';
         }
 
         if ($value === true) {
-            return '1';
+            $value = '1';
+        }
+
+        if ($binder) {
+            return $binder->bind($value);
         }
 
         if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false) {

@@ -3,31 +3,16 @@ declare(strict_types=1);
 
 namespace Tests\Query;
 
-trait UpdateTest
+trait InsertTestTrait
 {
 
-    public function testUpdate()
+    public function testInsert()
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
-                [
-                    'name' => 'Test 1'
-                ],
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
-
         $this->assertTrue(
             $this->db->builder()
                 ->table('test')
-                ->update([
-                    'name' => 'Test 2'
-                ])
-                ->where([
-                    'id' => 1
+                ->insert([
+                    'name' => 'Test'
                 ])
                 ->execute()
         );
@@ -35,7 +20,7 @@ trait UpdateTest
         $this->assertSame(
             [
                 'id' => 1,
-                'name' => 'Test 2'
+                'name' => 'Test'
             ],
             $this->db->builder()
                 ->table('test')
@@ -45,33 +30,19 @@ trait UpdateTest
         );
     }
 
-    public function testUpdateBatch()
+    public function testInsertBatch()
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
-                [
-                    'name' => 'Test 1'
-                ],
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
-
         $this->assertTrue(
             $this->db->builder()
                 ->table('test')
-                ->updateBatch([
+                ->insertBatch([
                     [
-                        'id' => 1,
-                        'name' => 'Test 3'
+                        'name' => 'Test 1'
                     ],
                     [
-                        'id' => 2,
-                        'name' => 'Test 4'
+                        'name' => 'Test 2'
                     ]
-                ], 'id')
+                ])
                 ->execute()
         );
 
@@ -79,11 +50,11 @@ trait UpdateTest
             [
                 [
                     'id' => 1,
-                    'name' => 'Test 3'
+                    'name' => 'Test 1'
                 ],
                 [
                     'id' => 2,
-                    'name' => 'Test 4'
+                    'name' => 'Test 2'
                 ]
             ],
             $this->db->builder()
@@ -94,7 +65,34 @@ trait UpdateTest
         );
     }
 
-    public function testUpdateAffectedRows()
+    public function testInsertId()
+    {
+        $this->db->builder()
+            ->table('test')
+            ->insert([
+                'name' => 'Test'
+            ])
+            ->execute();
+
+        $this->assertSame(
+            1,
+            $this->db->insertId()
+        );
+
+        $this->db->builder()
+            ->table('test')
+            ->insert([
+                'name' => 'Test 2'
+            ])
+            ->execute();
+
+        $this->assertSame(
+            2,
+            $this->db->insertId()
+        );
+    }
+
+    public function testInsertBatchId()
     {
         $this->db->builder()
             ->table('test')
@@ -108,13 +106,18 @@ trait UpdateTest
             ])
             ->execute();
 
+        $this->assertSame(
+            1,
+            $this->db->insertId()
+        );
+    }
+
+    public function testInsertAffectedRows()
+    {
         $this->db->builder()
             ->table('test')
-            ->update([
-                'name' => 'Test 3'
-            ])
-            ->where([
-                'id' => 1
+            ->insert([
+                'name' => 'Test'
             ])
             ->execute();
 
@@ -124,7 +127,7 @@ trait UpdateTest
         );
     }
 
-    public function testUpdateBatchAffectedRows()
+    public function testInsertBatchAffectedRows()
     {
         $this->db->builder()
             ->table('test')
@@ -136,20 +139,6 @@ trait UpdateTest
                     'name' => 'Test 2'
                 ]
             ])
-            ->execute();
-
-        $this->db->builder()
-            ->table('test')
-            ->updateBatch([
-                [
-                    'id' => 1,
-                    'name' => 'Test 3'
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Test 4'
-                ]
-            ], 'id')
             ->execute();
 
         $this->assertSame(
