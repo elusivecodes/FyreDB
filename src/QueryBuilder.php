@@ -581,8 +581,8 @@ class QueryBuilder
                     $query .= $generator->buildUnion($this->unions);
                 }
 
-                $query .= $generator->buildOrderBy($this->orderBy);
                 $query .= $generator->buildGroupBy($this->groupBy);
+                $query .= $generator->buildOrderBy($this->orderBy);
                 $query .= $generator->buildHaving($this->having, $binder);
                 $query .= $generator->buildLimit($this->limit, $this->offset);
                 $query .= $generator->buildEpilog($this->epilog);
