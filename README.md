@@ -1,6 +1,6 @@
 # FyreDB
 
-**FyreDB** is a free, database library for *PHP*.
+**FyreDB** is a free, open-source database library for *PHP*.
 
 
 ## Table Of Contents
