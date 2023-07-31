@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace Fyre\DB;
 
-use Fyre\DB\Connection;
 use Fyre\DB\Exceptions\DbException;
-use Fyre\DB\Handlers\MySQL\MySQLConnection;
 
 use function array_key_exists;
 use function array_search;

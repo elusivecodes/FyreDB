@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Fyre\DB;
 
 use Countable;
-use Fyre\DB\TypeParser;
 use Fyre\DB\Types\Type;
 use Iterator;
 
