@@ -79,7 +79,7 @@ abstract class ConnectionManager
      * Load a handler.
      * @param array $options Options for the handler.
      * @return Connection The handler.
-     * @throws DbException if the handler is invalid.
+     * @throws DbException if the handler is not valid.
      */
     public static function load(array $options = []): Connection
     {
@@ -98,7 +98,7 @@ abstract class ConnectionManager
      * Set handler config.
      * @param string|array $key The config key.
      * @param array|null $options The config options.
-     * @throws DbException if the config is invalid.
+     * @throws DbException if the config is not valid.
      */
     public static function setConfig(string|array $key, array|null $options = null): void
     {

@@ -125,7 +125,6 @@ class QueryBuilder
     /**
      * Execute the query.
      * @return ResultSet|bool The query result.
-     * @throws DbException if the query failed.
      */
     public function execute(ValueBinder|null $binder = null): ResultSet|bool
     {
@@ -765,6 +764,7 @@ class QueryBuilder
      * Normalize a joins array.
      * @param array $joins The joins.
      * @return array The normalize joins.
+     * @throws DbException if an alias is not valid.
      */
     protected static function normalizeJoins(array $joins): array
     {

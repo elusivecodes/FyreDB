@@ -36,6 +36,7 @@ class MySQLConnection extends Connection
 
     /**
      * Connect to the database.
+     * @throws RuntimeException if PDO extension is not installed.
      * @throws DbException if the connection failed.
      */
     public function connect(): void
@@ -118,6 +119,7 @@ class MySQLConnection extends Connection
      * @param string $sql The SQL query.
      * @param array $params The parameters to bind.
      * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
+     * @throws DbException if the query threw an error.
      */
     public function execute(string $sql, array $params): ResultSet|bool
     {

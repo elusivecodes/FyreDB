@@ -173,7 +173,6 @@ abstract class Connection
      * Execute a SQL query.
      * @param string $sql The SQL query.
      * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
-     * @throws DbException if the query failed.
      */
     public function query(string $sql): ResultSet|bool
     {
