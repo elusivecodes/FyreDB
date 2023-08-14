@@ -6,7 +6,7 @@ namespace Tests\Query;
 trait InsertTestTrait
 {
 
-    public function testInsert()
+    public function testInsert(): void
     {
         $this->assertTrue(
             $this->db->builder()
@@ -30,7 +30,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertBatch()
+    public function testInsertBatch(): void
     {
         $this->assertTrue(
             $this->db->builder()
@@ -65,7 +65,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertId()
+    public function testInsertId(): void
     {
         $this->db->builder()
             ->table('test')
@@ -92,7 +92,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertBatchId()
+    public function testInsertBatchId(): void
     {
         $this->db->builder()
             ->table('test')
@@ -112,7 +112,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertAffectedRows()
+    public function testInsertAffectedRows(): void
     {
         $this->db->builder()
             ->table('test')
@@ -127,7 +127,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertBatchAffectedRows()
+    public function testInsertBatchAffectedRows(): void
     {
         $this->db->builder()
             ->table('test')

@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait WhereTestTrait
 {
 
-    public function testWhere()
+    public function testWhere(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE name IS NULL',
@@ -20,7 +20,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereArray()
+    public function testWhereArray(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE name = \'test\'',
@@ -34,7 +34,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereInteger()
+    public function testWhereInteger(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE id = 1',
@@ -48,7 +48,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereFloat()
+    public function testWhereFloat(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value = 1.25',
@@ -62,7 +62,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereBooleanTrue()
+    public function testWhereBooleanTrue(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value = 1',
@@ -76,7 +76,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereBooleanFalse()
+    public function testWhereBooleanFalse(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value = 0',
@@ -90,7 +90,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereEqual()
+    public function testWhereEqual(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value = 1',
@@ -104,7 +104,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereNotEqual()
+    public function testWhereNotEqual(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value != 1',
@@ -118,7 +118,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereGreaterThan()
+    public function testWhereGreaterThan(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value > 1',
@@ -132,7 +132,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereLessThan()
+    public function testWhereLessThan(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value < 1',
@@ -146,7 +146,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereGreaterThanOrEqual()
+    public function testWhereGreaterThanOrEqual(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value >= 1',
@@ -160,7 +160,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereLessThanOrEqual()
+    public function testWhereLessThanOrEqual(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value <= 1',
@@ -174,7 +174,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereIsNull()
+    public function testWhereIsNull(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value IS NULL',
@@ -189,7 +189,7 @@ trait WhereTestTrait
     }
 
 
-    public function testWhereIsNotNull()
+    public function testWhereIsNotNull(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value IS NOT NULL',
@@ -203,7 +203,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereLike()
+    public function testWhereLike(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE name LIKE \'%test%\'',
@@ -217,7 +217,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereNotLike()
+    public function testWhereNotLike(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE name NOT LIKE \'%test%\'',
@@ -231,7 +231,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereIn()
+    public function testWhereIn(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value IN (1, 2, 3)',
@@ -245,7 +245,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereNotIn()
+    public function testWhereNotIn(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value NOT IN (1, 2, 3)',
@@ -259,7 +259,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereMultiple()
+    public function testWhereMultiple(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value = 1 AND name = \'test\'',
@@ -274,7 +274,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereAnd()
+    public function testWhereAnd(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE (value = 1 AND name = \'test\')',
@@ -291,7 +291,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereOr()
+    public function testWhereOr(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE (value = 1 OR name = \'test\')',
@@ -308,7 +308,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereNot()
+    public function testWhereNot(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE NOT (value = 1 AND name = \'test\')',
@@ -325,7 +325,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereGroups()
+    public function testWhereGroups(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE (value = 1 AND (name = \'test\' OR name IS NULL))',
@@ -345,7 +345,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereQueryBuilder()
+    public function testWhereQueryBuilder(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value IN (SELECT id FROM test)',
@@ -361,7 +361,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereClosure()
+    public function testWhereClosure(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value IN (SELECT id FROM test)',
@@ -379,7 +379,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereLiteral()
+    public function testWhereLiteral(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value = UPPER(test)',
@@ -395,7 +395,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereMerge()
+    public function testWhereMerge(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE name = \'test\' AND value = 1',
@@ -412,7 +412,7 @@ trait WhereTestTrait
         );
     }
 
-    public function testWhereOverwrite()
+    public function testWhereOverwrite(): void
     {
         $this->assertSame(
             'SELECT * FROM test WHERE value = 1',

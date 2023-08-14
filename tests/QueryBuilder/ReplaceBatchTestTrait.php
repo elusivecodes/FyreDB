@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait ReplaceBatchTestTrait
 {
 
-    public function testReplaceBatch()
+    public function testReplaceBatch(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
@@ -30,7 +30,7 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchQueryBuilder()
+    public function testReplaceBatchQueryBuilder(): void
     {
         $this->assertSame(
             'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
@@ -56,7 +56,7 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchClosure()
+    public function testReplaceBatchClosure(): void
     {
         $this->assertSame(
             'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
@@ -86,7 +86,7 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchLiteral()
+    public function testReplaceBatchLiteral(): void
     {
         $this->assertSame(
             'REPLACE INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
@@ -110,7 +110,7 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchMerge()
+    public function testReplaceBatchMerge(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
@@ -134,7 +134,7 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchOverwrite()
+    public function testReplaceBatchOverwrite(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (2, \'Test 2\', 2)',

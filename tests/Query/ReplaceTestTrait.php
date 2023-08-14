@@ -6,7 +6,7 @@ namespace Tests\Query;
 trait ReplaceTestTrait
 {
 
-    public function testReplace()
+    public function testReplace(): void
     {
         $this->db->builder()
             ->table('test')
@@ -38,7 +38,7 @@ trait ReplaceTestTrait
         );
     }
 
-    public function testReplaceBatch()
+    public function testReplaceBatch(): void
     {
         $this->db->builder()
             ->table('test')

@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait UnionTestTrait
 {
 
-    public function testUnion()
+    public function testUnion(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
@@ -20,7 +20,7 @@ trait UnionTestTrait
         );
     }
 
-    public function testUnionQueryBuilder()
+    public function testUnionQueryBuilder(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -36,7 +36,7 @@ trait UnionTestTrait
         );
     }
 
-    public function testUnionClosure()
+    public function testUnionClosure(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
@@ -51,7 +51,7 @@ trait UnionTestTrait
         );
     }
 
-    public function testUnionLiteral()
+    public function testUnionLiteral(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -69,7 +69,7 @@ trait UnionTestTrait
         );
     }
 
-    public function testUnionMerge()
+    public function testUnionMerge(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2) UNION DISTINCT (SELECT * FROM test3)',
@@ -82,7 +82,7 @@ trait UnionTestTrait
         );
     }
 
-    public function testUnionOverwrite()
+    public function testUnionOverwrite(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test3)',

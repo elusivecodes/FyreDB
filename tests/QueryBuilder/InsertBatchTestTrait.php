@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait InsertBatchTestTrait
 {
 
-    public function testInsertBatch()
+    public function testInsertBatch(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
@@ -28,7 +28,7 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchQueryBuilder()
+    public function testInsertBatchQueryBuilder(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
@@ -54,7 +54,7 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchClosure()
+    public function testInsertBatchClosure(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
@@ -84,7 +84,7 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchLiteral()
+    public function testInsertBatchLiteral(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
@@ -108,7 +108,7 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchMerge()
+    public function testInsertBatchMerge(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
@@ -130,7 +130,7 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchOverwrite()
+    public function testInsertBatchOverwrite(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 2\', 2)',

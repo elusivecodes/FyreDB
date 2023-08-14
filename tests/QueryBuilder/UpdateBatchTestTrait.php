@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait UpdateBatchTestTrait
 {
 
-    public function testUpdateBatch()
+    public function testUpdateBatch(): void
     {
         $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN 1 WHEN id = 2 THEN 2 END WHERE id IN (1, 2)',
@@ -30,7 +30,7 @@ trait UpdateBatchTestTrait
         );
     }
 
-    public function testUpdateBatchArray()
+    public function testUpdateBatchArray(): void
     {
         $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 AND value = 1 THEN \'Test 1\' WHEN id = 2 AND value = 2 THEN \'Test 2\' END WHERE ((id = 1 AND value = 1) OR (id = 2 AND value = 2))',
@@ -52,7 +52,7 @@ trait UpdateBatchTestTrait
         );
     }
 
-    public function testUpdateBatchArrayNull()
+    public function testUpdateBatchArrayNull(): void
     {
         $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 AND value = 1 THEN \'Test 1\' WHEN id = 2 AND value IS NULL THEN \'Test 2\' END WHERE ((id = 1 AND value = 1) OR (id = 2 AND value IS NULL))',
@@ -74,7 +74,7 @@ trait UpdateBatchTestTrait
         );
     }
 
-    public function testUpdateBatchQueryBuilder()
+    public function testUpdateBatchQueryBuilder(): void
     {
         $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
@@ -102,7 +102,7 @@ trait UpdateBatchTestTrait
         );
     }
 
-    public function testUpdateBatchClosure()
+    public function testUpdateBatchClosure(): void
     {
         $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
@@ -134,7 +134,7 @@ trait UpdateBatchTestTrait
         );
     }
 
-    public function testUpdateBatchLiteral()
+    public function testUpdateBatchLiteral(): void
     {
         $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN 2 * 10 WHEN id = 2 THEN 2 * 20 END WHERE id IN (1, 2)',
@@ -160,7 +160,7 @@ trait UpdateBatchTestTrait
         );
     }
 
-    public function testUpdateBatchMerge()
+    public function testUpdateBatchMerge(): void
     {
         $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN 1 WHEN id = 2 THEN 2 END WHERE id IN (1, 2)',
@@ -184,7 +184,7 @@ trait UpdateBatchTestTrait
         );
     }
 
-    public function testUpdateBatchOverwrite()
+    public function testUpdateBatchOverwrite(): void
     {
         $this->assertSame(
             'UPDATE test SET name = CASE WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 2 THEN 2 END WHERE id = 2',

@@ -6,7 +6,7 @@ namespace Tests\QueryBuilder;
 trait DeleteTestTrait
 {
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $this->assertSame(
             'DELETE FROM test',
@@ -17,7 +17,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteTables()
+    public function testDeleteTables(): void
     {
         $this->assertSame(
             'DELETE FROM test AS alt',
@@ -30,7 +30,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteAlias()
+    public function testDeleteAlias(): void
     {
         $this->assertSame(
             'DELETE alt FROM test AS alt',
@@ -44,7 +44,7 @@ trait DeleteTestTrait
     }
 
 
-    public function testDeleteMultipleAliases()
+    public function testDeleteMultipleAliases(): void
     {
         $this->assertSame(
             'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
@@ -69,7 +69,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteMultipleTables()
+    public function testDeleteMultipleTables(): void
     {
         $this->assertSame(
             'DELETE alt, alt2 FROM test AS alt, test2 AS alt2',
@@ -83,7 +83,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteJoin()
+    public function testDeleteJoin(): void
     {
         $this->assertSame(
             'DELETE FROM test INNER JOIN test2 ON test2.id = test.id',
@@ -102,7 +102,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteWhere()
+    public function testDeleteWhere(): void
     {
         $this->assertSame(
             'DELETE FROM test WHERE id = 1',
@@ -116,7 +116,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteOrderBy()
+    public function testDeleteOrderBy(): void
     {
         $this->assertSame(
             'DELETE FROM test ORDER BY id ASC',
@@ -128,7 +128,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteOrderByArray()
+    public function testDeleteOrderByArray(): void
     {
         $this->assertSame(
             'DELETE FROM test ORDER BY id ASC, value DESC',
@@ -143,7 +143,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteLimit()
+    public function testDeleteLimit(): void
     {
         $this->assertSame(
             'DELETE FROM test LIMIT 1',
@@ -155,7 +155,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteOffset()
+    public function testDeleteOffset(): void
     {
         $this->assertSame(
             'DELETE FROM test LIMIT 10, 20',
@@ -167,7 +167,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteFull()
+    public function testDeleteFull(): void
     {
         $this->assertSame(
             'DELETE FROM test INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\' ORDER BY test.id ASC LIMIT 10, 20',
@@ -193,7 +193,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteMerge()
+    public function testDeleteMerge(): void
     {
         $this->assertSame(
             'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
@@ -216,7 +216,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteOverwrite()
+    public function testDeleteOverwrite(): void
     {
         $this->assertSame(
             'DELETE alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
@@ -239,7 +239,7 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteWith()
+    public function testDeleteWith(): void
     {
         $query = $this->db->builder()
             ->table('test')

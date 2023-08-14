@@ -6,7 +6,7 @@ namespace Tests\Query;
 trait UpdateTestTrait
 {
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $this->db->builder()
             ->table('test')
@@ -45,7 +45,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateBatch()
+    public function testUpdateBatch(): void
     {
         $this->db->builder()
             ->table('test')
@@ -94,7 +94,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateAffectedRows()
+    public function testUpdateAffectedRows(): void
     {
         $this->db->builder()
             ->table('test')
@@ -124,7 +124,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateBatchAffectedRows()
+    public function testUpdateBatchAffectedRows(): void
     {
         $this->db->builder()
             ->table('test')

@@ -11,32 +11,32 @@ use RuntimeException;
 class DbException extends RuntimeException
 {
 
-    public static function forConfigExists(string $key)
+    public static function forConfigExists(string $key): static
     {
         return new static('Database handler config already exists: '.$key);
     }
 
-    public static function forConnectionFailed(string $error)
+    public static function forConnectionFailed(string $error): static
     {
         return new static('Unable to connect to database: '.$error);
     }
 
-    public static function forQueryError(string $error)
+    public static function forQueryError(string $error): static
     {
         return new static('Database error: '.$error);
     }
 
-    public static function forInvalidClass(string $className = '')
+    public static function forInvalidClass(string $className = ''): static
     {
         return new static('Database handler class not found: '.$className);
     }
 
-    public static function forInvalidConfig(string $key)
+    public static function forInvalidConfig(string $key): static
     {
         return new static('Database handler invalid config: '.$key);
     }
 
-    public static function forInvalidJoinAlias()
+    public static function forInvalidJoinAlias(): static
     {
         return new static('Database error: invalid join alias');
     }

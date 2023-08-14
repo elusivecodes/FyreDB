@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait UpdateTestTrait
 {
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $this->assertSame(
             'UPDATE test SET value = 1',
@@ -21,7 +21,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateAlias()
+    public function testUpdateAlias(): void
     {
         $this->assertSame(
             'UPDATE test AS alt SET value = 1',
@@ -36,7 +36,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateMultipleTables()
+    public function testUpdateMultipleTables(): void
     {
         $this->assertSame(
             'UPDATE test AS alt, test2 AS alt2 SET alt.value = 1, alt2.value = 2',
@@ -53,7 +53,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateJoin()
+    public function testUpdateJoin(): void
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 1 INNER JOIN test2 ON test2.id = test.id',
@@ -75,7 +75,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateWhere()
+    public function testUpdateWhere(): void
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 1 WHERE id = 1',
@@ -92,7 +92,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateQueryBuilder()
+    public function testUpdateQueryBuilder(): void
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
@@ -112,7 +112,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateClosure()
+    public function testUpdateClosure(): void
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
@@ -134,7 +134,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateLiteral()
+    public function testUpdateLiteral(): void
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 2 * 10 WHERE id = 1',
@@ -153,7 +153,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateFull()
+    public function testUpdateFull(): void
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 1 INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\'',
@@ -178,7 +178,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateMerge()
+    public function testUpdateMerge(): void
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 1',
@@ -194,7 +194,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateOverwrite()
+    public function testUpdateOverwrite(): void
     {
         $this->assertSame(
             'UPDATE test SET value = 1',
@@ -210,7 +210,7 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateWith()
+    public function testUpdateWith(): void
     {
         $query = $this->db->builder()
             ->table('test')

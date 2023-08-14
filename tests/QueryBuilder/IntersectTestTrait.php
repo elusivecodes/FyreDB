@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait IntersectTestTrait
 {
 
-    public function testIntersect()
+    public function testIntersect(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) INTERSECT (SELECT * FROM test2)',
@@ -20,7 +20,7 @@ trait IntersectTestTrait
         );
     }
 
-    public function testIntersectQueryBuilder()
+    public function testIntersectQueryBuilder(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -36,7 +36,7 @@ trait IntersectTestTrait
         );
     }
 
-    public function testIntersectClosure()
+    public function testIntersectClosure(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -55,7 +55,7 @@ trait IntersectTestTrait
         );
     }
 
-    public function testIntersectLiteral()
+    public function testIntersectLiteral(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -73,7 +73,7 @@ trait IntersectTestTrait
         );
     }
 
-    public function testIntersectMerge()
+    public function testIntersectMerge(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) INTERSECT (SELECT * FROM test2) INTERSECT (SELECT * FROM test3)',
@@ -86,7 +86,7 @@ trait IntersectTestTrait
         );
     }
 
-    public function testIntersectOverwrite()
+    public function testIntersectOverwrite(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) INTERSECT (SELECT * FROM test3)',

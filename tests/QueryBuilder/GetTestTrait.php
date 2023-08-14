@@ -6,7 +6,7 @@ namespace Tests\QueryBuilder;
 trait GetTestTrait
 {
 
-    public function testGetData()
+    public function testGetData(): void
     {
         $this->assertSame(
             [
@@ -20,7 +20,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetDistinct()
+    public function testGetDistinct(): void
     {
         $this->assertSame(
             true,
@@ -30,7 +30,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetGroupBy()
+    public function testGetGroupBy(): void
     {
         $this->assertSame(
             [
@@ -44,7 +44,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetHaving()
+    public function testGetHaving(): void
     {
         $this->assertSame(
             [
@@ -58,7 +58,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetJoin()
+    public function testGetJoin(): void
     {
         $this->assertSame(
             [
@@ -78,7 +78,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetLimit()
+    public function testGetLimit(): void
     {
         $this->assertSame(
             1,
@@ -88,7 +88,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetOffset()
+    public function testGetOffset(): void
     {
         $this->assertSame(
             1,
@@ -98,7 +98,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetOrderBy()
+    public function testGetOrderBy(): void
     {
         $this->assertSame(
             [
@@ -112,7 +112,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetSelect()
+    public function testGetSelect(): void
     {
         $this->assertSame(
             [
@@ -126,7 +126,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetTable()
+    public function testGetTable(): void
     {
         $this->assertSame(
             [
@@ -140,7 +140,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetUnion()
+    public function testGetUnion(): void
     {
         $query = $this->db->builder()
             ->table('test')
@@ -159,7 +159,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetWhere()
+    public function testGetWhere(): void
     {
         $this->assertSame(
             [
@@ -173,7 +173,7 @@ trait GetTestTrait
         );
     }
 
-    public function testGetWith()
+    public function testGetWith(): void
     {
         $query = $this->db->builder()
             ->table('test')

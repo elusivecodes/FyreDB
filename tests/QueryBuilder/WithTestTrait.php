@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait WithTestTrait
 {
 
-    public function testWithQueryBuilder()
+    public function testWithQueryBuilder(): void
     {
         $query = $this->db->builder()
             ->table('test')
@@ -26,7 +26,7 @@ trait WithTestTrait
         );
     }
 
-    public function testWithClosure()
+    public function testWithClosure(): void
     {
         $this->assertSame(
             'WITH alt AS (SELECT * FROM test) SELECT * FROM alt',
@@ -43,7 +43,7 @@ trait WithTestTrait
         );
     }
 
-    public function testWithLiteral()
+    public function testWithLiteral(): void
     {
         $this->assertSame(
             'WITH alt AS (SELECT * FROM test) SELECT * FROM alt',
@@ -59,7 +59,7 @@ trait WithTestTrait
         );
     }
 
-    public function testWithRecursiveQueryBuilder()
+    public function testWithRecursiveQueryBuilder(): void
     {
         $query = $this->db->builder()
             ->table('test')
@@ -77,7 +77,7 @@ trait WithTestTrait
         );
     }
 
-    public function testWithRecursiveClosure()
+    public function testWithRecursiveClosure(): void
     {
         $this->assertSame(
             'WITH RECURSIVE alt AS (SELECT * FROM test) SELECT * FROM alt',
@@ -94,7 +94,7 @@ trait WithTestTrait
         );
     }
 
-    public function testWithRecursiveLiteral()
+    public function testWithRecursiveLiteral(): void
     {
         $this->assertSame(
             'WITH RECURSIVE alt AS (SELECT * FROM test) SELECT * FROM alt',
@@ -110,7 +110,7 @@ trait WithTestTrait
         );
     }
 
-    public function testWithMerge()
+    public function testWithMerge(): void
     {
         $query1 = $this->db->builder()
             ->table('test1')
@@ -135,7 +135,7 @@ trait WithTestTrait
         );
     }
 
-    public function testWithOverwrite()
+    public function testWithOverwrite(): void
     {
         $query1 = $this->db->builder()
             ->table('test1')

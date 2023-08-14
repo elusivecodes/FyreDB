@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait InsertFromTestTrait
 {
 
-    public function testInsertFromQueryBuilder()
+    public function testInsertFromQueryBuilder(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -23,7 +23,7 @@ trait InsertFromTestTrait
         );
     }
 
-    public function testInsertFromClosure()
+    public function testInsertFromClosure(): void
     {
         $this->assertSame(
             'INSERT INTO test VALUES (SELECT * FROM test2)',
@@ -37,7 +37,7 @@ trait InsertFromTestTrait
         );
     }
 
-    public function testInsertFromLiteral()
+    public function testInsertFromLiteral(): void
     {
         $this->assertSame(
             'INSERT INTO test VALUES (SELECT * FROM test2)',
@@ -50,7 +50,7 @@ trait InsertFromTestTrait
         );
     }
 
-    public function testInsertFromString()
+    public function testInsertFromString(): void
     {
         $this->assertSame(
             'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
@@ -61,7 +61,7 @@ trait InsertFromTestTrait
         );
     }
 
-    public function testInsertFromColumnsQueryBuilder()
+    public function testInsertFromColumnsQueryBuilder(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -76,7 +76,7 @@ trait InsertFromTestTrait
         );
     }
 
-    public function testInsertFromColumnsClosure()
+    public function testInsertFromColumnsClosure(): void
     {
         $this->assertSame(
             'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
@@ -90,7 +90,7 @@ trait InsertFromTestTrait
         );
     }
 
-    public function testInsertFromColumnsLiteral()
+    public function testInsertFromColumnsLiteral(): void
     {
         $this->assertSame(
             'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
@@ -103,7 +103,7 @@ trait InsertFromTestTrait
         );
     }
 
-    public function testInsertFromColumnsString()
+    public function testInsertFromColumnsString(): void
     {
         $this->assertSame(
             'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',

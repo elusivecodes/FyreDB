@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait SelectTestTrait
 {
 
-    public function testSelect()
+    public function testSelect(): void
     {
         $this->assertSame(
             'SELECT * FROM test',
@@ -19,7 +19,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectAlias()
+    public function testSelectAlias(): void
     {
         $this->assertSame(
             'SELECT * FROM test AS alt',
@@ -32,7 +32,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectMultipleTables()
+    public function testSelectMultipleTables(): void
     {
         $this->assertSame(
             'SELECT * FROM test AS alt, test2 AS alt2',
@@ -46,7 +46,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectQueryBuilder()
+    public function testSelectQueryBuilder(): void
     {
         $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
@@ -61,7 +61,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectClosure()
+    public function testSelectClosure(): void
     {
         $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
@@ -77,7 +77,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectLiteral()
+    public function testSelectLiteral(): void
     {
         $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
@@ -92,7 +92,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectWithoutTable()
+    public function testSelectWithoutTable(): void
     {
         $this->assertSame(
             'SELECT *',
@@ -102,7 +102,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectFields()
+    public function testSelectFields(): void
     {
         $this->assertSame(
             'SELECT id, name FROM test',
@@ -113,7 +113,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectFieldsArray()
+    public function testSelectFieldsArray(): void
     {
         $this->assertSame(
             'SELECT id, name FROM test',
@@ -127,7 +127,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectFieldsAs()
+    public function testSelectFieldsAs(): void
     {
         $this->assertSame(
             'SELECT name AS alt FROM test',
@@ -140,7 +140,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectFieldsQueryBuilder()
+    public function testSelectFieldsQueryBuilder(): void
     {
         $this->assertSame(
             'SELECT (SELECT name FROM test) AS alt FROM test',
@@ -155,7 +155,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectFieldsClosure()
+    public function testSelectFieldsClosure(): void
     {
         $this->assertSame(
             'SELECT (SELECT name FROM test LIMIT 1) AS alt FROM test',
@@ -173,7 +173,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectFieldsLiteral()
+    public function testSelectFieldsLiteral(): void
     {
         $this->assertSame(
             'SELECT UPPER(test) AS alt FROM test',
@@ -188,7 +188,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectDistinct()
+    public function testSelectDistinct(): void
     {
         $this->assertSame(
             'SELECT DISTINCT * FROM test',
@@ -200,7 +200,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectEpilog()
+    public function testSelectEpilog(): void
     {
         $this->assertSame(
             'SELECT * FROM test FOR UPDATE',
@@ -212,7 +212,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectGroupBy()
+    public function testSelectGroupBy(): void
     {
         $this->assertSame(
             'SELECT * FROM test GROUP BY id',
@@ -224,7 +224,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectGroupByArray()
+    public function testSelectGroupByArray(): void
     {
         $this->assertSame(
             'SELECT * FROM test GROUP BY id, name',
@@ -239,7 +239,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectOrderBy()
+    public function testSelectOrderBy(): void
     {
         $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC',
@@ -251,7 +251,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectOrderByArray()
+    public function testSelectOrderByArray(): void
     {
         $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC, value DESC',
@@ -266,7 +266,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectLimit()
+    public function testSelectLimit(): void
     {
         $this->assertSame(
             'SELECT * FROM test LIMIT 1',
@@ -278,7 +278,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectLimitWithOffset()
+    public function testSelectLimitWithOffset(): void
     {
         $this->assertSame(
             'SELECT * FROM test LIMIT 10, 20',
@@ -290,7 +290,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectOffset()
+    public function testSelectOffset(): void
     {
         $this->assertSame(
             'SELECT * FROM test LIMIT 10, 20',
@@ -303,7 +303,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectFull()
+    public function testSelectFull(): void
     {
         $this->assertSame(
             'SELECT DISTINCT test.id, test.name FROM test INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\' GROUP BY test.id ORDER BY test.id ASC HAVING value = 1 LIMIT 10, 20 FOR UPDATE',
@@ -340,7 +340,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectMerge()
+    public function testSelectMerge(): void
     {
         $this->assertSame(
             'SELECT id, name FROM test',
@@ -352,7 +352,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectOverwrite()
+    public function testSelectOverwrite(): void
     {
         $this->assertSame(
             'SELECT name FROM test',
@@ -364,7 +364,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectTableMerge()
+    public function testSelectTableMerge(): void
     {
         $this->assertSame(
             'SELECT * FROM test AS alt, test2 AS alt2',
@@ -380,7 +380,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectTableOverwrite()
+    public function testSelectTableOverwrite(): void
     {
         $this->assertSame(
             'SELECT * FROM test2 AS alt2',
@@ -396,7 +396,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectOrderByMerge()
+    public function testSelectOrderByMerge(): void
     {
         $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC, value DESC',
@@ -413,7 +413,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectOrderByOverwrite()
+    public function testSelectOrderByOverwrite(): void
     {
         $this->assertSame(
             'SELECT * FROM test ORDER BY value DESC',
@@ -430,7 +430,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectGroupByMerge()
+    public function testSelectGroupByMerge(): void
     {
         $this->assertSame(
             'SELECT * FROM test GROUP BY id, name',
@@ -443,7 +443,7 @@ trait SelectTestTrait
         );
     }
 
-    public function testSelectGroupByOverwrite()
+    public function testSelectGroupByOverwrite(): void
     {
         $this->assertSame(
             'SELECT * FROM test GROUP BY name',

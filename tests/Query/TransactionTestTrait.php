@@ -9,7 +9,7 @@ use Fyre\DB\Connection;
 trait TransactionTestTrait
 {
 
-    public function testTransactionCommit()
+    public function testTransactionCommit(): void
     {
         $this->db->begin();
 
@@ -46,7 +46,7 @@ trait TransactionTestTrait
         );
     }
 
-    public function testTransactionRollback()
+    public function testTransactionRollback(): void
     {
         $this->db->begin();
 
@@ -74,7 +74,7 @@ trait TransactionTestTrait
         );
     }
 
-    public function testTransactionNested()
+    public function testTransactionNested(): void
     {
         $this->db->begin();
 
@@ -113,7 +113,7 @@ trait TransactionTestTrait
         );
     }
 
-    public function testTransactionNestedRollback()
+    public function testTransactionNestedRollback(): void
     {
         $this->db->begin();
 
@@ -147,7 +147,7 @@ trait TransactionTestTrait
         );
     }
 
-    public function testTransactionalCommit()
+    public function testTransactionalCommit(): void
     {
         $this->assertTrue(
             $this->db->transactional(function(Connection $db) {
@@ -184,7 +184,7 @@ trait TransactionTestTrait
         );
     }
 
-    public function testTransactionalRollback()
+    public function testTransactionalRollback(): void
     {
         $this->assertFalse(
             $this->db->transactional(function(Connection $db) {
@@ -214,7 +214,7 @@ trait TransactionTestTrait
         );
     }
 
-    public function testTransactionalRollbackException()
+    public function testTransactionalRollbackException(): void
     {
         try {
             $this->db->transactional(function(Connection $db) {
@@ -244,7 +244,7 @@ trait TransactionTestTrait
         );
     }
 
-    public function testTransactionalRollbackExceptionThrown()
+    public function testTransactionalRollbackExceptionThrown(): void
     {
         $this->expectException(Exception::class);
 

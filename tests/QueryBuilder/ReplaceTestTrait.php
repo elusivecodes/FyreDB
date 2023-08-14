@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait ReplaceTestTrait
 {
 
-    public function testReplace()
+    public function testReplace(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', 1)',
@@ -23,7 +23,7 @@ trait ReplaceTestTrait
         );
     }
 
-    public function testReplaceQueryBuilder()
+    public function testReplaceQueryBuilder(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', (SELECT id FROM test LIMIT 1))',
@@ -41,7 +41,7 @@ trait ReplaceTestTrait
         );
     }
 
-    public function testReplaceClosure()
+    public function testReplaceClosure(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', (SELECT id FROM test LIMIT 1))',
@@ -61,7 +61,7 @@ trait ReplaceTestTrait
         );
     }
 
-    public function testReplaceLiteral()
+    public function testReplaceLiteral(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', 2 * 10)',
@@ -78,7 +78,7 @@ trait ReplaceTestTrait
         );
     }
 
-    public function testReplaceMerge()
+    public function testReplaceMerge(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test\', 1)',
@@ -96,7 +96,7 @@ trait ReplaceTestTrait
         );
     }
 
-    public function testReplaceOverwrite()
+    public function testReplaceOverwrite(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, value) VALUES (1, 1)',

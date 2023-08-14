@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait InsertTestTrait
 {
 
-    public function testInsert()
+    public function testInsert(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test\', 1)',
@@ -22,7 +22,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertQueryBuilder()
+    public function testInsertQueryBuilder(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test\', (SELECT id FROM test LIMIT 1))',
@@ -39,7 +39,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertClosure()
+    public function testInsertClosure(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test\', (SELECT id FROM test LIMIT 1))',
@@ -58,7 +58,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertLiteral()
+    public function testInsertLiteral(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test\', 2 * 10)',
@@ -74,7 +74,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertMerge()
+    public function testInsertMerge(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test\', 1)',
@@ -90,7 +90,7 @@ trait InsertTestTrait
         );
     }
 
-    public function testInsertOverwrite()
+    public function testInsertOverwrite(): void
     {
         $this->assertSame(
             'INSERT INTO test (value) VALUES (1)',

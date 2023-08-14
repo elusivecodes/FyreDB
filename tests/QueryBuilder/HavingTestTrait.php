@@ -9,7 +9,7 @@ use Fyre\DB\QueryLiteral;
 trait HavingTestTrait
 {
 
-    public function testHaving()
+    public function testHaving(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name IS NULL',
@@ -21,7 +21,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingArray()
+    public function testHavingArray(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name = \'test\'',
@@ -35,7 +35,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingInteger()
+    public function testHavingInteger(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING id = 1',
@@ -49,7 +49,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingFloat()
+    public function testHavingFloat(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1.25',
@@ -63,7 +63,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingBooleanTrue()
+    public function testHavingBooleanTrue(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1',
@@ -77,7 +77,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingBooleanFalse()
+    public function testHavingBooleanFalse(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 0',
@@ -91,7 +91,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingEqual()
+    public function testHavingEqual(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1',
@@ -105,7 +105,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingNotEqual()
+    public function testHavingNotEqual(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value != 1',
@@ -119,7 +119,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingGreaterThan()
+    public function testHavingGreaterThan(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value > 1',
@@ -133,7 +133,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingLessThan()
+    public function testHavingLessThan(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value < 1',
@@ -147,7 +147,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingGreaterThanOrEqual()
+    public function testHavingGreaterThanOrEqual(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value >= 1',
@@ -161,7 +161,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingLessThanOrEqual()
+    public function testHavingLessThanOrEqual(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value <= 1',
@@ -175,7 +175,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingIsNull()
+    public function testHavingIsNull(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IS NULL',
@@ -190,7 +190,7 @@ trait HavingTestTrait
     }
 
 
-    public function testHavingIsNotNull()
+    public function testHavingIsNotNull(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IS NOT NULL',
@@ -204,7 +204,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingLike()
+    public function testHavingLike(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name LIKE \'%test%\'',
@@ -218,7 +218,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingNotLike()
+    public function testHavingNotLike(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name NOT LIKE \'%test%\'',
@@ -232,7 +232,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingIn()
+    public function testHavingIn(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IN (1, 2, 3)',
@@ -246,7 +246,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingNotIn()
+    public function testHavingNotIn(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value NOT IN (1, 2, 3)',
@@ -260,7 +260,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingMultiple()
+    public function testHavingMultiple(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1 AND name = \'test\'',
@@ -275,7 +275,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingAnd()
+    public function testHavingAnd(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 AND name = \'test\')',
@@ -292,7 +292,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingOr()
+    public function testHavingOr(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 OR name = \'test\')',
@@ -309,7 +309,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingNot()
+    public function testHavingNot(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING NOT (value = 1 AND name = \'test\')',
@@ -326,7 +326,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingGroups()
+    public function testHavingGroups(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 AND (name = \'test\' OR name IS NULL))',
@@ -346,7 +346,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingQueryBuilder()
+    public function testHavingQueryBuilder(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
@@ -362,7 +362,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingClosure()
+    public function testHavingClosure(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
@@ -378,7 +378,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingLiteral()
+    public function testHavingLiteral(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = UPPER(test)',
@@ -393,7 +393,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingMerge()
+    public function testHavingMerge(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name = \'test\' AND value = 1',
@@ -410,7 +410,7 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingOverwrite()
+    public function testHavingOverwrite(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1',

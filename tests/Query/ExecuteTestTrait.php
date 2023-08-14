@@ -6,7 +6,7 @@ namespace Tests\Query;
 trait ExecuteTestTrait
 {
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $this->db->builder()
             ->table('test')
@@ -30,7 +30,7 @@ trait ExecuteTestTrait
         );
     }
 
-    public function testExecuteNamed()
+    public function testExecuteNamed(): void
     {
         $this->db->builder()
             ->table('test')
@@ -54,7 +54,7 @@ trait ExecuteTestTrait
         );
     }
 
-    public function testExecuteUpdate()
+    public function testExecuteUpdate(): void
     {
         $this->db->builder()
             ->table('test')

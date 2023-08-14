@@ -8,7 +8,7 @@ use Fyre\DB\QueryBuilder;
 trait ExceptTestTrait
 {
 
-    public function testExcept()
+    public function testExcept(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
@@ -20,7 +20,7 @@ trait ExceptTestTrait
         );
     }
 
-    public function testExceptQueryBuilder()
+    public function testExceptQueryBuilder(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -36,7 +36,7 @@ trait ExceptTestTrait
         );
     }
 
-    public function testExceptClosure()
+    public function testExceptClosure(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -55,7 +55,7 @@ trait ExceptTestTrait
         );
     }
 
-    public function testExceptLiteral()
+    public function testExceptLiteral(): void
     {
         $query = $this->db->builder()
             ->table('test2')
@@ -73,7 +73,7 @@ trait ExceptTestTrait
         );
     }
 
-    public function testExceptMerge()
+    public function testExceptMerge(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test2) EXCEPT (SELECT * FROM test3)',
@@ -86,7 +86,7 @@ trait ExceptTestTrait
         );
     }
 
-    public function testExceptOverwrite()
+    public function testExceptOverwrite(): void
     {
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test3)',

@@ -33,7 +33,7 @@ final class QueryBuilderTest extends TestCase
     use WhereTestTrait;
     use WithTestTrait;
 
-    public function testGetConnection()
+    public function testGetConnection(): void
     {
         $this->assertSame(
             $this->db,
@@ -42,7 +42,7 @@ final class QueryBuilderTest extends TestCase
         );
     }
     
-    public function testToString()
+    public function testToString(): void
     {
         $this->assertSame(
             'SELECT * FROM test',
