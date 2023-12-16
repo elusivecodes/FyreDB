@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Sql;
 
 use Fyre\DB\Connection;
 use Fyre\DB\ConnectionManager;
 use PHPUnit\Framework\TestCase;
 use Tests\ConnectionTrait;
 
-final class QueryBuilderTest extends TestCase
+final class SqlTest extends TestCase
 {
 
     protected Connection $db;
@@ -16,15 +16,12 @@ final class QueryBuilderTest extends TestCase
     use ConnectionTrait;
     use DeleteTestTrait;
     use ExceptTestTrait;
-    use GetTestTrait;
     use HavingTestTrait;
     use InsertTestTrait;
-    use InsertBatchTestTrait;
     use InsertFromTestTrait;
     use IntersectTestTrait;
     use JoinTestTrait;
     use ReplaceTestTrait;
-    use ReplaceBatchTestTrait;
     use SelectTestTrait;
     use UnionTestTrait;
     use UnionAllTestTrait;
@@ -37,7 +34,7 @@ final class QueryBuilderTest extends TestCase
     {
         $this->assertSame(
             $this->db,
-            $this->db->builder()
+            $this->db->select()
                 ->getConnection()
         );
     }
@@ -46,9 +43,8 @@ final class QueryBuilderTest extends TestCase
     {
         $this->assertSame(
             'SELECT * FROM test',
-            (string) $this->db->builder()
-                ->table('test')
-                ->select()
+            (string) $this->db->select()
+                ->from('test')
         );
     }
 

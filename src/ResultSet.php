@@ -6,6 +6,13 @@ namespace Fyre\DB;
 use Countable;
 use Fyre\DB\Types\Type;
 use Iterator;
+use PDO;
+use PDOStatement;
+
+use function array_filter;
+use function array_keys;
+use function array_merge;
+use function count;
 
 /**
  * ResultSet
@@ -13,31 +20,68 @@ use Iterator;
 abstract class ResultSet implements Countable, Iterator
 {
 
+    protected PDOStatement $result;
+
+    protected array|null $columnMeta = null;
+
+    protected array|null $buffer = null;
+
     protected int $index = 0;
+
+    /**
+     * New MySQLResultSet constructor.
+     * @param PDOStatement $result The raw result.
+     */
+    public function __construct(PDOStatement $result)
+    {
+        $this->result = $result;
+    }
 
     /**
      * Get the results as an array.
      * @return array The results.
      */
-    abstract public function all(): array;
+    public function all(): array
+    {
+        if (!$this->buffer) {
+            $this->buffer = $this->result->fetchAll(PDO::FETCH_ASSOC);
+        } else if (count($this->buffer) < $this->count()) {
+            $results = $this->result->fetchAll(PDO::FETCH_ASSOC);
+            $results = array_filter($results);
+            $this->buffer = array_merge($this->buffer, $results);
+        }
+
+        return $this->buffer;
+    }
 
     /**
      * Get the column count.
      * @return int The column count.
      */
-    abstract public function columnCount(): int;
+    public function columnCount(): int
+    {
+        return $this->result->columnCount();
+    }
 
     /**
      * Get the result columns.
      * @return array The result columns.
      */
-    abstract public function columns(): array;
+    public function columns(): array
+    {
+        $columns = $this->getColumnMeta();
+
+        return array_keys($columns);
+    }
 
     /**
      * Get the result count.
      * @return int The result count.
      */
-    abstract public function count(): int;
+    public function count(): int
+    {
+        return $this->result->rowCount();
+    }
 
     /**
      * Get the result at the current index.
@@ -53,7 +97,24 @@ abstract class ResultSet implements Countable, Iterator
      * @param int $index The index.
      * @return array|null The result.
      */
-    abstract public function fetch(int $index = 0): array|null;
+    public function fetch(int $index = 0): array|null
+    {
+        if ($index >= $this->count()) {
+            return null;
+        }
+
+        if ($index === $this->count() - 1) {
+            return $this->all()[$index];
+        }
+
+        $this->buffer ??= [];
+
+        while (count($this->buffer) <= $index) {
+            $this->buffer[] = $this->result->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return $this->buffer[$index] ?? null;
+    }
 
     /**
      * Get the first result.
@@ -67,7 +128,10 @@ abstract class ResultSet implements Countable, Iterator
     /**
      * Free the result from memory.
      */
-    abstract public function free(): void;
+    public function free(): void
+    {
+        $this->result->closeCursor();
+    }
 
     /**
      * Get a Type class for a column.
@@ -135,6 +199,28 @@ abstract class ResultSet implements Countable, Iterator
     public function valid(): bool
     {
         return $this->index < $this->count();
+    }
+
+    /**
+     * Get column meta data.
+     * @return array The column meta data.
+     */
+    protected function getColumnMeta(): array
+    {
+        if ($this->columnMeta === null) {
+            $columnCount = $this->columnCount();
+
+            $this->columnMeta = [];
+
+            for ($i = 0; $i < $columnCount; $i++) {
+                $column = $this->result->getColumnMeta($i);
+                $name = $column['name'];
+
+                $this->columnMeta[$name] = $column;
+            }
+        }
+
+        return $this->columnMeta;
     }
 
     /**

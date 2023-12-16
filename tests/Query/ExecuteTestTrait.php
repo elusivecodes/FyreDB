@@ -8,9 +8,9 @@ trait ExecuteTestTrait
 
     public function testExecute(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -32,9 +32,9 @@ trait ExecuteTestTrait
 
     public function testExecuteNamed(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -56,10 +56,12 @@ trait ExecuteTestTrait
 
     public function testExecuteUpdate(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test'
+                ]
             ])
             ->execute();
 

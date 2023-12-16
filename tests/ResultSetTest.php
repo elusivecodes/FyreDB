@@ -33,9 +33,8 @@ final class ResultSetTest extends TestCase
                     'name' => 'Test 3'
                 ]
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -45,9 +44,8 @@ final class ResultSetTest extends TestCase
     {
         $this->assertSame(
             3,
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->count()
         );
@@ -60,9 +58,8 @@ final class ResultSetTest extends TestCase
                 'id' => 2,
                 'name' => 'Test 2'
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->fetch(1)
         );
@@ -75,9 +72,8 @@ final class ResultSetTest extends TestCase
                 'id' => 1,
                 'name' => 'Test 1'
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->first()
         );
@@ -90,9 +86,8 @@ final class ResultSetTest extends TestCase
                 'id' => 3,
                 'name' => 'Test 3'
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->last()
         );
@@ -102,9 +97,8 @@ final class ResultSetTest extends TestCase
     {
         $this->assertSame(
             2,
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->columnCount()
         );
@@ -117,9 +111,8 @@ final class ResultSetTest extends TestCase
                 'id',
                 'name'
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->columns()
         );
@@ -127,9 +120,8 @@ final class ResultSetTest extends TestCase
 
     public function testIteration(): void
     {
-        $query = $this->db->builder()
-            ->table('test')
-            ->select()
+        $query = $this->db->select()
+            ->from('test')
             ->execute();
 
         $results = [];
@@ -161,9 +153,8 @@ final class ResultSetTest extends TestCase
     {
         $this->assertInstanceOf(
             StringType::class,
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->getType('name')
         );
@@ -174,8 +165,7 @@ final class ResultSetTest extends TestCase
     {
         $this->assertInstanceOf(
             DateTimeType::class,
-            $this->db->builder()
-                ->select([
+            $this->db->select([
                     'virtual' => 'NOW()'
                 ])
                 ->execute()
@@ -186,9 +176,9 @@ final class ResultSetTest extends TestCase
     protected function setUp(): void
     {
         $this->db = ConnectionManager::use();
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],

@@ -1,20 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Sql;
 
-use Fyre\DB\QueryBuilder;
+use Fyre\DB\Connection;
+use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\QueryLiteral;
 
-trait InsertBatchTestTrait
+trait InsertTestTrait
 {
 
-    public function testInsertBatch(): void
+    public function testInsert(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
-            $this->db->builder()
-                ->table('test')
-                ->insertBatch([
+            $this->db->insert()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
                         'value' => 1
@@ -28,25 +30,23 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchQueryBuilder(): void
+    public function testInsertSelectQuery(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
-            $this->db->builder()
-                ->table('test')
-                ->insertBatch([
+            $this->db->insert()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
-                        'value' => $this->db->builder()
-                            ->table('test')
-                            ->select(['id'])
+                        'value' => $this->db->select(['id'])
+                            ->from('test')
                             ->limit(1)
                     ],
                     [
                         'name' => 'Test 2',
-                        'value' => $this->db->builder()
-                            ->table('test')
-                            ->select(['id'])
+                        'value' => $this->db->select(['id'])
+                            ->from('test')
                             ->limit(1)
                     ]
                 ])
@@ -54,28 +54,26 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchClosure(): void
+    public function testInsertClosure(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
-            $this->db->builder()
-                ->table('test')
-                ->insertBatch([
+            $this->db->insert()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder
-                                ->table('test')
-                                ->select(['id'])
+                        'value' => function(Connection $db): SelectQuery {
+                            return $db->select(['id'])
+                                ->from('test')
                                 ->limit(1);
                         }
                     ],
                     [
                         'name' => 'Test 2',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder
-                                ->table('test')
-                                ->select(['id'])
+                        'value' => function(Connection $db): SelectQuery {
+                            return $db->select(['id'])
+                                ->from('test')
                                 ->limit(1);
                         }
                     ]
@@ -84,23 +82,23 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchLiteral(): void
+    public function testInsertLiteral(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
-            $this->db->builder()
-                ->table('test')
-                ->insertBatch([
+            $this->db->insert()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder->literal('2 * 10');
+                        'value' => function(Connection $db): QueryLiteral {
+                            return $db->literal('2 * 10');
                         }
                     ],
                     [
                         'name' => 'Test 2',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder->literal('2 * 20');
+                        'value' => function(Connection $db): QueryLiteral {
+                            return $db->literal('2 * 20');
                         }
                     ]
                 ])
@@ -108,19 +106,19 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchMerge(): void
+    public function testInsertMerge(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
-            $this->db->builder()
-                ->table('test')
-                ->insertBatch([
+            $this->db->insert()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
                         'value' => 1
                     ]
                 ])
-                ->insertBatch([
+                ->values([
                     [
                         'name' => 'Test 2',
                         'value' => 2
@@ -130,19 +128,19 @@ trait InsertBatchTestTrait
         );
     }
 
-    public function testInsertBatchOverwrite(): void
+    public function testInsertOverwrite(): void
     {
         $this->assertSame(
             'INSERT INTO test (name, value) VALUES (\'Test 2\', 2)',
-            $this->db->builder()
-                ->table('test')
-                ->insertBatch([
+            $this->db->insert()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
                         'value' => 1
                     ]
                 ])
-                ->insertBatch([
+                ->values([
                     [
                         'name' => 'Test 2',
                         'value' => 2

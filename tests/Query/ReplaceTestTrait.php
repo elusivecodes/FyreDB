@@ -8,19 +8,23 @@ trait ReplaceTestTrait
 
     public function testReplace(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test'
+                ]
             ])
             ->execute();
 
         $this->assertTrue(
-            $this->db->builder()
-                ->table('test')
-                ->replace([
-                    'id' => 1,
-                    'name' => 'Test 2'
+            $this->db->replace()
+                ->into('test')
+                ->values([
+                    [
+                        'id' => 1,
+                        'name' => 'Test 2'
+                    ]
                 ])
                 ->execute()
         );
@@ -30,9 +34,8 @@ trait ReplaceTestTrait
                 'id' => 1,
                 'name' => 'Test 2'
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->first()
         );
@@ -40,9 +43,9 @@ trait ReplaceTestTrait
 
     public function testReplaceBatch(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -53,9 +56,9 @@ trait ReplaceTestTrait
             ->execute();
 
         $this->assertTrue(
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
+            $this->db->replace()
+                ->into('test')
+                ->values([
                     [
                         'id' => 1,
                         'name' => 'Test 3'
@@ -79,9 +82,8 @@ trait ReplaceTestTrait
                     'name' => 'Test 4'
                 ]
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );

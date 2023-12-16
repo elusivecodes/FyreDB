@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\DB;
 
 use Closure;
+use Fyre\DB\Queries\SelectQuery;
 
 use const FILTER_VALIDATE_FLOAT;
 
@@ -128,32 +129,20 @@ class QueryGenerator
     /**
      * Generate an INSERT query.
      * @param array $tables The tables.
-     * @param array $data The data.
-     * @param ValueBinder|null $binder The value binder.
-     * @return string The query string.
-     */
-    public function buildInsert(array $tables, array $data, ValueBinder|null $binder = null): string
-    {
-        return $this->buildInsertBatch($tables, [$data], $binder);
-    }
-
-    /**
-     * Generate a batch INSERT query.
-     * @param array $tables The tables.
-     * @param array $data The data.
+     * @param array $values The values.
      * @param ValueBinder|null $binder The value binder.
      * @param string $type The type of INSERT query.
      * @return string The query string.
      */
-    public function buildInsertBatch(array $tables, array $data, ValueBinder|null $binder = null, string $type = 'INSERT'): string
+    public function buildInsert(array $tables, array $values, ValueBinder|null $binder = null, string $type = 'INSERT'): string
     {
-        $columns = array_keys($data[0] ?? []);
+        $columns = array_keys($values[0] ?? []);
         $values = array_map(
             function(array $values) use ($binder): string {
                 $values = array_map(fn(mixed $value): string => $this->parseExpression($value, $binder), $values);
                 return '('.implode(', ', $values).')';
             },
-            $data
+            $values
         );
 
         $query = $type;
@@ -169,11 +158,12 @@ class QueryGenerator
     /**
      * Generate an INSERT query from another query.
      * @param array $tables The tables.
-     * @param Closure|QueryBuilder|QueryLiteral|string $insertQuery The query.
+     * @param Closure|SelectQuery|QueryLiteral|string $from The query.
      * @param array $columns The columns.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildInsertFrom(array $tables, Closure|QueryBuilder|QueryLiteral|string $insertQuery, array $columns): string
+    public function buildInsertFrom(array $tables, Closure|SelectQuery|QueryLiteral|string $from, array $columns, ValueBinder|null $binder = null): string
     {
         $query = 'INSERT INTO ';
         $query .= $this->buildTables($tables);
@@ -184,7 +174,7 @@ class QueryGenerator
 
         $query .= ' VALUES ';
 
-        $query .= $this->parseExpression($insertQuery, quote: false);
+        $query .= $this->parseExpression($from, $binder, false);
 
         return $query;
     }
@@ -272,30 +262,6 @@ class QueryGenerator
     }
 
     /**
-     * Generate a REPLACE query.
-     * @param array $tables The tables.
-     * @param array $data The data.
-     * @param ValueBinder|null $binder The value binder.
-     * @return string The query string.
-     */
-    public function buildReplace(array $tables, array $data, ValueBinder|null $binder = null): string
-    {
-        return $this->buildInsertBatch($tables, [$data], $binder, 'REPLACE');
-    }
-
-    /**
-     * Generate a batch REPLACE query.
-     * @param array $tables The tables.
-     * @param array $data The data.
-     * @param ValueBinder|null $binder The value binder.
-     * @return string The query string.
-     */
-    public function buildReplaceBatch(array $tables, array $data, ValueBinder|null $binder = null): string
-    {
-        return $this->buildInsertBatch($tables, $data, $binder, 'REPLACE');
-    }
-
-    /**
      * Generate the SELECT portion of the query.
      * @param array $tables The tables.
      * @param array $fields The fields.
@@ -367,15 +333,15 @@ class QueryGenerator
      * Generate a batch UPDATE query.
      * @param array $tables The tables.
      * @param array $data The data.
-     * @param array $updateKeys The key to use for updating.
+     * @param array $keys The key to use for updating.
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildUpdateBatch(array $tables, array $data, array $updateKeys, ValueBinder|null $binder = null): string
+    public function buildUpdateBatch(array $tables, array $data, array $keys, ValueBinder|null $binder = null): string
     {
         $columns = array_filter(
             array_keys($data[0] ?? []),
-            fn(string $column): bool => !in_array($column, $updateKeys)
+            fn(string $column): bool => !in_array($column, $keys)
         );
 
         $columns = array_values($columns);
@@ -397,10 +363,10 @@ class QueryGenerator
                 if ($i === 0) {
                     $updateValues = array_map(
                         fn(string $column): mixed => $values[$column] ?? null,
-                        $updateKeys
+                        $keys
                     );
 
-                    $rowConditions = static::combineConditions($updateKeys, $updateValues);
+                    $rowConditions = static::combineConditions($keys, $updateValues);
 
                     $allConditions[] = $rowConditions;
                     $allValues[] = $updateValues;
@@ -428,7 +394,7 @@ class QueryGenerator
         $query .= ' SET ';
         $query .= implode(', ', $updateData);
 
-        $conditions = static::normalizeConditions($updateKeys, $allValues);
+        $conditions = static::normalizeConditions($keys, $allValues);
         $query .= $this->buildWhere($conditions, $binder);
 
         return $query;
@@ -623,11 +589,10 @@ class QueryGenerator
     protected function parseExpression(mixed $value, ValueBinder|null $binder = null, bool $quote = true): string
     {
         if ($value instanceof Closure) {
-            $builder = new QueryBuilder($this->connection);
-            $value = $value($builder);
+            $value = $value($this->connection);
         }
 
-        if ($value instanceof QueryBuilder) {
+        if ($value instanceof SelectQuery) {
             return '('.$value->sql($binder).')';
         }
 

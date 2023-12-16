@@ -13,9 +13,9 @@ trait TransactionTestTrait
     {
         $this->db->begin();
 
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -38,9 +38,8 @@ trait TransactionTestTrait
                     'name' => 'Test 2'
                 ]
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -50,9 +49,9 @@ trait TransactionTestTrait
     {
         $this->db->begin();
 
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -66,9 +65,8 @@ trait TransactionTestTrait
 
         $this->assertSame(
             [],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -78,19 +76,23 @@ trait TransactionTestTrait
     {
         $this->db->begin();
 
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test 1'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1'
+                ]
             ])
             ->execute();
 
         $this->db->begin();
 
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test 2'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2'
+                ]
             ])
             ->execute();
 
@@ -105,9 +107,8 @@ trait TransactionTestTrait
                     'name' => 'Test 1'
                 ]
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -117,19 +118,23 @@ trait TransactionTestTrait
     {
         $this->db->begin();
 
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test 1'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1'
+                ]
             ])
             ->execute();
 
         $this->db->begin();
 
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test 2'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2'
+                ]
             ])
             ->execute();
 
@@ -139,9 +144,8 @@ trait TransactionTestTrait
 
         $this->assertSame(
             [],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -151,9 +155,9 @@ trait TransactionTestTrait
     {
         $this->assertTrue(
             $this->db->transactional(function(Connection $db) {
-                $db->builder()
-                    ->table('test')
-                    ->insertBatch([
+                $db->insert()
+                    ->into('test')
+                    ->values([
                         [
                             'name' => 'Test 1'
                         ],
@@ -176,9 +180,8 @@ trait TransactionTestTrait
                     'name' => 'Test 2'
                 ]
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -188,9 +191,9 @@ trait TransactionTestTrait
     {
         $this->assertFalse(
             $this->db->transactional(function(Connection $db) {
-                $db->builder()
-                    ->table('test')
-                    ->insertBatch([
+                $db->insert()
+                    ->into('test')
+                    ->values([
                         [
                             'name' => 'Test 1'
                         ],
@@ -206,9 +209,8 @@ trait TransactionTestTrait
 
         $this->assertSame(
             [],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -218,9 +220,9 @@ trait TransactionTestTrait
     {
         try {
             $this->db->transactional(function(Connection $db) {
-                $db->builder()
-                    ->table('test')
-                    ->insertBatch([
+                $db->insert()
+                    ->into('test')
+                    ->values([
                         [
                             'name' => 'Test 1'
                         ],
@@ -236,9 +238,8 @@ trait TransactionTestTrait
 
         $this->assertSame(
             [],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -251,6 +252,17 @@ trait TransactionTestTrait
         $this->db->transactional(function(Connection $db) {
             throw new Exception();
         });
+    }
+
+    public function testInTransaction(): void
+    {
+        $this->db->begin();
+
+        $this->assertTrue(
+            $this->db->inTransaction()
+        );
+
+        $this->db->rollback();
     }
 
 }

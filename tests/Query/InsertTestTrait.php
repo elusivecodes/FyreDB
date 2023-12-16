@@ -9,10 +9,12 @@ trait InsertTestTrait
     public function testInsert(): void
     {
         $this->assertTrue(
-            $this->db->builder()
-                ->table('test')
-                ->insert([
-                    'name' => 'Test'
+            $this->db->insert()
+                ->into('test')
+                ->values([
+                    [
+                        'name' => 'Test'
+                    ]
                 ])
                 ->execute()
         );
@@ -22,9 +24,8 @@ trait InsertTestTrait
                 'id' => 1,
                 'name' => 'Test'
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->first()
         );
@@ -33,9 +34,9 @@ trait InsertTestTrait
     public function testInsertBatch(): void
     {
         $this->assertTrue(
-            $this->db->builder()
-                ->table('test')
-                ->insertBatch([
+            $this->db->insert()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1'
                     ],
@@ -57,9 +58,8 @@ trait InsertTestTrait
                     'name' => 'Test 2'
                 ]
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -67,10 +67,12 @@ trait InsertTestTrait
 
     public function testInsertId(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test'
+                ]
             ])
             ->execute();
 
@@ -79,10 +81,12 @@ trait InsertTestTrait
             $this->db->insertId()
         );
 
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test 2'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2'
+                ]
             ])
             ->execute();
 
@@ -94,9 +98,9 @@ trait InsertTestTrait
 
     public function testInsertBatchId(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -114,10 +118,12 @@ trait InsertTestTrait
 
     public function testInsertAffectedRows(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test'
+                ]
             ])
             ->execute();
 
@@ -129,9 +135,9 @@ trait InsertTestTrait
 
     public function testInsertBatchAffectedRows(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],

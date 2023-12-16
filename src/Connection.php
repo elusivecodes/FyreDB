@@ -6,9 +6,20 @@ namespace Fyre\DB;
 use Closure;
 use Exception;
 use Fyre\DB\Exceptions\DbException;
+use Fyre\DB\Queries\DeleteQuery;
+use Fyre\DB\Queries\InsertQuery;
+use Fyre\DB\Queries\InsertFromQuery;
+use Fyre\DB\Queries\ReplaceQuery;
+use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\Queries\UpdateQuery;
+use Fyre\DB\Queries\UpdateBatchQuery;
+use PDO;
+use PDOException;
+use PDOStatement;
 use Throwable;
 
 use function array_replace_recursive;
+use function implode;
 
 /**
  * Connection
@@ -33,12 +44,23 @@ abstract class Connection
             'ca' => null,
             'capath' => null,
             'cipher' => null
-        ]
+        ],
+        'flags' => []
     ];
 
     protected array $config;
 
+    protected PDO|null $pdo = null;
+
+    protected ConnectionRetry $retry;
+
     protected QueryGenerator $generator;
+
+    protected string|null $version = null;
+
+    protected int|null $affectedRows = null;
+
+    protected bool $useSavePoints = true;
 
     protected int $savePointLevel = 0;
 
@@ -63,9 +85,12 @@ abstract class Connection
 
     /**
      * Get the number of affected rows.
-     * @param int The number of affected rows.
+     * @param int|null The number of affected rows.
      */
-    abstract public function affectedRows(): int;
+    public function affectedRows(): int|null
+    {
+        return $this->affectedRows;
+    }
 
     /**
      * Begin a transaction.
@@ -75,7 +100,7 @@ abstract class Connection
     {
         if ($this->savePointLevel === 0) {
             $this->transBegin();
-        } else {
+        } else if ($this->useSavePoints) {
             $this->transSavepoint((string) $this->savePointLevel);
         }
 
@@ -85,25 +110,20 @@ abstract class Connection
     }
 
     /**
-     * Create a QueryBuilder.
-     * @return QueryBuilder A new QueryBuilder.
-     */
-    public function builder(): QueryBuilder
-    {
-        return new QueryBuilder($this);
-    }
-
-    /**
      * Commit a transaction.
      * @return Connection The Connection.
      */
     public function commit(): static
     {
+        if (!$this->savePointLevel) {
+            return $this;
+        }
+
         $this->savePointLevel--;
 
         if ($this->savePointLevel === 0) {
             $this->transCommit();
-        } else {
+        } else if ($this->useSavePoints) {
             $this->transRelease((string) $this->savePointLevel);
         }
 
@@ -116,17 +136,46 @@ abstract class Connection
     abstract public function connect(): void;
 
     /**
+     * Create a DeleteQuery.
+     * @param string|array|null $alias The alias to delete.
+     * @return DeleteQuery A new DeleteQuery.
+     */
+    public function delete(string|array|null $alias = null): DeleteQuery
+    {
+        return new DeleteQuery($this, $alias);
+    }
+
+    /**
      * Disconnect from the database.
      */
-    abstract public function disconnect(): bool;
+    public function disconnect(): bool
+    {
+        $this->pdo = null;
+
+        return true;
+    }
 
     /**
      * Execute a SQL query with bound parameters.
-     * @param string $query The SQL query.
+     * @param string $sql The SQL query.
      * @param array $params The parameters to bind.
      * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
+     * @throws DbException if the query threw an error.
      */
-    abstract public function execute(string $query, array $params): ResultSet|bool;
+    public function execute(string $sql, array $params): ResultSet|bool
+    {
+        try {
+            return $this->retry()->run(function() use ($sql, $params) {
+                $query = $this->pdo->prepare($sql);
+
+                $query->execute($params);
+
+                return $this->result($query);
+            });
+        } catch (PDOException $e) {
+            throw DbException::forQueryError($e->getMessage());
+        }
+    }
 
     /**
      * Get the query generator.
@@ -141,13 +190,19 @@ abstract class Connection
      * Get the connection charset.
      * @return string The connection charset.
      */
-    abstract public function getCharset(): string;
+    public function getCharset(): string
+    {
+        return $this->rawQuery('SELECT CHARSET("")')->fetchColumn();
+    }
 
     /**
      * Get the connection collation.
      * @return string The connection collation.
      */
-    abstract public function getCollation(): string;
+    public function getCollation(): string
+    {
+        return $this->rawQuery('SELECT COLLATION("")')->fetchColumn();
+    }
 
     /**
      * Get the config.
@@ -161,13 +216,66 @@ abstract class Connection
      * Get the last connection error.
      * @return string The last  connection error.
      */
-    abstract public function getError(): string;
+    public function getError(): string
+    {
+        $info = $this->pdo->errorInfo();
+
+        return implode(' ', $info);
+    }
+
+    /**
+     * Create an InsertQuery.
+     * @return InsertQuery A new InsertQuery.
+     */
+    public function insert(): InsertQuery
+    {
+        return new InsertQuery($this);
+    }
+
+    /**
+     * Create an InsertFromQuery.
+     * @param Closure|SelectQuery|QueryLiteral|string $from The query.
+     * @param array $columns The columns.
+     * @return InsertFromQuery A new InsertFromQuery.
+     */
+    public function insertFrom(Closure|SelectQuery|QueryLiteral|string $from, array $columns = []): InsertFromQuery
+    {
+        return new InsertFromQuery($this, $from, $columns);
+    }
 
     /**
      * Get the last inserted ID.
-     * @return int The last inserted ID.
+     * @return int|null The last inserted ID.
      */
-    abstract public function insertId(): int;
+    public function insertId(): int|null
+    {
+        $lastId = $this->pdo->lastInsertId();
+
+        if ($lastId === false) {
+            return null;
+        }
+
+        return (int) $lastId;
+    }
+
+    /**
+     * Determine if a transaction is in progress.
+     * @return bool TRUE if a transaction is in progress, otherwise FALSE.
+     */
+    public function inTransaction(): bool
+    {
+        return $this->pdo->inTransaction();
+    }
+
+    /**
+     * Create a QueryLiteral.
+     * @param string $string The literal string.
+     * @return QueryLiteral A new QueryLiteral.
+     */
+    public function literal(string $string): QueryLiteral
+    {
+        return new QueryLiteral($string);
+    }
 
     /**
      * Execute a SQL query.
@@ -186,21 +294,36 @@ abstract class Connection
      * @param string $value The value to quote.
      * @return string The quoted value.
      */
-    abstract public function quote(string $value): string;
+    public function quote(string $value): string
+    {
+        return $this->pdo->quote($value);
+    }
 
     /**
      * Execute a raw SQL query.
      * @param string $sql The SQL query.
-     * @return mixed The raw result.
+     * @return PDOStatement The raw result.
+     * @throws DbException if the query threw an error.
      */
-    abstract public function rawQuery(string $sql): mixed;
+    public function rawQuery(string $sql): PDOStatement
+    {
+        try {
+            return $this->retry()->run(function() use ($sql) {
+                return $this->pdo->query($sql);
+            });
+        } catch (PDOException $e) {
+            throw DbException::forQueryError($e->getMessage());
+        }
+    }
 
     /**
-     * Generate a result set from a raw result.
-     * @param mixed $result The raw result.
-     * @return ResultSet|bool The result set or TRUE if the query was successful.
+     * Create a ReplaceQuery.
+     * @return ReplaceQuery A new ReplaceQuery.
      */
-    abstract public function result(mixed $result): ResultSet|bool;
+    public function replace(): ReplaceQuery
+    {
+        return new ReplaceQuery($this);
+    }
 
     /**
      * Rollback a transaction.
@@ -208,15 +331,29 @@ abstract class Connection
      */
     public function rollback(): static
     {
+        if (!$this->savePointLevel) {
+            return $this;
+        }
+
         $this->savePointLevel--;
 
         if ($this->savePointLevel === 0) {
             $this->transRollback();
-        } else {
+        } else if ($this->useSavePoints) {
             $this->transRollbackTo((string) $this->savePointLevel);
         }
 
         return $this;
+    }
+
+    /**
+     * Create a SelectQuery.
+     * @param string|array $fields The fields.
+     * @return SelectQuery A new SelectQuery.
+     */
+    public function select(string|array $fields = '*'): SelectQuery
+    {
+        return new SelectQuery($this, $fields);
     }
 
     /**
@@ -249,36 +386,118 @@ abstract class Connection
     }
 
     /**
+     * Create an UpdateQuery.
+     * @param string|array|null $table The table.
+     * @return UpdateQuery A new UpdateQuery.
+     */
+    public function update(string|array|null $table = null): UpdateQuery
+    {
+        return new UpdateQuery($this, $table);
+    }
+
+    /**
+     * Create an UpdateBatchQuery.
+     * @param string|null $table The table.
+     * @return UpdateBatchQuery A new UpdateBatchQuery.
+     */
+    public function updateBatch(string|null $table = null): UpdateBatchQuery
+    {
+        return new UpdateBatchQuery($this, $table);
+    }
+
+    /**
+     * Get the server version.
+     * @return string The server version.
+     */
+    public function version(): string
+    {
+        return $this->version ??= $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+    }
+
+    /**
+     * Generate a result set from a raw result.
+     * @param PDOStatement $result The raw result.
+     * @return ResultSet|bool The result set or TRUE if the query was successful.
+     */
+    protected function result(PDOStatement $result): ResultSet|bool
+    {
+        if ($result->columnCount() === 0) {
+            $this->affectedRows = $result->rowCount();
+
+            return true;
+        }
+
+        $class = static::resultSetClass();
+
+        return new $class($result);
+    }
+
+    /**
+     * Get the ConnectionRetry.
+     * @return ConnectionRetry The ConnectionRetry.
+     */
+    protected function retry(): mixed
+    {
+        return $this->retry ??= new ConnectionRetry($this);
+    }
+
+    /**
      * Begin a transaction.
      */
-    abstract protected function transBegin(): void;
+    protected function transBegin(): void
+    {
+        $this->retry()->run(function() {
+            $this->pdo->beginTransaction();
+        });
+    }
 
     /**
      * Commit a transaction.
      */
-    abstract protected function transCommit(): void;
+    protected function transCommit(): void
+    {
+        $this->pdo->commit();
+    }
 
     /**
      * Release a transaction savepoint.
      * @param string $savePoint The save point name.
      */
-    abstract protected function transRelease(string $savePoint): void;
+    protected function transRelease(string $savePoint): void
+    {
+        $this->query('RELEASE SAVEPOINT sp_'.$savePoint);
+    }
 
     /**
      * Rollback a transaction.
      */
-    abstract protected function transRollback(): void;
+    protected function transRollback(): void
+    {
+        $this->pdo->rollBack();
+    }
 
     /**
      * Rollback to a transaction savepoint.
      * @param string $savePoint The save point name.
      */
-    abstract protected function transRollbackTo(string $savePoint): void;
+    protected function transRollbackTo(string $savePoint): void
+    {
+        $this->query('ROLLBACK TO SAVEPOINT sp_'.$savePoint);
+    }
 
     /**
      * Save a transaction save point.
      * @param string $savePoint The save point name.
      */
-    abstract protected function transSavepoint(string $savePoint): void;
+    protected function transSavepoint(string $savePoint): void
+    {
+        $this->query('SAVEPOINT sp_'.$savePoint);
+    }
+
+    /**
+     * Get the ResultSet class.
+     * @return string The ResultSet class.
+     */
+    abstract protected static function resultSetClass(): string;
 
 }

@@ -1,20 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Sql;
 
-use Fyre\DB\QueryBuilder;
+use Fyre\DB\Connection;
+use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\QueryLiteral;
 
-trait ReplaceBatchTestTrait
+trait ReplaceTestTrait
 {
 
-    public function testReplaceBatch(): void
+    public function testReplace(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
+            $this->db->replace()
+                ->into('test')
+                ->values([
                     [
                         'id' => 1,
                         'name' => 'Test 1',
@@ -30,25 +32,23 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchQueryBuilder(): void
+    public function testReplaceSelectQuery(): void
     {
         $this->assertSame(
             'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
+            $this->db->replace()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
-                        'value' => $this->db->builder()
-                            ->table('test')
-                            ->select(['id'])
+                        'value' => $this->db->select(['id'])
+                            ->from('test')
                             ->limit(1)
                     ],
                     [
                         'name' => 'Test 2',
-                        'value' => $this->db->builder()
-                            ->table('test')
-                            ->select(['id'])
+                        'value' => $this->db->select(['id'])
+                            ->from('test')
                             ->limit(1)
                     ]
                 ])
@@ -56,28 +56,26 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchClosure(): void
+    public function testReplaceClosure(): void
     {
         $this->assertSame(
             'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
+            $this->db->replace()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder
-                                ->table('test')
-                                ->select(['id'])
+                        'value' => function(Connection $db): SelectQuery {
+                            return $db->select(['id'])
+                                ->from('test')
                                 ->limit(1);
                         }
                     ],
                     [
                         'name' => 'Test 2',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder
-                                ->table('test')
-                                ->select(['id'])
+                        'value' => function(Connection $db): SelectQuery {
+                            return $db->select(['id'])
+                                ->from('test')
                                 ->limit(1);
                         }
                     ]
@@ -86,23 +84,23 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchLiteral(): void
+    public function testReplaceLiteral(): void
     {
         $this->assertSame(
             'REPLACE INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
+            $this->db->replace()
+                ->into('test')
+                ->values([
                     [
                         'name' => 'Test 1',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder->literal('2 * 10');
+                        'value' => function(Connection $db): QueryLiteral {
+                            return $db->literal('2 * 10');
                         }
                     ],
                     [
                         'name' => 'Test 2',
-                        'value' => function(QueryBuilder $builder) {
-                            return $builder->literal('2 * 20');
+                        'value' => function(Connection $db): QueryLiteral {
+                            return $db->literal('2 * 20');
                         }
                     ]
                 ])
@@ -110,20 +108,20 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchMerge(): void
+    public function testReplaceMerge(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
+            $this->db->replace()
+                ->into('test')
+                ->values([
                     [
                         'id' => 1,
                         'name' => 'Test 1',
                         'value' => 1
                     ]
                 ])
-                ->replaceBatch([
+                ->values([
                     [
                         'id' => 2,
                         'name' => 'Test 2',
@@ -134,20 +132,20 @@ trait ReplaceBatchTestTrait
         );
     }
 
-    public function testReplaceBatchOverwrite(): void
+    public function testReplaceOverwrite(): void
     {
         $this->assertSame(
             'REPLACE INTO test (id, name, value) VALUES (2, \'Test 2\', 2)',
-            $this->db->builder()
-                ->table('test')
-                ->replaceBatch([
+            $this->db->replace()
+                ->into('test')
+                ->values([
                     [
                         'id' => 1,
                         'name' => 'Test 1',
                         'value' => 1
                     ]
                 ])
-                ->replaceBatch([
+                ->values([
                     [
                         'id' => 2,
                         'name' => 'Test 2',

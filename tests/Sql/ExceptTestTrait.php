@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Sql;
 
-use Fyre\DB\QueryBuilder;
+use Fyre\DB\Connection;
+use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\QueryLiteral;
 
 trait ExceptTestTrait
 {
@@ -12,25 +14,22 @@ trait ExceptTestTrait
     {
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->except('(SELECT * FROM test2)')
                 ->sql()
         );
     }
 
-    public function testExceptQueryBuilder(): void
+    public function testExceptSelectQuery(): void
     {
-        $query = $this->db->builder()
-            ->table('test2')
-            ->select();
+        $query = $this->db->select()
+            ->from('test2');
 
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->except($query)
                 ->sql()
         );
@@ -38,18 +37,16 @@ trait ExceptTestTrait
 
     public function testExceptClosure(): void
     {
-        $query = $this->db->builder()
-            ->table('test2')
-            ->select();
+        $query = $this->db->select()
+            ->from('test2');
 
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
-                ->except(function(QueryBuilder $builder) {
-                    return $builder->table('test2')
-                        ->select();
+            $this->db->select()
+                ->from('test')
+                ->except(function(Connection $db): SelectQuery {
+                    return $db->select()
+                        ->from('test2');
                 })
                 ->sql()
         );
@@ -57,17 +54,15 @@ trait ExceptTestTrait
 
     public function testExceptLiteral(): void
     {
-        $query = $this->db->builder()
-            ->table('test2')
-            ->select();
+        $query = $this->db->select()
+            ->from('test2');
 
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
-                ->except(function(QueryBuilder $builder) {
-                    return $builder->literal('(SELECT * FROM test2)');
+            $this->db->select()
+                ->from('test')
+                ->except(function(Connection $db): QueryLiteral {
+                    return $db->literal('(SELECT * FROM test2)');
                 })
                 ->sql()
         );
@@ -77,9 +72,8 @@ trait ExceptTestTrait
     {
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test2) EXCEPT (SELECT * FROM test3)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->except('(SELECT * FROM test2)')
                 ->except('(SELECT * FROM test3)')
                 ->sql()
@@ -90,9 +84,8 @@ trait ExceptTestTrait
     {
         $this->assertSame(
             '(SELECT * FROM test) EXCEPT (SELECT * FROM test3)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->except('(SELECT * FROM test2)')
                 ->except('(SELECT * FROM test3)', true)
                 ->sql()

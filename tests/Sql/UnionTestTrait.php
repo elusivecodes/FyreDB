@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Sql;
 
-use Fyre\DB\QueryBuilder;
+use Fyre\DB\Connection;
+use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\QueryLiteral;
 
 trait UnionTestTrait
 {
@@ -12,25 +14,22 @@ trait UnionTestTrait
     {
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->union('(SELECT * FROM test2)')
                 ->sql()
         );
     }
 
-    public function testUnionQueryBuilder(): void
+    public function testUnionSelectQuery(): void
     {
-        $query = $this->db->builder()
-            ->table('test2')
-            ->select();
+        $query = $this->db->select()
+            ->from('test2');
 
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->union($query)
                 ->sql()
         );
@@ -40,12 +39,11 @@ trait UnionTestTrait
     {
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
-                ->union(function(QueryBuilder $builder) {
-                    return $builder->table('test2')
-                        ->select();
+            $this->db->select()
+                ->from('test')
+                ->union(function(Connection $db): SelectQuery {
+                    return $db->select()
+                        ->from('test2');
                 })
                 ->sql()
         );
@@ -53,17 +51,15 @@ trait UnionTestTrait
 
     public function testUnionLiteral(): void
     {
-        $query = $this->db->builder()
-            ->table('test2')
-            ->select();
+        $query = $this->db->select()
+            ->from('test2');
 
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
-                ->union(function(QueryBuilder $builder) {
-                    return $builder->literal('(SELECT * FROM test2)');
+            $this->db->select()
+                ->from('test')
+                ->union(function(Connection $db): QueryLiteral {
+                    return $db->literal('(SELECT * FROM test2)');
                 })
                 ->sql()
         );
@@ -73,9 +69,8 @@ trait UnionTestTrait
     {
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2) UNION DISTINCT (SELECT * FROM test3)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->union('(SELECT * FROM test2)')
                 ->union('(SELECT * FROM test3)')
                 ->sql()
@@ -86,9 +81,8 @@ trait UnionTestTrait
     {
         $this->assertSame(
             '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test3)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->union('(SELECT * FROM test2)')
                 ->union('(SELECT * FROM test3)', true)
                 ->sql()

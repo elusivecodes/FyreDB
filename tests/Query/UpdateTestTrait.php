@@ -8,9 +8,9 @@ trait UpdateTestTrait
 
     public function testUpdate(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -21,9 +21,8 @@ trait UpdateTestTrait
             ->execute();
 
         $this->assertTrue(
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test 2'
                 ])
                 ->where([
@@ -37,9 +36,8 @@ trait UpdateTestTrait
                 'id' => 1,
                 'name' => 'Test 2'
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->first()
         );
@@ -47,9 +45,9 @@ trait UpdateTestTrait
 
     public function testUpdateBatch(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -60,9 +58,8 @@ trait UpdateTestTrait
             ->execute();
 
         $this->assertTrue(
-            $this->db->builder()
-                ->table('test')
-                ->updateBatch([
+            $this->db->updateBatch('test')
+                ->set([
                     [
                         'id' => 1,
                         'name' => 'Test 3'
@@ -86,9 +83,8 @@ trait UpdateTestTrait
                     'name' => 'Test 4'
                 ]
             ],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -96,9 +92,9 @@ trait UpdateTestTrait
 
     public function testUpdateAffectedRows(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -108,9 +104,9 @@ trait UpdateTestTrait
             ])
             ->execute();
 
-        $this->db->builder()
+        $this->db->update()
             ->table('test')
-            ->update([
+            ->set([
                 'name' => 'Test 3'
             ])
             ->where([
@@ -126,9 +122,9 @@ trait UpdateTestTrait
 
     public function testUpdateBatchAffectedRows(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -138,9 +134,8 @@ trait UpdateTestTrait
             ])
             ->execute();
 
-        $this->db->builder()
-            ->table('test')
-            ->updateBatch([
+        $this->db->updateBatch('test')
+            ->set([
                 [
                     'id' => 1,
                     'name' => 'Test 3'

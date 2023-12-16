@@ -32,6 +32,14 @@ final class ConnectionTest extends TestCase
         );
     }
 
+    public function testVersion(): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/^\d+\.\d+\.\d+.*/',
+            $this->db->version()
+        );
+    }
+
     public function testFailedConnection(): void
     {
         $this->expectException(DbException::class);

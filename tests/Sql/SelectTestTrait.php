@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Sql;
 
-use Fyre\DB\QueryBuilder;
+use Fyre\DB\Connection;
+use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\QueryLiteral;
 
 trait SelectTestTrait
 {
@@ -12,9 +14,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->sql()
         );
     }
@@ -23,11 +24,10 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test AS alt',
-            $this->db->builder()
-                ->table([
+            $this->db->select()
+                ->from([
                     'alt' => 'test'
                 ])
-                ->select()
                 ->sql()
         );
     }
@@ -36,27 +36,24 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test AS alt, test2 AS alt2',
-            $this->db->builder()
-                ->table([
+            $this->db->select()
+                ->from([
                     'alt' => 'test',
                     'alt2' => 'test2'
                 ])
-                ->select()
                 ->sql()
         );
     }
 
-    public function testSelectQueryBuilder(): void
+    public function testSelectSelectQuery(): void
     {
         $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
-            $this->db->builder()
-                ->table([
-                    'alt' => $this->db->builder()
-                        ->table('test')
-                        ->select()
+            $this->db->select()
+                ->from([
+                    'alt' => $this->db->select()
+                        ->from('test')
                 ])
-                ->select()
                 ->sql()
         );
     }
@@ -65,14 +62,14 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
-            $this->db->builder()
-                ->table([
-                    'alt' => function(QueryBuilder $builder) {
-                        return $builder->table('test')
-                            ->select();
+            $this->db->select()
+                ->from([
+                    'alt' => function(Connection $db): SelectQuery {
+                        return $db->select()
+                            ->from('test');
+                            
                     }
                 ])
-                ->select()
                 ->sql()
         );
     }
@@ -81,13 +78,12 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM (SELECT * FROM test) AS alt',
-            $this->db->builder()
-                ->table([
-                    'alt' => function(QueryBuilder $builder) {
-                        return $builder->literal('(SELECT * FROM test)');
+            $this->db->select()
+                ->from([
+                    'alt' => function(Connection $db): QueryLiteral {
+                        return $db->literal('(SELECT * FROM test)');
                     }
                 ])
-                ->select()
                 ->sql()
         );
     }
@@ -96,8 +92,7 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT *',
-            $this->db->builder()
-                ->select()
+            $this->db->select()
                 ->sql()
         );
     }
@@ -106,9 +101,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT id, name FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select('id, name')
+            $this->db->select('id, name')
+                ->from('test')
                 ->sql()
         );
     }
@@ -117,13 +111,12 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT id, name FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select([
-                    'id',
-                    'name'
-                ])
-                ->sql()
+            $this->db->select([
+                'id',
+                'name'
+            ])
+            ->from('test')
+            ->sql()
         );
     }
 
@@ -131,27 +124,24 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT name AS alt FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select([
-                    'alt' => 'name'
-                ])
-                ->sql()
+            $this->db->select([
+                'alt' => 'name'
+            ])
+            ->from('test')
+            ->sql()
         );
     }
 
-    public function testSelectFieldsQueryBuilder(): void
+    public function testSelectFieldsSelectQuery(): void
     {
         $this->assertSame(
             'SELECT (SELECT name FROM test) AS alt FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select([
-                    'alt' => $this->db->builder()
-                        ->table('test')
-                        ->select(['name'])
-                ])
-                ->sql()
+            $this->db->select([
+                'alt' => $this->db->select(['name'])
+                    ->from('test')
+            ])
+            ->from('test')
+            ->sql()
         );
     }
 
@@ -159,17 +149,15 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT (SELECT name FROM test LIMIT 1) AS alt FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select([
-                    'alt' => function(QueryBuilder $builder) {
-                        return $builder
-                            ->table('test')
-                            ->select(['name'])
-                            ->limit(1);
-                    }
-                ])
-                ->sql()
+            $this->db->select([
+                'alt' => function(Connection $db): SelectQuery {
+                    return $db->select(['name'])
+                        ->from('test')
+                        ->limit(1);
+                }
+            ])
+            ->from('test')
+            ->sql()
         );
     }
 
@@ -177,14 +165,13 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT UPPER(test) AS alt FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select([
-                    'alt' => function(QueryBuilder $builder) {
-                        return $builder->literal('UPPER(test)');
-                    }
-                ])
-                ->sql()
+            $this->db->select([
+                'alt' => function(Connection $db): QueryLiteral {
+                    return $db->literal('UPPER(test)');
+                }
+            ])
+            ->from('test')
+            ->sql()
         );
     }
 
@@ -192,9 +179,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT DISTINCT * FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->distinct()
                 ->sql()
         );
@@ -204,9 +190,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test FOR UPDATE',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->epilog('FOR UPDATE')
                 ->sql()
         );
@@ -216,9 +201,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test GROUP BY id',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->groupBy('id')
                 ->sql()
         );
@@ -228,9 +212,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test GROUP BY id, name',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->groupBy([
                     'id',
                     'name'
@@ -243,9 +226,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->orderBy('id ASC')
                 ->sql()
         );
@@ -255,9 +237,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC, value DESC',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->orderBy([
                     'id' => 'ASC',
                     'value' => 'DESC'
@@ -270,9 +251,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test LIMIT 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->limit(1)
                 ->sql()
         );
@@ -282,9 +262,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test LIMIT 10, 20',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->limit(20, 10)
                 ->sql()
         );
@@ -294,9 +273,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test LIMIT 10, 20',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->limit(20)
                 ->offset(10)
                 ->sql()
@@ -307,36 +285,35 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT DISTINCT test.id, test.name FROM test INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\' GROUP BY test.id ORDER BY test.id ASC HAVING value = 1 LIMIT 10, 20 FOR UPDATE',
-            $this->db->builder()
-                ->table('test')
-                ->select([
-                    'test.id',
-                    'test.name'
-                ])
-                ->distinct()
-                ->join([
-                    [
-                        'table' => 'test2',
-                        'conditions' => [
-                            'test2.id = test.id'
-                        ]
+            $this->db->select([
+                'test.id',
+                'test.name'
+            ])
+            ->from('test')
+            ->distinct()
+            ->join([
+                [
+                    'table' => 'test2',
+                    'conditions' => [
+                        'test2.id = test.id'
                     ]
-                ])
-                ->where([
-                    'test.name' => 'test'
-                ])
-                ->orderBy([
-                    'test.id' => 'ASC'
-                ])
-                ->groupBy([
-                    'test.id'
-                ])
-                ->having([
-                    'value' => 1
-                ])
-                ->limit(20, 10)
-                ->epilog('FOR UPDATE')
-                ->sql()
+                ]
+            ])
+            ->where([
+                'test.name' => 'test'
+            ])
+            ->orderBy([
+                'test.id' => 'ASC'
+            ])
+            ->groupBy([
+                'test.id'
+            ])
+            ->having([
+                'value' => 1
+            ])
+            ->limit(20, 10)
+            ->epilog('FOR UPDATE')
+            ->sql()
         );
     }
 
@@ -344,10 +321,9 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT id, name FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select('id')
+            $this->db->select('id')
                 ->select('name')
+                ->from('test')
                 ->sql()
         );
     }
@@ -356,10 +332,9 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT name FROM test',
-            $this->db->builder()
-                ->table('test')
-                ->select('id')
+            $this->db->select('id')
                 ->select('name', true)
+                ->from('test')
                 ->sql()
         );
     }
@@ -368,14 +343,13 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test AS alt, test2 AS alt2',
-            $this->db->builder()
-                ->table([
+            $this->db->select()
+                ->from([
                     'alt' => 'test'
                 ])
-                ->table([
+                ->from([
                     'alt2' => 'test2'
                 ])
-                ->select()
                 ->sql()
         );
     }
@@ -384,14 +358,13 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test2 AS alt2',
-            $this->db->builder()
-                ->table([
+            $this->db->select()
+                ->from([
                     'alt' => 'test'
                 ])
-                ->table([
+                ->from([
                     'alt2' => 'test2'
                 ], true)
-                ->select()
                 ->sql()
         );
     }
@@ -400,9 +373,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test ORDER BY id ASC, value DESC',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->orderBy([
                     'id' => 'ASC'
                 ])
@@ -417,9 +389,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test ORDER BY value DESC',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->orderBy([
                     'id' => 'ASC'
                 ])
@@ -434,9 +405,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test GROUP BY id, name',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->groupBy('id')
                 ->groupBy('name')
                 ->sql()
@@ -447,9 +417,8 @@ trait SelectTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test GROUP BY name',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->groupBy('id')
                 ->groupBy('name', true)
                 ->sql()

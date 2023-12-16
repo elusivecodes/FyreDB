@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Sql;
 
-use Fyre\DB\QueryBuilder;
+use Fyre\DB\Connection;
+use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\QueryLiteral;
 
 trait UpdateTestTrait
 {
@@ -12,9 +14,8 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test SET value = 1',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'value' => 1
                 ])
                 ->sql()
@@ -25,14 +26,13 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test AS alt SET value = 1',
-            $this->db->builder()
-                ->table([
-                    'alt' => 'test'
-                ])
-                ->update([
-                    'value' => 1
-                ])
-                ->sql()
+            $this->db->update([
+                'alt' => 'test'
+            ])
+            ->set([
+                'value' => 1
+            ])
+            ->sql()
         );
     }
 
@@ -40,16 +40,15 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test AS alt, test2 AS alt2 SET alt.value = 1, alt2.value = 2',
-            $this->db->builder()
-                ->table([
-                    'alt' => 'test',
-                    'alt2' => 'test2'
-                ])
-                ->update([
-                    'alt.value' => 1,
-                    'alt2.value' => 2
-                ])
-                ->sql()
+            $this->db->update([
+                'alt' => 'test',
+                'alt2' => 'test2'
+            ])
+            ->set([
+                'alt.value' => 1,
+                'alt2.value' => 2
+            ])
+            ->sql()
         );
     }
 
@@ -57,9 +56,8 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 1 INNER JOIN test2 ON test2.id = test.id',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test',
                     'value' => 1
                 ])
@@ -79,9 +77,8 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 1 WHERE id = 1',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test',
                     'value' => 1
                 ])
@@ -92,17 +89,15 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateQueryBuilder(): void
+    public function testUpdateSelectQuery(): void
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test',
-                    'value' => $this->db->builder()
-                        ->table('test')
-                        ->select(['id'])
+                    'value' => $this->db->select(['id'])
+                        ->from('test')
                         ->limit(1)
                 ])
                 ->where([
@@ -116,14 +111,12 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = (SELECT id FROM test LIMIT 1) WHERE id = 1',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test',
-                    'value' => function(QueryBuilder $builder) {
-                        return $builder
-                            ->table('test')
-                            ->select(['id'])
+                    'value' => function(Connection $db): SelectQuery {
+                        return $db->select(['id'])
+                            ->from('test')
                             ->limit(1);
                     }
                 ])
@@ -138,12 +131,11 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 2 * 10 WHERE id = 1',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test',
-                    'value' => function(QueryBuilder $builder) {
-                        return $builder->literal('2 * 10');
+                    'value' => function(Connection $db): QueryLiteral {
+                        return $db->literal('2 * 10');
                     }
                 ])
                 ->where([
@@ -157,9 +149,8 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 1 INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\'',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test',
                     'value' => 1
                 ])
@@ -182,12 +173,11 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test SET name = \'Test\', value = 1',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test'
                 ])
-                ->update([
+                ->set([
                     'value' => 1
                 ])
                 ->sql()
@@ -198,12 +188,11 @@ trait UpdateTestTrait
     {
         $this->assertSame(
             'UPDATE test SET value = 1',
-            $this->db->builder()
-                ->table('test')
-                ->update([
+            $this->db->update('test')
+                ->set([
                     'name' => 'Test'
                 ])
-                ->update([
+                ->set([
                     'value' => 1
                 ], true)
                 ->sql()
@@ -212,18 +201,17 @@ trait UpdateTestTrait
 
     public function testUpdateWith(): void
     {
-        $query = $this->db->builder()
-            ->table('test')
-            ->select();
+        $query = $this->db->select()
+            ->from('test');
 
         $this->assertSame(
             'WITH alt AS (SELECT * FROM test) UPDATE alt SET value = 1',
-            $this->db->builder()
+            $this->db->update()
                 ->with([
                     'alt' => $query
                 ])
                 ->table('alt')
-                ->update([
+                ->set([
                     'value' => 1
                 ])
                 ->sql()

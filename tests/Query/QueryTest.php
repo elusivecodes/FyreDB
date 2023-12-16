@@ -16,6 +16,7 @@ final class QueryTest extends TestCase
     use ConnectionTrait;
     use DeleteTestTrait;
     use ExecuteTestTrait;
+    use GetTestTrait;
     use InsertTestTrait;
     use ReplaceTestTrait;
     use TransactionTestTrait;

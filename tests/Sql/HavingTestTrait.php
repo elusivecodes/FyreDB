@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Sql;
 
-use Fyre\DB\QueryBuilder;
+use Fyre\DB\Connection;
+use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\QueryLiteral;
 
 trait HavingTestTrait
@@ -13,9 +14,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name IS NULL',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having('name IS NULL')
                 ->sql()
         );
@@ -25,9 +25,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name = \'test\'',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'name' => 'test'
                 ])
@@ -39,9 +38,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING id = 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'id' => 1
                 ])
@@ -53,9 +51,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1.25',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value' => 1.25
                 ])
@@ -67,9 +64,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value' => true
                 ])
@@ -81,9 +77,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 0',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value' => false
                 ])
@@ -95,9 +90,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value =' => 1
                 ])
@@ -109,9 +103,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value != 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value !=' => 1
                 ])
@@ -123,9 +116,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value > 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value >' => 1
                 ])
@@ -137,9 +129,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value < 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value <' => 1
                 ])
@@ -151,9 +142,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value >= 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value >=' => 1
                 ])
@@ -165,9 +155,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value <= 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value <=' => 1
                 ])
@@ -179,9 +168,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IS NULL',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value IS' => null
                 ])
@@ -194,9 +182,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IS NOT NULL',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value IS NOT' => null
                 ])
@@ -208,9 +195,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name LIKE \'%test%\'',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'name LIKE' => '%test%'
                 ])
@@ -222,9 +208,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name NOT LIKE \'%test%\'',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'name NOT LIKE' => '%test%'
                 ])
@@ -236,9 +221,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IN (1, 2, 3)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value IN' => [1, 2, 3]
                 ])
@@ -250,9 +234,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value NOT IN (1, 2, 3)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value NOT IN' => [1, 2, 3]
                 ])
@@ -264,9 +247,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1 AND name = \'test\'',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'value' => 1,
                     'name' => 'test'
@@ -279,9 +261,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 AND name = \'test\')',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'and' => [
                         'value' => 1,
@@ -296,9 +277,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 OR name = \'test\')',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'or' => [
                         'value' => 1,
@@ -313,9 +293,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING NOT (value = 1 AND name = \'test\')',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'not' => [
                         'value' => 1,
@@ -330,9 +309,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING (value = 1 AND (name = \'test\' OR name IS NULL))',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     [
                         'value' => 1,
@@ -346,17 +324,15 @@ trait HavingTestTrait
         );
     }
 
-    public function testHavingQueryBuilder(): void
+    public function testHavingSelectQuery(): void
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
-                    'value IN' => $this->db->builder()
-                        ->table('test')
-                        ->select(['id'])
+                    'value IN' => $this->db->select(['id'])
+                        ->from('test')
                 ])
                 ->sql()
         );
@@ -366,13 +342,13 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value IN (SELECT id FROM test)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
-                    'value IN' => fn(QueryBuilder $builder): QueryBuilder => $builder
-                        ->table('test')
-                        ->select(['id'])
+                    'value IN' => function(Connection $db): SelectQuery {
+                        return $db->select(['id'])
+                            ->from('test');
+                    }
                 ])
                 ->sql()
         );
@@ -382,12 +358,12 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = UPPER(test)',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
-                    'value' => fn(QueryBuilder $builder): QueryLiteral => $builder
-                        ->literal('UPPER(test)')
+                    'value' => function(Connection $db): QueryLiteral {
+                        return $db->literal('UPPER(test)');
+                    }
                 ])
                 ->sql()
         );
@@ -397,9 +373,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING name = \'test\' AND value = 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'name' => 'test'
                 ])
@@ -414,9 +389,8 @@ trait HavingTestTrait
     {
         $this->assertSame(
             'SELECT * FROM test HAVING value = 1',
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->having([
                     'name' => 'test'
                 ])

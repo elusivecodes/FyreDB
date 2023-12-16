@@ -9,6 +9,13 @@
 - [Connections](#connections)
     - [MySQL](#mysql)
 - [Queries](#queries)
+    - [Delete](#delete)
+    - [Insert](#insert)
+    - [Insert From](#insert-from)
+    - [Replace](#replace)
+    - [Select](#select)
+    - [Update](#update)
+    - [Update Batch](#update-batch)
 - [Results](#results)
 
 
@@ -138,7 +145,7 @@ You can load a specific connection handler by specifying the `className` option 
 
 Custom connection handlers can be created by extending `\Fyre\DB\Connection`, ensuring all below methods are implemented.
 
-Custom handlers should also implement a `results` method that returns a new [*ResultSet*](#results) and a `generator` method that returns a new *QueryGenerator* (if required).
+Custom handlers should also implement a `generator` method that returns a new *QueryGenerator* (if required) and a `resultSetClass` static method that returns the class name to use for [results](#results).
 
 **Affected Rows**
 
@@ -154,14 +161,6 @@ Begin a transaction.
 
 ```php
 $connection->begin();
-```
-
-**Builder**
-
-Create a [*QueryBuilder*](#queries).
-
-```php
-$builder = $connection->builder();
 ```
 
 **Commit**
@@ -182,6 +181,16 @@ $connection->connect();
 
 This method is called automatically when the *Connection* is created.
 
+**Delete**
+
+Create a [*DeleteQuery*](#delete).
+
+- `$alias` is a string or array containing the table aliases to delete, and will default to *null*.
+
+```php
+$query = $connection->delete($alias);
+```
+
 **Disconnect**
 
 Disconnect from the database.
@@ -201,7 +210,7 @@ Execute a SQL query with bound parameters.
 $result = $connection->execute($sql, $params);
 ```
 
-The SQL query can use either *?* as a placeholder (for numerically indexed paramaters), or the array key prefixed with *:*.
+The SQL query can use either *?* as a placeholder (for numerically indexed parameters), or the array key prefixed with *:*.
 
 This method will return a [*ResultSet*](#results) for SELECT queries. Other query types will return a boolean value.
 
@@ -229,12 +238,49 @@ Get the last connection error.
 $error = $connection->getError();
 ```
 
+**In Transaction**
+
+Determine if a transaction is in progress.
+
+```php
+$inTransaction = $connection->inTransaction();
+```
+
+**Insert**
+
+Create an [*InsertQuery*](#insert).
+
+```php
+$query = $connection->insert();
+```
+
+**Insert From**
+
+Create an [*InsertFromQuery*](#insert-from).
+
+- `$from` is a *Closure*, *SelectQuery*, *QueryLiteral* or string representing the query.
+- `$columns` is an array of column names.
+
+```php
+$query = $connection->insertFrom($from, $columns);
+```
+
 **Insert ID**
 
 Get the last inserted ID.
 
 ```php
 $id = $connection->insertId();
+```
+
+**Literal**
+
+Create a *QueryLiteral*.
+
+- `$string` is a string representing the literal string.
+
+```php
+$literal = $connection->literal($string);
 ```
 
 **Query**
@@ -259,6 +305,14 @@ Quote a string for use in SQL queries.
 $quoted = $connection->quote($value);
 ```
 
+**Replace**
+
+Create a [*ReplaceQuery*](#replace).
+
+```php
+$query = $connection->replace();
+```
+
 **Rollback**
 
 Rollback a transaction.
@@ -266,6 +320,22 @@ Rollback a transaction.
 ```php
 $connection->rollback();
 ```
+
+**Select**
+
+Create a [*SelectQuery*](#select).
+
+- `$fields` is an array or string representing the fields to select, and will default to "*".
+
+```php
+$query = $connection->select($fields);
+```
+
+Non-numeric array keys will be used as field aliases.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
 
 **Transactional**
 
@@ -278,6 +348,38 @@ $result = $connection->transactional($callback);
 ```
 
 If the callback returns *false* or throws an *Exception* the transaction will be rolled back, otherwise it will be committed.
+
+**Update**
+
+Create a [*UpdateQuery*](#update).
+
+- `$table` is an array or string representing the table(s).
+
+```php
+$query = $connection->update($table);
+```
+
+Non-numeric array keys will be used as table aliases.
+
+**Update Batch**
+
+Create a [*UpdateBatchQuery*](#update-batch).
+
+- `$table` is an array or string representing the table(s).
+
+```php
+$query = $connection->updateBatch($table);
+```
+
+Non-numeric array keys will be used as table aliases.
+
+**Version**
+
+Get the server version.
+
+```php
+$version = $connection->version();
+```
 
 
 ### MySQL
@@ -303,6 +405,7 @@ The MySQL connection can be loaded using custom configuration.
         - `ca` is a string representing the path to the certificate authority file.
         - `capath` is a string representing the path to a directory containing CA certificates.
         - `cipher` is a string representing a list of allowable ciphers to use for encryption.
+    - `flags` is an array containing PDO connection options.
 
 ```php
 ConnectionManager::setConfig($key, $options);
@@ -313,54 +416,12 @@ $connection = ConnectionManager::use($key);
 
 ## Queries
 
-**Delete**
-
-Set query as DELETE.
-
-- `$aliases` is a string or array containing the table aliases to delete, and will default to *null*.
-- `$overwrite` is a boolean indicating whether to overwrite existing aliases, and will default to *false*.
-
-```php
-$builder->delete($aliases, $overwrite);
-```
-
-**Distinct**
-
-Set the DISTINCT clause.
-
-- `$distinct` is a boolean indicating whether to set the query as DISTINCT, and will default to *true*.
-
-```php
-$builder->distinct($distinct);
-```
-
-**Epilog**
-
-Set the epilog.
-
-- `$epilog` is a string representing the epilog for the query.
-
-```php
-$builder->epilog($epilog);
-```
-
-**Except**
-
-Add an EXCEPT query.
-
-- `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
-- `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
-
-```php
-$builder->except($query, $overwrite);
-```
-
 **Execute**
 
 Execute the query.
 
 ```php
-$result = $builder->execute();
+$result = $query->execute();
 ```
 
 This method will return a [*ResultSet*](#results) for SELECT queries. Other query types will return a boolean value.
@@ -370,39 +431,111 @@ This method will return a [*ResultSet*](#results) for SELECT queries. Other quer
 Get the [*Connection*](#connections).
 
 ```php
-$connection = $builder->getConnection();
+$connection = $query->getConnection();
 ```
 
-**Get Data**
+**Get Table**
 
-Get the INSERT/UPDATE data.`
+Get the table(s).
 
 ```php
-$data = $builder->getData();
+$table = $query->getTable();
 ```
 
-**Get Distinct**
+**Sql**
 
-Get the DISTINCT clause.
+Generate the SQL query.
 
 ```php
-$distinct = $builder->getDistinct();
+$query = $query->sql();
 ```
 
-**Get Group By**
+**Table**
 
-Get the GROUP BY fields.
+Set the table(s).
+
+- `$table` is an array or string representing the table(s).
+- `$overwrite` is a boolean indicating whether to overwrite existing tables, and will default to *false*.
 
 ```php
-$groupBy = $builder->getGroupBy();
+$query->table($table, $overwrite);
 ```
 
-**Get Having**
+Non-numeric array keys will be used as table aliases.
 
-Get the HAVING conditions.
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+### Delete
+
+The `\Fyre\DB\Queries\DeleteQuery` class extends the [*Query*](#queries) class, while providing additional methods for executing DELETE queries.
 
 ```php
-$having = $builder->getHaving();
+$connection
+    ->delete($alias)
+    ->from($table)
+    ->where($conditions)
+    ->execute();
+```
+
+**Alias**
+
+Set the delete alias(es).
+
+- `$alias` is a string or array containing the table aliases to delete, and will default to *null*.
+- `$overwrite` is a boolean indicating whether to overwrite existing aliases, and will default to *false*.
+
+
+```php
+$query->alias($alias, $overwrite);
+```
+
+**Epilog**
+
+Set the epilog.
+
+- `$epilog` is a string representing the epilog for the query.
+
+```php
+$query->epilog($epilog);
+```
+
+**From**
+
+Set the FROM table(s).
+
+- `$table` is an array or string representing the table(s).
+- `$overwrite` is a boolean indicating whether to overwrite existing tables, and will default to *false*.
+
+```php
+$query->from($table, $overwrite);
+```
+
+Non-numeric array keys will be used as table aliases.
+
+**Get Alias**
+
+Get the delete alias(es).
+
+```php
+$alias = $query->getAlias();
+```
+
+**Get Epilog**
+
+Get the epilog.
+
+```php
+$epilog = $query->getEpilog();
+```
+
+**Get From**
+
+Get the FROM table(s).
+
+```php
+$table = $query->getFrom();
 ```
 
 **Get Join**
@@ -410,7 +543,7 @@ $having = $builder->getHaving();
 Get the JOIN tables.
 
 ```php
-$joins = $builder->getJoin();
+$joins = $query->getJoin();
 ```
 
 **Get Limit**
@@ -418,15 +551,7 @@ $joins = $builder->getJoin();
 Get the LIMIT clause.
 
 ```php
-$limit = $builder->getLimit();
-```
-
-**Get Offset**
-
-Get the OFFSET clause.
-
-```php
-$offset = $builder->getOffset();
+$limit = $query->getLimit();
 ```
 
 **Get Order By**
@@ -434,31 +559,7 @@ $offset = $builder->getOffset();
 Get the ORDER BY fields.
 
 ```php
-$orderBy = $builder->getOrderBy();
-```
-
-**Get Select**
-
-Get the SELECT fields.
-
-```php
-$fields = $builder->getSelect();
-```
-
-**Get Table**
-
-Get the tables.
-
-```php
-$tables = $builder->getTable();
-```
-
-**Get Union**
-
-Get the UNION queries.
-
-```php
-$unions = $builder->getUnion();
+$orderBy = $query->getOrderBy();
 ```
 
 **Get Where**
@@ -466,7 +567,7 @@ $unions = $builder->getUnion();
 Get the WHERE conditions.
 
 ```php
-$conditions = $builder->getWhere();
+$conditions = $query->getWhere();
 ```
 
 **Get With**
@@ -474,94 +575,7 @@ $conditions = $builder->getWhere();
 Get the WITH queries.
 
 ```php
-$with = $builder->getWith();
-```
-
-**Group By**
-
-Set the GROUP BY fields.
-
-- `$fields` is an array or string representing the fields to group by.
-- `$overwrite` is a boolean indicating whether to overwrite existing fields, and will default to *false*.
-
-```php
-$builder->groupBy($fields, $overwrite);
-```
-
-**Having**
-
-Set the HAVING conditions.
-
-- `$conditions` is an array or string representing the having conditions.
-- `$overwrite` is a boolean indicating whether to overwrite existing conditions, and will default to *false*.
-
-```php
-$builder->having($conditions, $overwrite);
-```
-
-Array conditions can contain:
-- Literal values with numeric keys.
-- Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped automatically.
-- Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
-
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
-
-**Insert**
-
-Set query as an INSERT.
-
-- `$data` is an array of values to insert.
-- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
-
-```php
-$builder->insert($data, $overwrite);
-```
-
-Array keys will be used for the column names, and the values will be escaped automatically.
-
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
-
-**Insert Batch**
-
-Set query as a batch INSERT.
-
-- `$data` is a 2-dimensional array of values to insert.
-- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
-
-```php
-$builder->insertBatch($data, $overwrite);
-```
-
-Array keys will be used for the column names, and the values will be escaped automatically.
-
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
-
-**Insert From**
-
-Set query as an INSERT from another query.
-
-- `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
-- `$columns` is an array of column names.
-
-```php
-$builder->insertFrom($query, $columns);
-```
-
-**Intersect**
-
-Add an INTERSECT query.
-
-- `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
-- `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
-
-```php
-$builder->intersect($query, $overwrite);
+$with = $query->getWith();
 ```
 
 **Join**
@@ -572,7 +586,490 @@ Set the JOIN tables.
 - `$overwrite` is a boolean indicating whether to overwrite existing joins, and will default to *false*.
 
 ```php
-$builder->join($joins, $overwrite);
+$query->join($joins, $overwrite);
+```
+
+Each join array can contain a `table`, `alias`, `type` and an array of `conditions`. If the `type` is not specified it will default to INNER.
+
+**Limit**
+
+Set the LIMIT clause.
+
+- `$limit` is a number indicating the query limit.
+
+```php
+$query->limit($limit);
+```
+
+**Order By**
+
+Set the ORDER BY fields.
+
+- `$fields` is an array or string representing the fields to order by.
+- `$overwrite` is a boolean indicating whether to overwrite existing fields, and will default to *false*.
+
+```php
+$query->orderBy($fields, $overwrite);
+```
+
+**Where**
+
+Set the WHERE conditions.
+
+- `$conditions` is an array or string representing the where conditions.
+- `$overwrite` is a boolean indicating whether to overwrite existing conditions, and will default to *false*.
+
+```php
+$query->where($conditions, $overwrite);
+```
+
+Array conditions can contain:
+- Literal values with numeric keys.
+- Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped.
+- Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+**With**
+
+Set the WITH clause.
+
+- `$with` is an array of common table expressions.
+- `$overwrite` is a boolean indicating whether to overwrite existing expressions, and will default to *false*.
+
+```php
+$query->with($with, $overwrite);
+```
+
+Array keys will be used as table aliases.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+**With Recursive**
+
+Set the WITH RECURSIVE clause.
+
+- `$with` is an array of expressions.
+- `$overwrite` is a boolean indicating whether to overwrite existing common table expressions, and will default to *false*.
+
+```php
+$query->withRecursive($with, $overwrite);
+```
+
+Array keys will be used as table aliases.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+### Insert
+
+The `\Fyre\DB\Queries\InsertQuery` class extends the [*Query*](#queries) class, while providing additional methods for executing INSERT queries.
+
+```php
+$connection
+    ->insert()
+    ->into($table)
+    ->values($values)
+    ->execute();
+```
+
+**Epilog**
+
+Set the epilog.
+
+- `$epilog` is a string representing the epilog for the query.
+
+```php
+$query->epilog($epilog);
+```
+
+**Get Epilog**
+
+Get the epilog.
+
+```php
+$epilog = $query->getEpilog();
+```
+
+**Get Into**
+
+Get the INTO table.
+
+```php
+$table = $query->getInto();
+```
+
+**Get Values**
+
+Get the REPLACE data.
+
+```php
+$values = $query->getValues();
+```
+
+**Into**
+
+Set the INTO table.
+
+- `$table` is an string representing the table.
+
+```php
+$query->into($table);
+```
+
+**Values**
+
+- `$values` is a 2-dimensional array of values to insert.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
+
+```php
+$query->values($values, $overwrite);
+```
+
+Array keys will be used for the column names, and the values will be escaped automatically.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+### Insert From
+
+The `\Fyre\DB\Queries\InsertFromQuery` class extends the [*Query*](#queries) class, while providing additional methods for executing INSERT queries from SELECT queries.
+
+```php
+$connection
+    ->insertFrom($from, $columns)
+    ->into($table)
+    ->execute();
+```
+
+**Epilog**
+
+Set the epilog.
+
+- `$epilog` is a string representing the epilog for the query.
+
+```php
+$query->epilog($epilog);
+```
+
+**Get Epilog**
+
+Get the epilog.
+
+```php
+$epilog = $query->getEpilog();
+```
+
+**Get Into**
+
+Get the INTO table.
+
+```php
+$table = $query->getInto();
+```
+
+**Into**
+
+Set the INTO table.
+
+- `$table` is an string representing the table.
+
+```php
+$query->into($table);
+```
+
+### Replace
+
+The `\Fyre\DB\Queries\ReplaceQuery` class extends the [*Query*](#queries) class, while providing additional methods for executing REPLACE queries.
+
+```php
+$connection
+    ->replace()
+    ->into($table)
+    ->values($values)
+    ->execute();
+```
+
+**Epilog**
+
+Set the epilog.
+
+- `$epilog` is a string representing the epilog for the query.
+
+```php
+$query->epilog($epilog);
+```
+
+**Get Epilog**
+
+Get the epilog.
+
+```php
+$epilog = $query->getEpilog();
+```
+
+**Get Into**
+
+Get the INTO table.
+
+```php
+$table = $query->getInto();
+```
+
+**Get Values**
+
+Get the REPLACE data.
+
+```php
+$values = $query->getValues();
+```
+
+**Into**
+
+Set the INTO table.
+
+- `$table` is an string representing the table.
+
+```php
+$query->into($table);
+```
+
+**Values**
+
+- `$values` is a 2-dimensional array of values to insert.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
+
+```php
+$query->values($values, $overwrite);
+```
+
+Array keys will be used for the column names, and the values will be escaped automatically.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+### Select
+
+The `\Fyre\DB\Queries\SelectQuery` class extends the [*Query*](#queries) class, while providing additional methods for executing SELECT queries.
+
+```php
+$results = $connection
+    ->select($fields)
+    ->from($table)
+    ->where($conditions)
+    ->execute();
+```
+
+**Distinct**
+
+Set the DISTINCT clause.
+
+- `$distinct` is a boolean indicating whether to set the query as DISTINCT, and will default to *true*.
+
+```php
+$query->distinct($distinct);
+```
+
+**Epilog**
+
+Set the epilog.
+
+- `$epilog` is a string representing the epilog for the query.
+
+```php
+$query->epilog($epilog);
+```
+
+**Except**
+
+Add an EXCEPT query.
+
+- `$union` is a *Closure*, *SelectQuery*, *QueryLiteral* or string representing the query.
+- `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
+
+```php
+$query->except($union, $overwrite);
+```
+
+**From**
+
+Set the FROM table(s).
+
+- `$table` is an array or string representing the table(s).
+- `$overwrite` is a boolean indicating whether to overwrite existing tables, and will default to *false*.
+
+```php
+$query->from($table, $overwrite);
+```
+
+Non-numeric array keys will be used as table aliases.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+**Get Distinct**
+
+Get the DISTINCT clause.
+
+```php
+$distinct = $query->getDistinct();
+```
+
+**Get Epilog**
+
+Get the epilog.
+
+```php
+$epilog = $query->getEpilog();
+```
+
+**Get Group By**
+
+Get the GROUP BY fields.
+
+```php
+$groupBy = $query->getGroupBy();
+```
+
+**Get From**
+
+Get the FROM table(s).
+
+```php
+$table = $query->getFrom();
+```
+
+**Get Having**
+
+Get the HAVING conditions.
+
+```php
+$having = $query->getHaving();
+```
+
+**Get Join**
+
+Get the JOIN tables.
+
+```php
+$joins = $query->getJoin();
+```
+
+**Get Limit**
+
+Get the LIMIT clause.
+
+```php
+$limit = $query->getLimit();
+```
+
+**Get Offset**
+
+Get the OFFSET clause.
+
+```php
+$offset = $query->getOffset();
+```
+
+**Get Order By**
+
+Get the ORDER BY fields.
+
+```php
+$orderBy = $query->getOrderBy();
+```
+
+**Get Select**
+
+Get the SELECT fields.
+
+```php
+$fields = $query->getSelect();
+```
+
+**Get Union**
+
+Get the UNION queries.
+
+```php
+$unions = $query->getUnion();
+```
+
+**Get Where**
+
+Get the WHERE conditions.
+
+```php
+$conditions = $query->getWhere();
+```
+
+**Get With**
+
+Get the WITH queries.
+
+```php
+$with = $query->getWith();
+```
+
+**Group By**
+
+Set the GROUP BY fields.
+
+- `$fields` is an array or string representing the fields to group by.
+- `$overwrite` is a boolean indicating whether to overwrite existing fields, and will default to *false*.
+
+```php
+$query->groupBy($fields, $overwrite);
+```
+
+**Having**
+
+Set the HAVING conditions.
+
+- `$conditions` is an array or string representing the having conditions.
+- `$overwrite` is a boolean indicating whether to overwrite existing conditions, and will default to *false*.
+
+```php
+$query->having($conditions, $overwrite);
+```
+
+Array conditions can contain:
+- Literal values with numeric keys.
+- Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped automatically.
+- Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+**Intersect**
+
+Add an INTERSECT query.
+
+- `$union` is a *Closure*, *SelectQuery*, *QueryLiteral* or string representing the query.
+- `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
+
+```php
+$query->intersect($union, $overwrite);
+```
+
+**Join**
+
+Set the JOIN tables.
+
+- `$joins` is a 2-dimensional array of joins.
+- `$overwrite` is a boolean indicating whether to overwrite existing joins, and will default to *false*.
+
+```php
+$query->join($joins, $overwrite);
 ```
 
 Each join array can contain a `table`, `alias`, `type` and an array of `conditions`. If the `type` is not specified it will default to INNER.
@@ -585,17 +1082,7 @@ Set the LIMIT and OFFSET clauses.
 - `$offset` is a number indicating the query offset.
 
 ```php
-$builder->limit($limit, $offset);
-```
-
-**Literal**
-
-Create a *QueryLiteral*.
-
-- `$string` is a string representing the literal string.
-
-```php
-$literal = $builder->literal($string);
+$query->limit($limit, $offset);
 ```
 
 **Offset**
@@ -605,7 +1092,7 @@ Set the OFFSET clause.
 - `$offset` is a number indicating the query offset.
 
 ```php
-$builder->offset($offset);
+$query->offset($offset);
 ```
 
 **Order By**
@@ -616,140 +1103,46 @@ Set the ORDER BY fields.
 - `$overwrite` is a boolean indicating whether to overwrite existing fields, and will default to *false*.
 
 ```php
-$builder->orderBy($fields, $overwrite);
+$query->orderBy($fields, $overwrite);
 ```
-
-**Replace**
-
-Set query as a REPLACE.
-
-- `$data` is an array of values to replace.
-- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
-
-```php
-$builder->replace($data, $overwrite);
-```
-
-Array keys will be used for the column names, and the values will be escaped automatically.
-
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
-
-**Replace Batch**
-
-Set query as a batch REPLACE.
-
-- `$data` is a 2-dimensional array of values to replace.
-- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
-
-```php
-$builder->replaceBatch($data, $overwrite);
-```
-
-Array keys will be used for the column names, and the values will be escaped automatically.
-
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
 
 **Select**
 
 Set the SELECT fields.
 
-- `$fields` is an array or string representing the fields to select.
+- `$fields` is an array or string representing the fields to select, and will default to "*".
 - `$overwrite` is a boolean indicating whether to overwrite existing fields, and will default to *false*.
 
 ```php
-$builder->select($fields, $overwrite);
+$query->select($fields, $overwrite);
 ```
 
 Non-numeric array keys will be used as field aliases.
 
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
-
-**Sql**
-
-Generate the SQL query.
-
-```php
-$query = $builder->sql();
-```
-
-**Table**
-
-Set the table(s).
-
-- `$tables` is an array or string representing the tables.
-- `$overwrite` is a boolean indicating whether to overwrite existing tables, and will default to *false*.
-
-```php
-$builder->table($tables, $overwrite);
-```
-
-Non-numeric array keys will be used as table aliases.
-
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
-
-**Update**
-
-Set query as an UPDATE.
-
-- `$data` is an array of values to update.
-- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
-
-```php
-$builder->update($data, $overwrite);
-```
-
-Array keys will be used for the column names, and the values will be escaped automatically.
-
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
-
-**Update Batch**
-
-Set query as a batch UPDATE.
-
-- `$data` is a 2-dimensional array of values to update.
-- `$updateKeys` is a string or array containing the keys to use for updating.
-- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
-
-```php
-$builder->updateBatch($data, $updateKeys, $overwrite);
-```
-
-Array keys will be used for the column names, and the values will be escaped automatically.
-
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
 
 **Union**
 
 Add a UNION DISTINCT query.
 
-- `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
+- `$union` is a *Closure*, *SelectQuery*, *QueryLiteral* or string representing the query.
 - `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
 
 ```php
-$builder->union($query, $overwrite);
+$query->union($union, $overwrite);
 ```
 
 **Union All**
 
 Add a UNION ALL query.
 
-- `$query` is a *Closure*, *QueryBuilder*, *QueryLiteral* or string representing the query.
+- `$union` is a *Closure*, *SelectQuery*, *QueryLiteral* or string representing the query.
 - `$overwrite` is a boolean indicating whether to overwrite existing unions, and will default to *false*.
 
 ```php
-$builder->unionAll($query, $overwrite);
+$query->unionAll($union, $overwrite);
 ```
 
 **Where**
@@ -760,7 +1153,7 @@ Set the WHERE conditions.
 - `$overwrite` is a boolean indicating whether to overwrite existing conditions, and will default to *false*.
 
 ```php
-$builder->where($conditions, $overwrite);
+$query->where($conditions, $overwrite);
 ```
 
 Array conditions can contain:
@@ -768,9 +1161,9 @@ Array conditions can contain:
 - Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped.
 - Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
 
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
 
 **With**
 
@@ -780,14 +1173,14 @@ Set the WITH clause.
 - `$overwrite` is a boolean indicating whether to overwrite existing expressions, and will default to *false*.
 
 ```php
-$builder->with($with, $overwrite);
+$query->with($with, $overwrite);
 ```
 
 Array keys will be used as table aliases.
 
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
 
 **With Recursive**
 
@@ -797,14 +1190,211 @@ Set the WITH RECURSIVE clause.
 - `$overwrite` is a boolean indicating whether to overwrite existing common table expressions, and will default to *false*.
 
 ```php
-$builder->withRecursive($with, $overwrite);
+$query->withRecursive($with, $overwrite);
 ```
 
 Array keys will be used as table aliases.
 
-If a *QueryBuilder* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where a new *QueryBuilder* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+### Update
+
+The `\Fyre\DB\Queries\UpdateQuery` class extends the [*Query*](#queries) class, while providing additional methods for executing UPDATE queries.
+
+```php
+$connection
+    ->update($table)
+    ->set($data)
+    ->where($conditions)
+    ->execute();
+```
+
+**Epilog**
+
+Set the epilog.
+
+- `$epilog` is a string representing the epilog for the query.
+
+```php
+$query->epilog($epilog);
+```
+
+**Get Data**
+
+Get the UPDATE data.
+
+```php
+$data = $query->getData();
+```
+
+**Get Epilog**
+
+Get the epilog.
+
+```php
+$epilog = $query->getEpilog();
+```
+
+**Get Join**
+
+Get the JOIN tables.
+
+```php
+$joins = $query->getJoin();
+```
+
+**Get Where**
+
+Get the WHERE conditions.
+
+```php
+$conditions = $query->getWhere();
+```
+
+**Get With**
+
+Get the WITH queries.
+
+```php
+$with = $query->getWith();
+```
+
+**Join**
+
+Set the JOIN tables.
+
+- `$joins` is a 2-dimensional array of joins.
+- `$overwrite` is a boolean indicating whether to overwrite existing joins, and will default to *false*.
+
+```php
+$query->join($joins, $overwrite);
+```
+
+Each join array can contain a `table`, `alias`, `type` and an array of `conditions`. If the `type` is not specified it will default to INNER.
+
+**Set**
+
+- `$data` is an array of values to update.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
+
+```php
+$query->set($data, $overwrite);
+```
+
+Array keys will be used for the column names, and the values will be escaped automatically.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+**Where**
+
+Set the WHERE conditions.
+
+- `$conditions` is an array or string representing the where conditions.
+- `$overwrite` is a boolean indicating whether to overwrite existing conditions, and will default to *false*.
+
+```php
+$query->where($conditions, $overwrite);
+```
+
+Array conditions can contain:
+- Literal values with numeric keys.
+- Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped.
+- Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+**With**
+
+Set the WITH clause.
+
+- `$with` is an array of common table expressions.
+- `$overwrite` is a boolean indicating whether to overwrite existing expressions, and will default to *false*.
+
+```php
+$query->with($with, $overwrite);
+```
+
+Array keys will be used as table aliases.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+**With Recursive**
+
+Set the WITH RECURSIVE clause.
+
+- `$with` is an array of expressions.
+- `$overwrite` is a boolean indicating whether to overwrite existing common table expressions, and will default to *false*.
+
+```php
+$query->withRecursive($with, $overwrite);
+```
+
+Array keys will be used as table aliases.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+
+### Update Batch
+
+The `\Fyre\DB\Queries\UpdateBatchQuery` class extends the [*Query*](#queries) class, while providing additional methods for executing batch UPDATE queries.
+
+```php
+$connection
+    ->updateBatch($table)
+    ->set($data, $keys)
+    ->execute();
+```
+
+**Epilog**
+
+Set the epilog.
+
+- `$epilog` is a string representing the epilog for the query.
+
+```php
+$query->epilog($epilog);
+```
+
+**Get Data**
+
+Get the UPDATE data.
+
+```php
+$data = $query->getData();
+```
+
+**Get Epilog**
+
+Get the epilog.
+
+```php
+$epilog = $query->getEpilog();
+```
+
+**Set**
+
+- `$data` is a 2-dimensional array of values to update.
+- `$keys` is a string or array containing the keys to use for updating.
+- `$overwrite` is a boolean indicating whether to overwrite existing data, and will default to *false*.
+
+```php
+$query->set($data, $keys, $overwrite);
+```
+
+Array keys will be used for the column names, and the values will be escaped automatically.
+
+If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
+
+A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
 
 
 ## Results

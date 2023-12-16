@@ -1,10 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\QueryBuilder;
+namespace Tests\Query;
 
 trait GetTestTrait
 {
+
+    public function testGetAlias(): void
+    {
+        $this->assertSame(
+            [
+                'alt'
+            ],
+            $this->db->delete()
+                ->alias('alt')
+                ->getAlias()
+        );
+    }
 
     public function testGetData(): void
     {
@@ -12,8 +24,8 @@ trait GetTestTrait
             [
                 'value' => 1
             ],
-            $this->db->builder()
-                ->insert([
+            $this->db->update()
+                ->set([
                     'value' => 1
                 ])
                 ->getData()
@@ -24,9 +36,31 @@ trait GetTestTrait
     {
         $this->assertSame(
             true,
-            $this->db->builder()
+            $this->db->select()
                 ->distinct()
                 ->getDistinct()
+        );
+    }
+
+    public function testGetEpilog(): void
+    {
+        $this->assertSame(
+            'FOR UPDATE',
+            $this->db->select()
+                ->epilog('FOR UPDATE')
+                ->getEpilog()
+        );
+    }
+
+    public function testGetFrom(): void
+    {
+        $this->assertSame(
+            [
+                'test'
+            ],
+            $this->db->select()
+                ->from('test')
+                ->getFrom()
         );
     }
 
@@ -36,7 +70,7 @@ trait GetTestTrait
             [
                 'value'
             ],
-            $this->db->builder()
+            $this->db->select()
                 ->groupBy([
                     'value'
                 ])
@@ -50,11 +84,21 @@ trait GetTestTrait
             [
                 'value' => 1
             ],
-            $this->db->builder()
+            $this->db->select()
                 ->having([
                     'value' => 1
                 ])
                 ->getHaving()
+        );
+    }
+
+    public function testGetInto(): void
+    {
+        $this->assertSame(
+            'test',
+            $this->db->insert()
+                ->into('test')
+                ->getInto()
         );
     }
 
@@ -67,7 +111,7 @@ trait GetTestTrait
                     'using' => 'id'
                 ]
             ],
-            $this->db->builder()
+            $this->db->select()
                 ->join([
                     [
                         'table' => 'test2',
@@ -82,7 +126,7 @@ trait GetTestTrait
     {
         $this->assertSame(
             1,
-            $this->db->builder()
+            $this->db->select()
                 ->limit(1)
                 ->getLimit()
         );
@@ -92,7 +136,7 @@ trait GetTestTrait
     {
         $this->assertSame(
             1,
-            $this->db->builder()
+            $this->db->select()
                 ->offset(1)
                 ->getOffset()
         );
@@ -104,7 +148,7 @@ trait GetTestTrait
             [
                 'value' => 'ASC'
             ],
-            $this->db->builder()
+            $this->db->select()
                 ->orderBy([
                     'value' => 'ASC'
                 ])
@@ -118,11 +162,10 @@ trait GetTestTrait
             [
                 'value'
             ],
-            $this->db->builder()
-                ->select([
-                    'value'
-                ])
-                ->getSelect()
+            $this->db->select([
+                'value'
+            ])
+            ->getSelect()
         );
     }
 
@@ -132,8 +175,8 @@ trait GetTestTrait
             [
                 'value'
             ],
-            $this->db->builder()
-                ->table([
+            $this->db->select()
+                ->from([
                     'value'
                 ])
                 ->getTable()
@@ -142,9 +185,8 @@ trait GetTestTrait
 
     public function testGetUnion(): void
     {
-        $query = $this->db->builder()
-            ->table('test')
-            ->select();
+        $query = $this->db->select()
+            ->from('test');
 
         $this->assertSame(
             [
@@ -153,9 +195,27 @@ trait GetTestTrait
                     'query' => $query
                 ]
             ],
-            $this->db->builder()
+            $this->db->select()
                 ->union($query)
                 ->getUnion()
+        );
+    }
+
+    public function testGetValues(): void
+    {
+        $this->assertSame(
+            [
+                [
+                    'value' => 1
+                ]
+            ],
+            $this->db->insert()
+                ->values([
+                    [
+                        'value' => 1
+                    ]
+                ])
+                ->getValues()
         );
     }
 
@@ -165,7 +225,7 @@ trait GetTestTrait
             [
                 'value' => 1
             ],
-            $this->db->builder()
+            $this->db->select()
                 ->where([
                     'value' => 1
                 ])
@@ -175,9 +235,8 @@ trait GetTestTrait
 
     public function testGetWith(): void
     {
-        $query = $this->db->builder()
-            ->table('test')
-            ->select();
+        $query = $this->db->select()
+            ->from('test');
 
         $this->assertSame(
             [
@@ -188,7 +247,7 @@ trait GetTestTrait
                     'recursive' => false
                 ]
             ],
-            $this->db->builder()
+            $this->db->select()
                 ->with([
                     'alt' => $query
                 ])

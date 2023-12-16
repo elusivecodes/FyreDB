@@ -8,17 +8,18 @@ trait DeleteTestTrait
 
     public function testDelete(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insert([
-                'name' => 'Test'
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test'
+                ]
             ])
             ->execute();
 
         $this->assertTrue(
-            $this->db->builder()
-                ->table('test')
-                ->delete()
+            $this->db->delete()
+                ->from('test')
                 ->where([
                     'id' => 1
                 ])
@@ -27,9 +28,8 @@ trait DeleteTestTrait
 
         $this->assertSame(
             [],
-            $this->db->builder()
-                ->table('test')
-                ->select()
+            $this->db->select()
+                ->from('test')
                 ->execute()
                 ->all()
         );
@@ -37,9 +37,9 @@ trait DeleteTestTrait
 
     public function testDeleteAffectedRows(): void
     {
-        $this->db->builder()
-            ->table('test')
-            ->insertBatch([
+        $this->db->insert()
+            ->into('test')
+            ->values([
                 [
                     'name' => 'Test 1'
                 ],
@@ -49,9 +49,8 @@ trait DeleteTestTrait
             ])
             ->execute();
 
-        $this->db->builder()
-            ->table('test')
-            ->delete()
+        $this->db->delete()
+            ->from('test')
             ->execute();
 
         $this->assertSame(
