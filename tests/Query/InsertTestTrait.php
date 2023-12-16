@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Query;
 
+use Fyre\DB\Exceptions\DbException;
+
 trait InsertTestTrait
 {
 
@@ -151,6 +153,38 @@ trait InsertTestTrait
             2,
             $this->db->affectedRows()
         );
+    }
+
+    public function testInsertMultipleTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->insert()
+            ->table([
+                'alt' => 'test',
+                'alt2' => 'test2'
+            ]);
+    }
+
+    public function testInsertVirtualTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->insert()
+            ->table([
+                'alt' => $this->db->select()
+                    ->from('test')
+            ]);
+    }
+
+    public function testInsertTableAliases(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->insert()
+            ->table([
+                'alt' => 'test'
+            ]);
     }
 
 }

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Query;
 
+use Fyre\DB\Exceptions\DbException;
+
 trait DeleteTestTrait
 {
 
@@ -57,6 +59,17 @@ trait DeleteTestTrait
             2,
             $this->db->affectedRows()
         );
+    }
+
+    public function testDeleteVirtualTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->delete()
+            ->from([
+                'alt' => $this->db->select()
+                    ->from('test')
+            ]);
     }
 
 }

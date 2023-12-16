@@ -6,7 +6,6 @@ namespace Fyre\DB\Queries;
 use Fyre\DB\Queries\Traits\EpilogTrait;
 use Fyre\DB\Queries\Traits\JoinTrait;
 use Fyre\DB\Queries\Traits\WhereTrait;
-use Fyre\DB\Queries\Traits\WithTrait;
 use Fyre\DB\Query;
 use Fyre\DB\ValueBinder;
 
@@ -17,13 +16,13 @@ class UpdateQuery extends Query
 {
 
     protected static bool $multipleTables = true;
+    protected static bool $tableAliases = true;
 
     protected array $data = [];
 
     use EpilogTrait;
     use JoinTrait;
     use WhereTrait;
-    use WithTrait;
 
     /**
      * Get the data.
@@ -61,8 +60,7 @@ class UpdateQuery extends Query
     {
         $generator = $this->connection->generator();
 
-        $query = $generator->buildWith($this->with);
-        $query .= $generator->buildUpdate($this->table, $this->data, $binder);
+        $query = $generator->buildUpdate($this->table, $this->data, $binder);
         $query .= $generator->buildJoin($this->joins, $binder);
         $query .= $generator->buildWhere($this->conditions, $binder);
         $query .= $generator->buildEpilog($this->epilog);

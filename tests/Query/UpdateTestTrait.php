@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Query;
 
+use Fyre\DB\Exceptions\DbException;
+
 trait UpdateTestTrait
 {
 
@@ -151,6 +153,38 @@ trait UpdateTestTrait
             2,
             $this->db->affectedRows()
         );
+    }
+
+    public function testUpdateVirtualTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->update([
+            'alt' => $this->db->select()
+                ->from('test')
+        ]);
+    }
+
+    public function testUpdateBatchMultipleTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->updateBatch()
+            ->table([
+                'alt' => 'test',
+                'alt2' => 'test2'
+            ]);
+    }
+
+    public function testUpdateBatchVirtualTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->updateBatch()
+            ->table([
+                'alt' => $this->db->select()
+                    ->from('test')
+            ]);
     }
 
 }

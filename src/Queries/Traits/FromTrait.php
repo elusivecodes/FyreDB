@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Fyre\DB\Queries\Traits;
 
-use function array_merge;
-
 /**
  * FromTrait
  */
@@ -13,11 +11,11 @@ trait FromTrait
 
     /**
      * Get the FROM clause.
-     * @return array The table.
+     * @return string|array|null The table.
      */
-    public function getFrom(): array
+    public function getFrom(): string|array|null
     {
-        return $this->table;
+        return $this->getTable();
     }
 
     /**
@@ -28,17 +26,7 @@ trait FromTrait
      */
     public function from(string|array $table, bool $overwrite = false): static
     {
-        $table = (array) $table;
-
-        if ($overwrite) {
-            $this->table = $table;
-        } else {
-            $this->table = array_merge($this->table, $table);
-        }
-
-        $this->dirty();
-
-        return $this;
+        return $this->table($table, $overwrite);
     }
 
 }

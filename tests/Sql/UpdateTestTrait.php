@@ -199,23 +199,4 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateWith(): void
-    {
-        $query = $this->db->select()
-            ->from('test');
-
-        $this->assertSame(
-            'WITH alt AS (SELECT * FROM test) UPDATE alt SET value = 1',
-            $this->db->update()
-                ->with([
-                    'alt' => $query
-                ])
-                ->table('alt')
-                ->set([
-                    'value' => 1
-                ])
-                ->sql()
-        );
-    }
-
 }

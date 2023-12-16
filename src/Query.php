@@ -3,7 +3,12 @@ declare(strict_types=1);
 
 namespace Fyre\DB;
 
+use Fyre\DB\Exceptions\DbException;
+
+use function array_is_list;
 use function array_merge;
+use function count;
+use function is_string;
 
 /**
  * Query
@@ -12,6 +17,8 @@ abstract class Query
 {
 
     protected static bool $multipleTables = false;
+    protected static bool $virtualTables = false;
+    protected static bool $tableAliases = false;
 
     protected Connection $connection;
 
@@ -77,11 +84,15 @@ abstract class Query
 
     /**
      * Get the table.
-     * @return array The table.
+     * @return string|array|null The table.
      */
-    public function getTable(): array
+    public function getTable(): string|array|null
     {
-        return $this->table;
+        if (static::$multipleTables) {
+            return $this->table;
+        }
+
+        return $this->table[0] ?? null;
     }
 
     /**
@@ -100,12 +111,26 @@ abstract class Query
     {
         $table = (array) $table;
 
-        if (!static::$multipleTables) {
-            $this->table = array_slice($table, 0, 1);
-        } else if ($overwrite) {
+        if (!static::$virtualTables) {
+            foreach ($table AS $test) {
+                if (!is_string($test)) {
+                    throw DbException::forVirtualTablesNotSupported();
+                }
+            }
+        }
+
+        if (!static::$tableAliases && !array_is_list($table)) {
+            throw DbException::forTableAliasesNotSupported();
+        }
+
+        if ($overwrite) {
             $this->table = $table;
         } else {
             $this->table = array_merge($this->table, $table);
+        }
+
+        if (!static::$multipleTables && count($table) > 1) {
+            throw DbException::forMultipleTablesNotSupported();
         }
 
         $this->dirty();

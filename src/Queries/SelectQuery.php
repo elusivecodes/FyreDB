@@ -26,6 +26,8 @@ class SelectQuery extends Query
 {
 
     protected static bool $multipleTables = true;
+    protected static bool $virtualTables = true;
+    protected static bool $tableAliases = true;
 
     use DistinctTrait;
     use EpilogTrait;

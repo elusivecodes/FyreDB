@@ -16,6 +16,8 @@ use function array_unique;
 class UpdateBatchQuery extends Query
 {
 
+    protected static bool $tableAliases = true;
+
     protected array $data = [];
     protected array $keys = [];
 

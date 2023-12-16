@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Query;
 
+use Fyre\DB\Exceptions\DbException;
+
 trait ReplaceTestTrait
 {
 
@@ -87,6 +89,38 @@ trait ReplaceTestTrait
                 ->execute()
                 ->all()
         );
+    }
+
+    public function testReplaceMultipleTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->replace()
+            ->table([
+                'alt' => 'test',
+                'alt2' => 'test2'
+            ]);
+    }
+
+    public function testReplaceVirtualTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->replace()
+            ->table([
+                'alt' => $this->db->select()
+                    ->from('test')
+            ]);
+    }
+
+    public function testReplaceTableAliases(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->replace()
+            ->table([
+                'alt' => 'test'
+            ]);
     }
 
 }

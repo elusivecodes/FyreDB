@@ -351,7 +351,7 @@ If the callback returns *false* or throws an *Exception* the transaction will be
 
 **Update**
 
-Create a [*UpdateQuery*](#update).
+Create an [*UpdateQuery*](#update).
 
 - `$table` is an array or string representing the table(s).
 
@@ -363,7 +363,7 @@ Non-numeric array keys will be used as table aliases.
 
 **Update Batch**
 
-Create a [*UpdateBatchQuery*](#update-batch).
+Create an [*UpdateBatchQuery*](#update-batch).
 
 - `$table` is an array or string representing the table(s).
 
@@ -416,6 +416,8 @@ $connection = ConnectionManager::use($key);
 
 ## Queries
 
+The `\Fyre\DB\Query` class provides base methods related to building queries, and is extended by the query type classes below.
+
 **Execute**
 
 Execute the query.
@@ -447,7 +449,7 @@ $table = $query->getTable();
 Generate the SQL query.
 
 ```php
-$query = $query->sql();
+$sql = $query->sql();
 ```
 
 **Table**
@@ -570,14 +572,6 @@ Get the WHERE conditions.
 $conditions = $query->getWhere();
 ```
 
-**Get With**
-
-Get the WITH queries.
-
-```php
-$with = $query->getWith();
-```
-
 **Join**
 
 Set the JOIN tables.
@@ -627,40 +621,6 @@ Array conditions can contain:
 - Literal values with numeric keys.
 - Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped.
 - Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
-
-If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
-
-**With**
-
-Set the WITH clause.
-
-- `$with` is an array of common table expressions.
-- `$overwrite` is a boolean indicating whether to overwrite existing expressions, and will default to *false*.
-
-```php
-$query->with($with, $overwrite);
-```
-
-Array keys will be used as table aliases.
-
-If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
-
-**With Recursive**
-
-Set the WITH RECURSIVE clause.
-
-- `$with` is an array of expressions.
-- `$overwrite` is a boolean indicating whether to overwrite existing common table expressions, and will default to *false*.
-
-```php
-$query->withRecursive($with, $overwrite);
-```
-
-Array keys will be used as table aliases.
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
@@ -716,7 +676,7 @@ $values = $query->getValues();
 
 Set the INTO table.
 
-- `$table` is an string representing the table.
+- `$table` is a string representing the table.
 
 ```php
 $query->into($table);
@@ -778,7 +738,7 @@ $table = $query->getInto();
 
 Set the INTO table.
 
-- `$table` is an string representing the table.
+- `$table` is a string representing the table.
 
 ```php
 $query->into($table);
@@ -834,7 +794,7 @@ $values = $query->getValues();
 
 Set the INTO table.
 
-- `$table` is an string representing the table.
+- `$table` is a string representing the table.
 
 ```php
 $query->into($table);
@@ -1186,8 +1146,8 @@ A *Closure* can also be supplied as an array value, where the *Connection* will 
 
 Set the WITH RECURSIVE clause.
 
-- `$with` is an array of expressions.
-- `$overwrite` is a boolean indicating whether to overwrite existing common table expressions, and will default to *false*.
+- `$with` is an array of common table expressions.
+- `$overwrite` is a boolean indicating whether to overwrite existing expressions, and will default to *false*.
 
 ```php
 $query->withRecursive($with, $overwrite);
@@ -1253,14 +1213,6 @@ Get the WHERE conditions.
 $conditions = $query->getWhere();
 ```
 
-**Get With**
-
-Get the WITH queries.
-
-```php
-$with = $query->getWith();
-```
-
 **Join**
 
 Set the JOIN tables.
@@ -1304,40 +1256,6 @@ Array conditions can contain:
 - Literal values with numeric keys.
 - Key/value pairs where the key is the field (and comparison operator) and the value(s) will be escaped.
 - Array values containing a group of conditions. These will be joined using the *AND* operator unless the array key is "*OR*" or "*NOT*".
-
-If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
-
-**With**
-
-Set the WITH clause.
-
-- `$with` is an array of common table expressions.
-- `$overwrite` is a boolean indicating whether to overwrite existing expressions, and will default to *false*.
-
-```php
-$query->with($with, $overwrite);
-```
-
-Array keys will be used as table aliases.
-
-If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
-
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
-
-**With Recursive**
-
-Set the WITH RECURSIVE clause.
-
-- `$with` is an array of expressions.
-- `$overwrite` is a boolean indicating whether to overwrite existing common table expressions, and will default to *false*.
-
-```php
-$query->withRecursive($with, $overwrite);
-```
-
-Array keys will be used as table aliases.
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 

@@ -217,20 +217,4 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteWith(): void
-    {
-        $query = $this->db->select()
-            ->from('test');
-
-        $this->assertSame(
-            'WITH alt AS (SELECT * FROM test) DELETE FROM alt',
-            $this->db->delete()
-                ->with([
-                    'alt' => $query
-                ])
-                ->from('alt')
-                ->sql()
-        );
-    }
-
 }

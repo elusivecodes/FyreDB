@@ -41,4 +41,18 @@ class DbException extends RuntimeException
         return new static('Database error: invalid join alias');
     }
 
+    public static function forMultipleTablesNotSupported(): static
+    {
+        return new static('Multiple tables are not supported for this query.');
+    }
+
+    public static function forTableAliasesNotSupported(): static
+    {
+        return new static('Table aliases are not supported for this query.');
+    }
+
+    public static function forVirtualTablesNotSupported(): static
+    {
+        return new static('Virtual tables are not supported for this query.');
+    }
 }

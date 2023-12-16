@@ -10,7 +10,6 @@ use Fyre\DB\Queries\Traits\JoinTrait;
 use Fyre\DB\Queries\Traits\LimitTrait;
 use Fyre\DB\Queries\Traits\OrderByTrait;
 use Fyre\DB\Queries\Traits\WhereTrait;
-use Fyre\DB\Queries\Traits\WithTrait;
 use Fyre\DB\Query;
 use Fyre\DB\ValueBinder;
 
@@ -24,6 +23,7 @@ class DeleteQuery extends Query
 {
 
     protected static bool $multipleTables = true;
+    protected static bool $tableAliases = true;
 
     protected array $alias = [];
 
@@ -33,7 +33,6 @@ class DeleteQuery extends Query
     use LimitTrait;
     use OrderByTrait;
     use WhereTrait;
-    use WithTrait;
 
     /**
      * New DeleteQuery constructor.
@@ -86,8 +85,7 @@ class DeleteQuery extends Query
     {
         $generator = $this->connection->generator();
 
-        $query = $generator->buildWith($this->with);
-        $query .= $generator->buildDelete($this->table, $this->alias);
+        $query = $generator->buildDelete($this->table, $this->alias);
         $query .= $generator->buildJoin($this->joins, $binder);
         $query .= $generator->buildWhere($this->conditions, $binder);
         $query .= $generator->buildOrderBy($this->orderBy);
