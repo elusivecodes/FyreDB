@@ -677,9 +677,10 @@ $values = $query->getValues();
 Set the INTO table.
 
 - `$table` is a string representing the table.
+- `$overwrite` is a boolean indicating whether to overwrite existing tables, and will default to *false*.
 
 ```php
-$query->into($table);
+$query->into($table, $overwrite);
 ```
 
 **Values**
@@ -739,9 +740,10 @@ $table = $query->getInto();
 Set the INTO table.
 
 - `$table` is a string representing the table.
+- `$overwrite` is a boolean indicating whether to overwrite existing tables, and will default to *false*.
 
 ```php
-$query->into($table);
+$query->into($table, $overwrite);
 ```
 
 ### Replace
@@ -795,9 +797,10 @@ $values = $query->getValues();
 Set the INTO table.
 
 - `$table` is a string representing the table.
+- `$overwrite` is a boolean indicating whether to overwrite existing tables, and will default to *false*.
 
 ```php
-$query->into($table);
+$query->into($table, $overwrite);
 ```
 
 **Values**

@@ -21,11 +21,12 @@ trait IntoTrait
     /**
      * Set the INTO clause.
      * @param string $table The table.
+     * @param bool $overwrite Whether to overwrite the existing table.
      * @return Query The Query.
      */
-    public function into(string $table): static
+    public function into(string $table, bool $overwrite = false): static
     {
-        return $this->table($table);
+        return $this->table($table, $overwrite);
     }
 
 }
