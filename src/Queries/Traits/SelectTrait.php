@@ -38,7 +38,6 @@ trait SelectTrait
             $this->fields = array_merge($this->fields, $fields);
         }
 
-        $this->action = 'select';
         $this->dirty();
 
         return $this;
