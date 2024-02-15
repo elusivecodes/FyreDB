@@ -37,7 +37,7 @@ class MySQLResultSet extends ResultSet
 
         $nativeType = $column['native_type'];
 
-        if ($nativeType === 'TINY' && $column['length'] === 1) {
+        if ($nativeType === 'TINY' && $column['len'] === 1) {
             return 'boolean';
         }
 
