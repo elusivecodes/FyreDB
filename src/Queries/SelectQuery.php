@@ -62,8 +62,8 @@ class SelectQuery extends Query
     {
         $generator = $this->connection->generator();
 
-        $query = $generator->buildWith($this->with);
-        $query .= $generator->buildSelect($this->table, $this->fields, $this->distinct);
+        $query = $generator->buildWith($this->with, $binder);
+        $query .= $generator->buildSelect($this->table, $this->fields, $this->distinct, $binder);
         $query .= $generator->buildJoin($this->joins, $binder);
         $query .= $generator->buildWhere($this->conditions, $binder);
 

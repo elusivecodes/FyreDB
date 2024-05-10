@@ -266,13 +266,14 @@ class QueryGenerator
      * @param array $tables The tables.
      * @param array $fields The fields.
      * @param bool $distinct Whether to use a DISTINCT clause.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildSelect(array $tables, array $fields, bool $distinct = false): string
+    public function buildSelect(array $tables, array $fields, bool $distinct = false, ValueBinder|null $binder = null): string
     {
         $fields = array_map(
-            function(mixed $key, mixed $value) {
-                $value = $this->parseExpression($value, quote: false);
+            function(mixed $key, mixed $value) use ($binder) {
+                $value = $this->parseExpression($value, $binder, false);
 
                 if (is_numeric($key)) {
                     return $value;
@@ -312,7 +313,7 @@ class QueryGenerator
         $data = array_map(
             function(mixed $field, mixed $value) use ($binder): string {
                 if (is_numeric($field)) {
-                    return $this->parseExpression($value, quote: false);
+                    return $this->parseExpression($value, $binder, false);
                 }
 
                 return $field.' = '.$this->parseExpression($value, $binder);
@@ -530,7 +531,7 @@ class QueryGenerator
                     $query .= $field.' '.$comparison.' ('.implode(', ', $value).')';
                 }
             } else if (is_numeric($field)) {
-                $query .= $this->parseExpression($value, quote: false);
+                $query .= $this->parseExpression($value, $binder, false);
             } else {
                 $field = trim($field);
 
@@ -589,7 +590,7 @@ class QueryGenerator
     protected function parseExpression(mixed $value, ValueBinder|null $binder = null, bool $quote = true): string
     {
         if ($value instanceof Closure) {
-            $value = $value($this->connection);
+            $value = $value($this->connection, $binder);
         }
 
         if ($value instanceof SelectQuery) {
@@ -612,17 +613,17 @@ class QueryGenerator
             $value = '1';
         }
 
+        if (!$quote) {
+            return (string) $value;
+        }
+
         if ($binder) {
             return $binder->bind($value);
         }
 
-        if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false) {
-            return (string) (float) $value;
-        }
-
         $value = (string) $value;
 
-        if (!$quote) {
+        if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false) {
             return $value;
         }
 
