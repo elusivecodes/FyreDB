@@ -20,7 +20,8 @@
         }
     },
     "require": {
-        "fyre/typeparser": "^2.0"
+        "fyre/typeparser": "^3.0",
+        "fyre/datetime": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^10"

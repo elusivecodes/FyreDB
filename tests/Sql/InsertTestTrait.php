@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Sql;
 
+use Fyre\DateTime\DateTime;
 use Fyre\DB\Connection;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\QueryLiteral;
@@ -100,6 +101,22 @@ trait InsertTestTrait
                         'value' => function(Connection $db): QueryLiteral {
                             return $db->literal('2 * 20');
                         }
+                    ]
+                ])
+                ->sql()
+        );
+    }
+
+    public function testInsertDateTime(): void
+    {
+        $this->assertSame(
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', \'2020-01-01 00:00:00\')',
+            $this->db->insert()
+                ->into('test')
+                ->values([
+                    [
+                        'name' => 'Test 1',
+                        'value' => DateTime::fromArray([2020, 1, 1])
                     ]
                 ])
                 ->sql()

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Sql;
 
+use Fyre\DateTime\DateTime;
 use Fyre\DB\Connection;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\QueryLiteral;
@@ -137,6 +138,22 @@ trait UpdateTestTrait
                     'value' => function(Connection $db): QueryLiteral {
                         return $db->literal('2 * 10');
                     }
+                ])
+                ->where([
+                    'id' => 1
+                ])
+                ->sql()
+        );
+    }
+
+    public function testUpdateDateTime(): void
+    {
+        $this->assertSame(
+            'UPDATE test SET name = \'Test\', value = \'2020-01-01 00:00:00\' WHERE id = 1',
+            $this->db->update('test')
+                ->set([
+                    'name' => 'Test',
+                    'value' => DateTime::fromArray([2020, 1, 1])
                 ])
                 ->where([
                     'id' => 1

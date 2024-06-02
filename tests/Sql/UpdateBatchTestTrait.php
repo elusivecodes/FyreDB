@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Sql;
 
+use Fyre\DateTime\DateTime;
 use Fyre\DB\Connection;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\QueryLiteral;
@@ -146,6 +147,27 @@ trait UpdateBatchTestTrait
                         'value' => function(Connection $db): QueryLiteral {
                             return $db->literal('2 * 20');
                         }
+                    ]
+                ], 'id')
+                ->sql()
+        );
+    }
+
+    public function testUpdateBatchDateTime(): void
+    {
+        $this->assertSame(
+            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN \'2020-01-01 00:00:00\' WHEN id = 2 THEN \'2021-01-01 00:00:00\' END WHERE id IN (1, 2)',
+            $this->db->updateBatch('test')
+                ->set([
+                    [
+                        'id' => 1,
+                        'name' => 'Test 1',
+                        'value' => DateTime::fromArray([2020, 1, 1])
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Test 2',
+                        'value' => DateTime::fromArray([2021, 1, 1])
                     ]
                 ], 'id')
                 ->sql()

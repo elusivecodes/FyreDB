@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\DB;
 
 use Closure;
+use Fyre\DateTime\DateTime;
 use Fyre\DB\Queries\SelectQuery;
 
 use const FILTER_VALIDATE_FLOAT;
@@ -599,6 +600,11 @@ class QueryGenerator
 
         if ($value instanceof QueryLiteral) {
             return (string) $value;
+        }
+
+        if ($value instanceof DateTime) {
+            $value = TypeParser::use('datetime')
+                ->toDatabase($value);
         }
 
         if ($value === null) {

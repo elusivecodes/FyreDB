@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Sql;
 
+use Fyre\DateTime\DateTime;
 use Fyre\DB\Connection;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\QueryLiteral;
@@ -364,6 +365,19 @@ trait WhereTestTrait
                     'value' => function(Connection $db): QueryLiteral {
                         return $db->literal('UPPER(test)');
                     }
+                ])
+                ->sql()
+        );
+    }
+
+    public function testWhereDateTime(): void
+    {
+        $this->assertSame(
+            'SELECT * FROM test WHERE value = \'2020-01-01 00:00:00\'',
+            $this->db->select()
+                ->from('test')
+                ->where([
+                    'value' => DateTime::fromArray([2020, 1, 1])
                 ])
                 ->sql()
         );

@@ -99,11 +99,13 @@ abstract class ResultSet implements Countable, Iterator
      */
     public function fetch(int $index = 0): array|null
     {
-        if ($index >= $this->count()) {
+        $count = $this->count();
+
+        if ($index >= $count) {
             return null;
         }
 
-        if ($index === $this->count() - 1) {
+        if ($index === $count - 1) {
             return $this->all()[$index];
         }
 

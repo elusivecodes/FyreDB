@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\Sql;
 
+use Fyre\DateTime\DateTime;
 use Fyre\DB\Connection;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\QueryLiteral;
@@ -646,6 +647,24 @@ trait JoinTestTrait
                             'test2.value' => function(Connection $db): QueryLiteral {
                                 return $db->literal('UPPER(test.test)');
                             }
+                        ]
+                    ]
+                ])
+                ->sql()
+        );
+    }
+
+    public function testJoinConditionsDateTime(): void
+    {
+        $this->assertSame(
+            'SELECT * FROM test INNER JOIN test2 ON test2.value = \'2020-01-01 00:00:00\'',
+            $this->db->select()
+                ->from('test')
+                ->join([
+                    [
+                        'table' => 'test2',
+                        'conditions' => [
+                            'test2.value' => DateTime::fromArray([2020, 1, 1])
                         ]
                     ]
                 ])

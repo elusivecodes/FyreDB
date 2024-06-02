@@ -335,7 +335,7 @@ Non-numeric array keys will be used as field aliases.
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 **Transactional**
 
@@ -467,7 +467,7 @@ Non-numeric array keys will be used as table aliases.
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection*.
 
 ### Delete
 
@@ -624,7 +624,7 @@ Array conditions can contain:
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 ### Insert
 
@@ -696,7 +696,7 @@ Array keys will be used for the column names, and the values will be escaped aut
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 ### Insert From
 
@@ -816,7 +816,7 @@ Array keys will be used for the column names, and the values will be escaped aut
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 ### Select
 
@@ -876,7 +876,7 @@ Non-numeric array keys will be used as table aliases.
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection*.
 
 **Get Distinct**
 
@@ -1011,7 +1011,7 @@ Array conditions can contain:
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 **Intersect**
 
@@ -1084,7 +1084,7 @@ Non-numeric array keys will be used as field aliases.
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 **Union**
 
@@ -1126,7 +1126,7 @@ Array conditions can contain:
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 **With**
 
@@ -1143,7 +1143,7 @@ Array keys will be used as table aliases.
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection*.
 
 **With Recursive**
 
@@ -1160,7 +1160,7 @@ Array keys will be used as table aliases.
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection*.
 
 ### Update
 
@@ -1242,7 +1242,7 @@ Array keys will be used for the column names, and the values will be escaped aut
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 **Where**
 
@@ -1262,7 +1262,7 @@ Array conditions can contain:
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 ### Update Batch
 
@@ -1315,7 +1315,7 @@ Array keys will be used for the column names, and the values will be escaped aut
 
 If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be converted to a string and not escaped.
 
-A *Closure* can also be supplied as an array value, where the *Connection* will be passed as the first argument.
+A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
 
 ## Results
