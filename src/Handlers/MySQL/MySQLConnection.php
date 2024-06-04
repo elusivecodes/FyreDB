@@ -7,6 +7,7 @@ use Fyre\DB\Connection;
 use Fyre\DB\Exceptions\DbException;
 use PDO;
 use PDOException;
+use RuntimeException;
 
 use function array_replace;
 use function class_exists;
