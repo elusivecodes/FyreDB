@@ -8,11 +8,11 @@ namespace Fyre\DB\Queries\Traits;
  */
 trait LimitTrait
 {
-
     protected int|null $limit = null;
 
     /**
      * Get the LIMIT clause.
+     *
      * @return int|null The LIMIT clause.
      */
     public function getLimit(): int|null
@@ -22,10 +22,11 @@ trait LimitTrait
 
     /**
      * Set the LIMIT clauses.
+     *
      * @param int|null $limit The limit.
      * @return Query The Query.
      */
-    public function limit(int|null $limit = null,): static
+    public function limit(int|null $limit = null): static
     {
         $this->limit = $limit;
 
@@ -33,5 +34,4 @@ trait LimitTrait
 
         return $this;
     }
-
 }

@@ -8,12 +8,13 @@ namespace Fyre\DB\Queries\Traits;
  */
 trait LimitOffsetTrait
 {
+    protected int|null $limit = null;
 
     protected int $offset = 0;
-    protected int|null $limit = null;
 
     /**
      * Get the LIMIT clause.
+     *
      * @return int|null The LIMIT clause.
      */
     public function getLimit(): int|null
@@ -23,6 +24,7 @@ trait LimitOffsetTrait
 
     /**
      * Get the OFFSET clause.
+     *
      * @return int The OFFSET clause.
      */
     public function getOffset(): int
@@ -32,6 +34,7 @@ trait LimitOffsetTrait
 
     /**
      * Set the LIMIT and OFFSET clauses.
+     *
      * @param int|null $limit The limit.
      * @param int|null $offset The offset.
      * @return Query The Query.
@@ -51,6 +54,7 @@ trait LimitOffsetTrait
 
     /**
      * Set the LIMIT and OFFSET clauses.
+     *
      * @param int $offset The offset.
      * @return Query The Query.
      */
@@ -62,5 +66,4 @@ trait LimitOffsetTrait
 
         return $this;
     }
-
 }

@@ -10,11 +10,11 @@ use function array_merge;
  */
 trait HavingTrait
 {
-
     protected array $having = [];
 
     /**
      * Get the HAVING conditions.
+     *
      * @return array The HAVING conditions.
      */
     public function getHaving(): array
@@ -24,11 +24,12 @@ trait HavingTrait
 
     /**
      * Set the HAVING conditions.
+     *
      * @param string|array $conditions The conditions.
      * @param bool $overwrite Whether to overwrite the existing conditions.
      * @return Query The Query.
      */
-    public function having(string|array $conditions, bool $overwrite = false): static
+    public function having(array|string $conditions, bool $overwrite = false): static
     {
         $conditions = (array) $conditions;
 
@@ -42,5 +43,4 @@ trait HavingTrait
 
         return $this;
     }
-
 }

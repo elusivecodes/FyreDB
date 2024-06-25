@@ -19,17 +19,17 @@ use function count;
  */
 abstract class ResultSet implements Countable, Iterator
 {
-
-    protected PDOStatement $result;
+    protected array|null $buffer = null;
 
     protected array|null $columnMeta = null;
 
-    protected array|null $buffer = null;
-
     protected int $index = 0;
+
+    protected PDOStatement $result;
 
     /**
      * New MySQLResultSet constructor.
+     *
      * @param PDOStatement $result The raw result.
      */
     public function __construct(PDOStatement $result)
@@ -39,6 +39,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the results as an array.
+     *
      * @return array The results.
      */
     public function all(): array
@@ -56,6 +57,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the column count.
+     *
      * @return int The column count.
      */
     public function columnCount(): int
@@ -65,6 +67,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the result columns.
+     *
      * @return array The result columns.
      */
     public function columns(): array
@@ -76,6 +79,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the result count.
+     *
      * @return int The result count.
      */
     public function count(): int
@@ -85,6 +89,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the result at the current index.
+     *
      * @return array|null The result at the current index.
      */
     public function current(): array|null
@@ -94,6 +99,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get a result by index.
+     *
      * @param int $index The index.
      * @return array|null The result.
      */
@@ -120,6 +126,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the first result.
+     *
      * @return array|null The first result.
      */
     public function first(): array|null
@@ -137,6 +144,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get a Type class for a column.
+     *
      * @param string $name The column name.
      * @return Type|null The Type.
      */
@@ -153,6 +161,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the current index.
+     *
      * @return int The current index.
      */
     public function key(): int
@@ -162,6 +171,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the last result.
+     *
      * @return array|null The last result.
      */
     public function last(): array|null
@@ -187,6 +197,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the current result.
+     *
      * @return array|null The current result.
      */
     public function row(): array|null
@@ -196,6 +207,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Determine if the current index is valid.
+     *
      * @return bool TRUE if the current index is valid, otherwise FALSE.
      */
     public function valid(): bool
@@ -205,6 +217,7 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get column meta data.
+     *
      * @return array The column meta data.
      */
     protected function getColumnMeta(): array
@@ -227,9 +240,9 @@ abstract class ResultSet implements Countable, Iterator
 
     /**
      * Get the database type for a column.
+     *
      * @param string $name The column name.
      * @return string|null The database type.
      */
     abstract protected function getColumnType(string $name): string|null;
-
 }

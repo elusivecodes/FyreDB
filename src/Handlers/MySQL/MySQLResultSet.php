@@ -7,7 +7,6 @@ use Fyre\DB\ResultSet;
 
 class MySQLResultSet extends ResultSet
 {
-
     protected static array $types = [
         'DATE' => 'date',
         'DATETIME' => 'datetime',
@@ -18,11 +17,12 @@ class MySQLResultSet extends ResultSet
         'SHORT' => 'integer',
         'TIME' => 'time',
         'TIMESTAMP' => 'datetime',
-        'TINY' => 'integer'
+        'TINY' => 'integer',
     ];
 
     /**
      * Get the database type for a column.
+     *
      * @param string $name The column name.
      * @return string|null The database type.
      */
@@ -43,5 +43,4 @@ class MySQLResultSet extends ResultSet
 
         return static::$types[$nativeType] ?? 'string';
     }
-
 }

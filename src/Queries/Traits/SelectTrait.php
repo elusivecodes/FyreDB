@@ -10,11 +10,11 @@ use function array_merge;
  */
 trait SelectTrait
 {
-
     protected array $fields = [];
 
     /**
      * Get the SELECT fields.
+     *
      * @return array The SELECT fields.
      */
     public function getSelect(): array
@@ -24,11 +24,12 @@ trait SelectTrait
 
     /**
      * Set the SELECT fields.
+     *
      * @param string|array $fields The fields.
      * @param bool $overwrite Whether to overwrite the existing fields.
      * @return Query The Query.
      */
-    public function select(string|array $fields = '*', bool $overwrite = false): static
+    public function select(array|string $fields = '*', bool $overwrite = false): static
     {
         $fields = (array) $fields;
 
@@ -42,5 +43,4 @@ trait SelectTrait
 
         return $this;
     }
-
 }

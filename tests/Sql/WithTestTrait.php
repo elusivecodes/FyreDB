@@ -9,23 +9,6 @@ use Fyre\DB\QueryLiteral;
 
 trait WithTestTrait
 {
-
-    public function testWithSelectQuery(): void
-    {
-        $query = $this->db->select()
-            ->from('test');
-
-        $this->assertSame(
-            'WITH alt AS (SELECT * FROM test) SELECT * FROM alt',
-            $this->db->select()
-                ->with([
-                    'alt' => $query
-                ])
-                ->from('alt')
-                ->sql()
-        );
-    }
-
     public function testWithClosure(): void
     {
         $this->assertSame(
@@ -35,7 +18,7 @@ trait WithTestTrait
                     'alt' => function(Connection $db): SelectQuery {
                         return $db->select()
                             ->from('test');
-                    }
+                    },
                 ])
                 ->from('alt')
                 ->sql()
@@ -50,54 +33,7 @@ trait WithTestTrait
                 ->with([
                     'alt' => function(Connection $db): QueryLiteral {
                         return $db->literal('(SELECT * FROM test)');
-                    }
-                ])
-                ->from('alt')
-                ->sql()
-        );
-    }
-
-    public function testWithRecursiveSelectQuery(): void
-    {
-        $query = $this->db->select()
-            ->from('test');
-
-        $this->assertSame(
-            'WITH RECURSIVE alt AS (SELECT * FROM test) SELECT * FROM alt',
-            $this->db->select()
-                ->withRecursive([
-                    'alt' => $query
-                ])
-                ->from('alt')
-                ->sql()
-        );
-    }
-
-    public function testWithRecursiveClosure(): void
-    {
-        $this->assertSame(
-            'WITH RECURSIVE alt AS (SELECT * FROM test) SELECT * FROM alt',
-            $this->db->select()
-                ->withRecursive([
-                    'alt' => function(Connection $db): SelectQuery {
-                        return $db->select()
-                            ->from('test');
-                    }
-                ])
-                ->from('alt')
-                ->sql()
-        );
-    }
-
-    public function testWithRecursiveLiteral(): void
-    {
-        $this->assertSame(
-            'WITH RECURSIVE alt AS (SELECT * FROM test) SELECT * FROM alt',
-            $this->db->select()
-                ->withRecursive([
-                    'alt' => function(Connection $db): QueryLiteral {
-                        return $db->literal('(SELECT * FROM test)');
-                    }
+                    },
                 ])
                 ->from('alt')
                 ->sql()
@@ -116,10 +52,10 @@ trait WithTestTrait
             'WITH alt1 AS (SELECT * FROM test1), alt2 AS (SELECT * FROM test2) SELECT * FROM alt1',
             $this->db->select()
                 ->with([
-                    'alt1' => $query1
+                    'alt1' => $query1,
                 ])
                 ->with([
-                    'alt2' => $query2
+                    'alt2' => $query2,
                 ])
                 ->from('alt1')
                 ->sql()
@@ -138,14 +74,76 @@ trait WithTestTrait
             'WITH alt2 AS (SELECT * FROM test2) SELECT * FROM alt2',
             $this->db->select()
                 ->with([
-                    'alt1' => $query1
+                    'alt1' => $query1,
                 ])
                 ->with([
-                    'alt2' => $query2
+                    'alt2' => $query2,
                 ], true)
                 ->from('alt2')
                 ->sql()
         );
     }
 
+    public function testWithRecursiveClosure(): void
+    {
+        $this->assertSame(
+            'WITH RECURSIVE alt AS (SELECT * FROM test) SELECT * FROM alt',
+            $this->db->select()
+                ->withRecursive([
+                    'alt' => function(Connection $db): SelectQuery {
+                        return $db->select()
+                            ->from('test');
+                    },
+                ])
+                ->from('alt')
+                ->sql()
+        );
+    }
+
+    public function testWithRecursiveLiteral(): void
+    {
+        $this->assertSame(
+            'WITH RECURSIVE alt AS (SELECT * FROM test) SELECT * FROM alt',
+            $this->db->select()
+                ->withRecursive([
+                    'alt' => function(Connection $db): QueryLiteral {
+                        return $db->literal('(SELECT * FROM test)');
+                    },
+                ])
+                ->from('alt')
+                ->sql()
+        );
+    }
+
+    public function testWithRecursiveSelectQuery(): void
+    {
+        $query = $this->db->select()
+            ->from('test');
+
+        $this->assertSame(
+            'WITH RECURSIVE alt AS (SELECT * FROM test) SELECT * FROM alt',
+            $this->db->select()
+                ->withRecursive([
+                    'alt' => $query,
+                ])
+                ->from('alt')
+                ->sql()
+        );
+    }
+
+    public function testWithSelectQuery(): void
+    {
+        $query = $this->db->select()
+            ->from('test');
+
+        $this->assertSame(
+            'WITH alt AS (SELECT * FROM test) SELECT * FROM alt',
+            $this->db->select()
+                ->with([
+                    'alt' => $query,
+                ])
+                ->from('alt')
+                ->sql()
+        );
+    }
 }

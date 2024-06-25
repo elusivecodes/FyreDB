@@ -7,7 +7,6 @@ use Fyre\DB\Exceptions\DbException;
 
 trait InsertTestTrait
 {
-
     public function testInsert(): void
     {
         $this->assertTrue(
@@ -15,8 +14,8 @@ trait InsertTestTrait
                 ->into('test')
                 ->values([
                     [
-                        'name' => 'Test'
-                    ]
+                        'name' => 'Test',
+                    ],
                 ])
                 ->execute()
         );
@@ -24,12 +23,29 @@ trait InsertTestTrait
         $this->assertSame(
             [
                 'id' => 1,
-                'name' => 'Test'
+                'name' => 'Test',
             ],
             $this->db->select()
                 ->from('test')
                 ->execute()
                 ->first()
+        );
+    }
+
+    public function testInsertAffectedRows(): void
+    {
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test',
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            1,
+            $this->db->affectedRows()
         );
     }
 
@@ -40,11 +56,11 @@ trait InsertTestTrait
                 ->into('test')
                 ->values([
                     [
-                        'name' => 'Test 1'
+                        'name' => 'Test 1',
                     ],
                     [
-                        'name' => 'Test 2'
-                    ]
+                        'name' => 'Test 2',
+                    ],
                 ])
                 ->execute()
         );
@@ -53,85 +69,17 @@ trait InsertTestTrait
             [
                 [
                     'id' => 1,
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
                     'id' => 2,
-                    'name' => 'Test 2'
-                ]
+                    'name' => 'Test 2',
+                ],
             ],
             $this->db->select()
                 ->from('test')
                 ->execute()
                 ->all()
-        );
-    }
-
-    public function testInsertId(): void
-    {
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test'
-                ]
-            ])
-            ->execute();
-
-        $this->assertSame(
-            1,
-            $this->db->insertId()
-        );
-
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
-
-        $this->assertSame(
-            2,
-            $this->db->insertId()
-        );
-    }
-
-    public function testInsertBatchId(): void
-    {
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 1'
-                ],
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
-
-        $this->assertSame(
-            1,
-            $this->db->insertId()
-        );
-    }
-
-    public function testInsertAffectedRows(): void
-    {
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test'
-                ]
-            ])
-            ->execute();
-
-        $this->assertSame(
-            1,
-            $this->db->affectedRows()
         );
     }
 
@@ -141,17 +89,68 @@ trait InsertTestTrait
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
-                    'name' => 'Test 2'
-                ]
+                    'name' => 'Test 2',
+                ],
             ])
             ->execute();
 
         $this->assertSame(
             2,
             $this->db->affectedRows()
+        );
+    }
+
+    public function testInsertBatchId(): void
+    {
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1',
+                ],
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            1,
+            $this->db->insertId()
+        );
+    }
+
+    public function testInsertId(): void
+    {
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test',
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            1,
+            $this->db->insertId()
+        );
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            2,
+            $this->db->insertId()
         );
     }
 
@@ -162,7 +161,17 @@ trait InsertTestTrait
         $this->db->insert()
             ->table([
                 'alt' => 'test',
-                'alt2' => 'test2'
+                'alt2' => 'test2',
+            ]);
+    }
+
+    public function testInsertTableAliases(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->insert()
+            ->table([
+                'alt' => 'test',
             ]);
     }
 
@@ -173,18 +182,7 @@ trait InsertTestTrait
         $this->db->insert()
             ->table([
                 'alt' => $this->db->select()
-                    ->from('test')
+                    ->from('test'),
             ]);
     }
-
-    public function testInsertTableAliases(): void
-    {
-        $this->expectException(DbException::class);
-
-        $this->db->insert()
-            ->table([
-                'alt' => 'test'
-            ]);
-    }
-
 }

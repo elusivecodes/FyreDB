@@ -7,28 +7,27 @@ use Fyre\DB\Exceptions\DbException;
 
 trait UpdateTestTrait
 {
-
     public function testUpdate(): void
     {
         $this->db->insert()
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
-                    'name' => 'Test 2'
-                ]
+                    'name' => 'Test 2',
+                ],
             ])
             ->execute();
 
         $this->assertTrue(
             $this->db->update('test')
                 ->set([
-                    'name' => 'Test 2'
+                    'name' => 'Test 2',
                 ])
                 ->where([
-                    'id' => 1
+                    'id' => 1,
                 ])
                 ->execute()
         );
@@ -36,59 +35,12 @@ trait UpdateTestTrait
         $this->assertSame(
             [
                 'id' => 1,
-                'name' => 'Test 2'
+                'name' => 'Test 2',
             ],
             $this->db->select()
                 ->from('test')
                 ->execute()
                 ->first()
-        );
-    }
-
-    public function testUpdateBatch(): void
-    {
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 1'
-                ],
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
-
-        $this->assertTrue(
-            $this->db->updateBatch('test')
-                ->set([
-                    [
-                        'id' => 1,
-                        'name' => 'Test 3'
-                    ],
-                    [
-                        'id' => 2,
-                        'name' => 'Test 4'
-                    ]
-                ], 'id')
-                ->execute()
-        );
-
-        $this->assertSame(
-            [
-                [
-                    'id' => 1,
-                    'name' => 'Test 3'
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Test 4'
-                ]
-            ],
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->all()
         );
     }
 
@@ -98,21 +50,21 @@ trait UpdateTestTrait
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
-                    'name' => 'Test 2'
-                ]
+                    'name' => 'Test 2',
+                ],
             ])
             ->execute();
 
         $this->db->update()
             ->table('test')
             ->set([
-                'name' => 'Test 3'
+                'name' => 'Test 3',
             ])
             ->where([
-                'id' => 1
+                'id' => 1,
             ])
             ->execute();
 
@@ -122,17 +74,64 @@ trait UpdateTestTrait
         );
     }
 
+    public function testUpdateBatch(): void
+    {
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1',
+                ],
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
+
+        $this->assertTrue(
+            $this->db->updateBatch('test')
+                ->set([
+                    [
+                        'id' => 1,
+                        'name' => 'Test 3',
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Test 4',
+                    ],
+                ], 'id')
+                ->execute()
+        );
+
+        $this->assertSame(
+            [
+                [
+                    'id' => 1,
+                    'name' => 'Test 3',
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'Test 4',
+                ],
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->all()
+        );
+    }
+
     public function testUpdateBatchAffectedRows(): void
     {
         $this->db->insert()
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
-                    'name' => 'Test 2'
-                ]
+                    'name' => 'Test 2',
+                ],
             ])
             ->execute();
 
@@ -140,12 +139,12 @@ trait UpdateTestTrait
             ->set([
                 [
                     'id' => 1,
-                    'name' => 'Test 3'
+                    'name' => 'Test 3',
                 ],
                 [
                     'id' => 2,
-                    'name' => 'Test 4'
-                ]
+                    'name' => 'Test 4',
+                ],
             ], 'id')
             ->execute();
 
@@ -155,16 +154,6 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateVirtualTables(): void
-    {
-        $this->expectException(DbException::class);
-
-        $this->db->update([
-            'alt' => $this->db->select()
-                ->from('test')
-        ]);
-    }
-
     public function testUpdateBatchMultipleTables(): void
     {
         $this->expectException(DbException::class);
@@ -172,7 +161,7 @@ trait UpdateTestTrait
         $this->db->updateBatch()
             ->table([
                 'alt' => 'test',
-                'alt2' => 'test2'
+                'alt2' => 'test2',
             ]);
     }
 
@@ -183,8 +172,17 @@ trait UpdateTestTrait
         $this->db->updateBatch()
             ->table([
                 'alt' => $this->db->select()
-                    ->from('test')
+                    ->from('test'),
             ]);
     }
 
+    public function testUpdateVirtualTables(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->update([
+            'alt' => $this->db->select()
+                ->from('test'),
+        ]);
+    }
 }

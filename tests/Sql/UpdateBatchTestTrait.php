@@ -10,7 +10,6 @@ use Fyre\DB\QueryLiteral;
 
 trait UpdateBatchTestTrait
 {
-
     public function testUpdateBatch(): void
     {
         $this->assertSame(
@@ -20,13 +19,13 @@ trait UpdateBatchTestTrait
                     [
                         'id' => 1,
                         'name' => 'Test 1',
-                        'value' => 1
+                        'value' => 1,
                     ],
                     [
                         'id' => 2,
                         'name' => 'Test 2',
-                        'value' => 2
-                    ]
+                        'value' => 2,
+                    ],
                 ], 'id')
                 ->sql()
         );
@@ -41,13 +40,13 @@ trait UpdateBatchTestTrait
                     [
                         'id' => 1,
                         'name' => 'Test 1',
-                        'value' => 1
+                        'value' => 1,
                     ],
                     [
                         'id' => 2,
                         'name' => 'Test 2',
-                        'value' => 2
-                    ]
+                        'value' => 2,
+                    ],
                 ], ['id', 'value'])
                 ->sql()
         );
@@ -62,39 +61,14 @@ trait UpdateBatchTestTrait
                     [
                         'id' => 1,
                         'name' => 'Test 1',
-                        'value' => 1
+                        'value' => 1,
                     ],
                     [
                         'id' => 2,
                         'name' => 'Test 2',
-                        'value' => null
-                    ]
+                        'value' => null,
+                    ],
                 ], ['id', 'value'])
-                ->sql()
-        );
-    }
-
-    public function testUpdateBatchSelectQuery(): void
-    {
-        $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
-            $this->db->updateBatch('test')
-                ->set([
-                    [
-                        'id' => 1,
-                        'name' => 'Test 1',
-                        'value' => $this->db->select(['id'])
-                            ->from('test')
-                            ->limit(1)
-                    ],
-                    [
-                        'id' => 2,
-                        'name' => 'Test 2',
-                        'value' => $this->db->select(['id'])
-                            ->from('test')
-                            ->limit(1)
-                    ]
-                ], 'id')
                 ->sql()
         );
     }
@@ -112,7 +86,7 @@ trait UpdateBatchTestTrait
                             return $db->select(['id'])
                                 ->from('test')
                                 ->limit(1);
-                        }
+                        },
                     ],
                     [
                         'id' => 2,
@@ -121,8 +95,29 @@ trait UpdateBatchTestTrait
                             return $db->select(['id'])
                                 ->from('test')
                                 ->limit(1);
-                        }
-                    ]
+                        },
+                    ],
+                ], 'id')
+                ->sql()
+        );
+    }
+
+    public function testUpdateBatchDateTime(): void
+    {
+        $this->assertSame(
+            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN \'2020-01-01 00:00:00\' WHEN id = 2 THEN \'2021-01-01 00:00:00\' END WHERE id IN (1, 2)',
+            $this->db->updateBatch('test')
+                ->set([
+                    [
+                        'id' => 1,
+                        'name' => 'Test 1',
+                        'value' => DateTime::fromArray([2020, 1, 1]),
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Test 2',
+                        'value' => DateTime::fromArray([2021, 1, 1]),
+                    ],
                 ], 'id')
                 ->sql()
         );
@@ -139,36 +134,15 @@ trait UpdateBatchTestTrait
                         'name' => 'Test 1',
                         'value' => function(Connection $db): QueryLiteral {
                             return $db->literal('2 * 10');
-                        }
+                        },
                     ],
                     [
                         'id' => 2,
                         'name' => 'Test 2',
                         'value' => function(Connection $db): QueryLiteral {
                             return $db->literal('2 * 20');
-                        }
-                    ]
-                ], 'id')
-                ->sql()
-        );
-    }
-
-    public function testUpdateBatchDateTime(): void
-    {
-        $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN \'2020-01-01 00:00:00\' WHEN id = 2 THEN \'2021-01-01 00:00:00\' END WHERE id IN (1, 2)',
-            $this->db->updateBatch('test')
-                ->set([
-                    [
-                        'id' => 1,
-                        'name' => 'Test 1',
-                        'value' => DateTime::fromArray([2020, 1, 1])
+                        },
                     ],
-                    [
-                        'id' => 2,
-                        'name' => 'Test 2',
-                        'value' => DateTime::fromArray([2021, 1, 1])
-                    ]
                 ], 'id')
                 ->sql()
         );
@@ -183,15 +157,15 @@ trait UpdateBatchTestTrait
                     [
                         'id' => 1,
                         'name' => 'Test 1',
-                        'value' => 1
-                    ]
+                        'value' => 1,
+                    ],
                 ], 'id')
                 ->set([
                     [
                         'id' => 2,
                         'name' => 'Test 2',
-                        'value' => 2
-                    ]
+                        'value' => 2,
+                    ],
                 ], 'id')
                 ->sql()
         );
@@ -206,18 +180,42 @@ trait UpdateBatchTestTrait
                     [
                         'id' => 1,
                         'name' => 'Test 1',
-                        'value' => 1
-                    ]
+                        'value' => 1,
+                    ],
                 ], 'id')
                 ->set([
                     [
                         'id' => 2,
                         'name' => 'Test 2',
-                        'value' => 2
-                    ]
+                        'value' => 2,
+                    ],
                 ], 'id', true)
                 ->sql()
         );
     }
 
+    public function testUpdateBatchSelectQuery(): void
+    {
+        $this->assertSame(
+            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
+            $this->db->updateBatch('test')
+                ->set([
+                    [
+                        'id' => 1,
+                        'name' => 'Test 1',
+                        'value' => $this->db->select(['id'])
+                            ->from('test')
+                            ->limit(1),
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'Test 2',
+                        'value' => $this->db->select(['id'])
+                            ->from('test')
+                            ->limit(1),
+                    ],
+                ], 'id')
+                ->sql()
+        );
+    }
 }

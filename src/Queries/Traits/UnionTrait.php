@@ -12,22 +12,23 @@ use Fyre\DB\QueryLiteral;
  */
 trait UnionTrait
 {
-
     protected array $unions = [];
 
     /**
      * Add an EXCEPT query.
+     *
      * @param Closure|SelectQuery|QueryLiteral|string $union The query.
      * @param bool $overwrite Whether to overwrite the existing unions.
      * @return SelectQuery The SelectQuery.
      */
-    public function except(Closure|SelectQuery|QueryLiteral|string $union, bool $overwrite = false): static
+    public function except(Closure|QueryLiteral|SelectQuery|string $union, bool $overwrite = false): static
     {
         return $this->union($union, $overwrite, 'except');
     }
 
     /**
      * Get the UNION queries.
+     *
      * @return array The UNION queries.
      */
     public function getUnion(): array
@@ -37,27 +38,29 @@ trait UnionTrait
 
     /**
      * Add an INTERSECT query.
+     *
      * @param Closure|SelectQuery|QueryLiteral|string $union The query.
      * @param bool $overwrite Whether to overwrite the existing unions.
      * @return SelectQuery The SelectQuery.
      */
-    public function intersect(Closure|SelectQuery|QueryLiteral|string $union, bool $overwrite = false): static
+    public function intersect(Closure|QueryLiteral|SelectQuery|string $union, bool $overwrite = false): static
     {
         return $this->union($union, $overwrite, 'intersect');
     }
 
     /**
      * Add an UNION DISTINCT query.
+     *
      * @param Closure|SelectQuery|QueryLiteral|string $union The query.
      * @param bool $overwrite Whether to overwrite the existing unions.
      * @param string $type The union type.
      * @return SelectQuery The SelectQuery.
      */
-    public function union(Closure|SelectQuery|QueryLiteral|string $union, bool $overwrite = false, string $type = 'distinct'): static
+    public function union(Closure|QueryLiteral|SelectQuery|string $union, bool $overwrite = false, string $type = 'distinct'): static
     {
         $union = [
             'type' => $type,
-            'query' => $union
+            'query' => $union,
         ];
 
         if ($overwrite) {
@@ -73,13 +76,13 @@ trait UnionTrait
 
     /**
      * Add an UNION ALL query.
+     *
      * @param Closure|SelectQuery|QueryLiteral|string $union The query.
      * @param bool $overwrite Whether to overwrite the existing unions.
      * @return SelectQuery The SelectQuery.
      */
-    public function unionAll(Closure|SelectQuery|QueryLiteral|string $union, bool $overwrite = false): static
+    public function unionAll(Closure|QueryLiteral|SelectQuery|string $union, bool $overwrite = false): static
     {
         return $this->union($union, $overwrite, 'all');
     }
-
 }

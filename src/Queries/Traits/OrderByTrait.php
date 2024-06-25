@@ -10,16 +10,26 @@ use function array_merge;
  */
 trait OrderByTrait
 {
-
     protected array $orderBy = [];
 
     /**
+     * Get the ORDER BY fields.
+     *
+     * @return array The ORDER BY fields.
+     */
+    public function getOrderBy(): array
+    {
+        return $this->orderBy;
+    }
+
+    /**
      * Set the ORDER BY fields.
+     *
      * @param string|array $fields The fields.
      * @param bool $overwrite Whether to overwrite the existing fields.
      * @return Query The Query.
      */
-    public function orderBy(string|array $fields, bool $overwrite = false): static
+    public function orderBy(array|string $fields, bool $overwrite = false): static
     {
         $fields = (array) $fields;
 
@@ -33,14 +43,4 @@ trait OrderByTrait
 
         return $this;
     }
-
-    /**
-     * Get the ORDER BY fields.
-     * @return array The ORDER BY fields.
-     */
-    public function getOrderBy(): array
-    {
-        return $this->orderBy;
-    }
-
 }

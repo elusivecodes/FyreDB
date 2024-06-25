@@ -15,16 +15,17 @@ use function array_unique;
  */
 class UpdateBatchQuery extends Query
 {
+    use EpilogTrait;
 
     protected static bool $tableAliases = true;
 
     protected array $data = [];
-    protected array $keys = [];
 
-    use EpilogTrait;
+    protected array $keys = [];
 
     /**
      * Get the data.
+     *
      * @return array The data.
      */
     public function getData(): array
@@ -34,12 +35,13 @@ class UpdateBatchQuery extends Query
 
     /**
      * Set the UPDATE batch data.
+     *
      * @param array $data The data.
      * @param string|array $keys The key to use for updating.
      * @param bool $overwrite Whether to overwrite the existing data.
      * @return UpdateBatchQuery The UpdateBatchQuery.
      */
-    public function set(array $data, string|array $keys, bool $overwrite = false): static
+    public function set(array $data, array|string $keys, bool $overwrite = false): static
     {
         $keys = (array) $keys;
 
@@ -60,6 +62,7 @@ class UpdateBatchQuery extends Query
 
     /**
      * Generate the SQL query.
+     *
      * @return string The SQL query.
      */
     public function sql(ValueBinder|null $binder = null): string
@@ -71,5 +74,4 @@ class UpdateBatchQuery extends Query
 
         return $query;
     }
-
 }

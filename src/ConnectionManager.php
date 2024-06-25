@@ -15,7 +15,6 @@ use function is_array;
  */
 abstract class ConnectionManager
 {
-
     public const DEFAULT = 'default';
 
     protected static array $config = [];
@@ -33,8 +32,8 @@ abstract class ConnectionManager
 
     /**
      * Get the handler config.
+     *
      * @param string|null $key The config key.
-     * @return array|null
      */
     public static function getConfig(string|null $key = null): array|null
     {
@@ -47,6 +46,7 @@ abstract class ConnectionManager
 
     /**
      * Get the key for a connection instance.
+     *
      * @param Connection $connection The Connection.
      * @return string|null The connection key.
      */
@@ -57,6 +57,7 @@ abstract class ConnectionManager
 
     /**
      * Determine if a config exists.
+     *
      * @param string $key The config key.
      * @return bool TRUE if the config exists, otherwise FALSE.
      */
@@ -67,6 +68,7 @@ abstract class ConnectionManager
 
     /**
      * Determine if a handler is loaded.
+     *
      * @param string $key The config key.
      * @return bool TRUE if the handler is loaded, otherwise FALSE.
      */
@@ -77,8 +79,10 @@ abstract class ConnectionManager
 
     /**
      * Load a handler.
+     *
      * @param array $options Options for the handler.
      * @return Connection The handler.
+     *
      * @throws DbException if the handler is not valid.
      */
     public static function load(array $options = []): Connection
@@ -96,14 +100,16 @@ abstract class ConnectionManager
 
     /**
      * Set handler config.
+     *
      * @param string|array $key The config key.
      * @param array|null $options The config options.
+     *
      * @throws DbException if the config is not valid.
      */
-    public static function setConfig(string|array $key, array|null $options = null): void
+    public static function setConfig(array|string $key, array|null $options = null): void
     {
         if (is_array($key)) {
-            foreach ($key AS $k => $value) {
+            foreach ($key as $k => $value) {
                 static::setConfig($k, $value);
             }
 
@@ -123,6 +129,7 @@ abstract class ConnectionManager
 
     /**
      * Unload a handler.
+     *
      * @param string $key The config key.
      * @return bool TRUE if the handler was removed, otherwise FALSE.
      */
@@ -140,6 +147,7 @@ abstract class ConnectionManager
 
     /**
      * Load a shared handler instance.
+     *
      * @param string $key The config key.
      * @return Connection The handler.
      */
@@ -147,5 +155,4 @@ abstract class ConnectionManager
     {
         return static::$instances[$key] ??= static::load(static::$config[$key] ?? []);
     }
-
 }

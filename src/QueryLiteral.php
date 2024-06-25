@@ -8,11 +8,11 @@ namespace Fyre\DB;
  */
 class QueryLiteral
 {
-
     protected string $string;
 
     /**
      * New QueryLiteral constructor.
+     *
      * @param string $string The literal string.
      */
     public function __construct(string $string)
@@ -22,11 +22,11 @@ class QueryLiteral
 
     /**
      * Get the literal string.
+     *
      * @return string The literal string.
      */
     public function __toString(): string
     {
         return $this->string;
     }
-
 }

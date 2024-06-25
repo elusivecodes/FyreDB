@@ -8,11 +8,11 @@ namespace Fyre\DB\Queries\Traits;
  */
 trait WithTrait
 {
-
     protected array $with = [];
 
     /**
      * Get the WITH queries.
+     *
      * @return array The WITH queries.
      */
     public function getWith(): array
@@ -22,6 +22,7 @@ trait WithTrait
 
     /**
      * Set the WITH clause.
+     *
      * @param array $cte The common table expressions.
      * @param bool $overwrite Whether to overwrite the existing expressions.
      * @param bool $recursive Whether the WITH is recursive.
@@ -31,7 +32,7 @@ trait WithTrait
     {
         $with = [
             'cte' => $cte,
-            'recursive' => $recursive
+            'recursive' => $recursive,
         ];
 
         if ($overwrite) {
@@ -39,7 +40,7 @@ trait WithTrait
         } else {
             $this->with[] = $with;
         }
-    
+
         $this->dirty();
 
         return $this;
@@ -47,6 +48,7 @@ trait WithTrait
 
     /**
      * Set the WITH RECURSIVE clause.
+     *
      * @param array $cte The common table expressions.
      * @param bool $overwrite Whether to overwrite the existing common table expressions.
      * @return Query The Query.
@@ -55,5 +57,4 @@ trait WithTrait
     {
         return $this->with($cte, $overwrite, true);
     }
-
 }

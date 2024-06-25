@@ -7,15 +7,14 @@ use Fyre\DB\Exceptions\DbException;
 
 trait DeleteTestTrait
 {
-
     public function testDelete(): void
     {
         $this->db->insert()
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test'
-                ]
+                    'name' => 'Test',
+                ],
             ])
             ->execute();
 
@@ -23,7 +22,7 @@ trait DeleteTestTrait
             $this->db->delete()
                 ->from('test')
                 ->where([
-                    'id' => 1
+                    'id' => 1,
                 ])
                 ->execute()
         );
@@ -43,11 +42,11 @@ trait DeleteTestTrait
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
-                    'name' => 'Test 2'
-                ]
+                    'name' => 'Test 2',
+                ],
             ])
             ->execute();
 
@@ -68,8 +67,7 @@ trait DeleteTestTrait
         $this->db->delete()
             ->from([
                 'alt' => $this->db->select()
-                    ->from('test')
+                    ->from('test'),
             ]);
     }
-
 }

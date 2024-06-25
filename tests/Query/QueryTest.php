@@ -10,9 +10,6 @@ use Tests\ConnectionTrait;
 
 final class QueryTest extends TestCase
 {
-
-    protected Connection $db;
-
     use ConnectionTrait;
     use DeleteTestTrait;
     use ExecuteTestTrait;
@@ -21,6 +18,8 @@ final class QueryTest extends TestCase
     use ReplaceTestTrait;
     use TransactionTestTrait;
     use UpdateTestTrait;
+
+    protected Connection $db;
 
     protected function setUp(): void
     {
@@ -31,5 +30,4 @@ final class QueryTest extends TestCase
     {
         $this->db->query('TRUNCATE test');
     }
-
 }

@@ -9,7 +9,6 @@ use Fyre\DB\QueryLiteral;
 
 trait ReplaceTestTrait
 {
-
     public function testReplace(): void
     {
         $this->assertSame(
@@ -20,37 +19,13 @@ trait ReplaceTestTrait
                     [
                         'id' => 1,
                         'name' => 'Test 1',
-                        'value' => 1
+                        'value' => 1,
                     ],
                     [
                         'id' => 2,
                         'name' => 'Test 2',
-                        'value' => 2
-                    ]
-                ])
-                ->sql()
-        );
-    }
-
-    public function testReplaceSelectQuery(): void
-    {
-        $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
-            $this->db->replace()
-                ->into('test')
-                ->values([
-                    [
-                        'name' => 'Test 1',
-                        'value' => $this->db->select(['id'])
-                            ->from('test')
-                            ->limit(1)
+                        'value' => 2,
                     ],
-                    [
-                        'name' => 'Test 2',
-                        'value' => $this->db->select(['id'])
-                            ->from('test')
-                            ->limit(1)
-                    ]
                 ])
                 ->sql()
         );
@@ -69,7 +44,7 @@ trait ReplaceTestTrait
                             return $db->select(['id'])
                                 ->from('test')
                                 ->limit(1);
-                        }
+                        },
                     ],
                     [
                         'name' => 'Test 2',
@@ -77,8 +52,8 @@ trait ReplaceTestTrait
                             return $db->select(['id'])
                                 ->from('test')
                                 ->limit(1);
-                        }
-                    ]
+                        },
+                    ],
                 ])
                 ->sql()
         );
@@ -95,14 +70,14 @@ trait ReplaceTestTrait
                         'name' => 'Test 1',
                         'value' => function(Connection $db): QueryLiteral {
                             return $db->literal('2 * 10');
-                        }
+                        },
                     ],
                     [
                         'name' => 'Test 2',
                         'value' => function(Connection $db): QueryLiteral {
                             return $db->literal('2 * 20');
-                        }
-                    ]
+                        },
+                    ],
                 ])
                 ->sql()
         );
@@ -118,15 +93,15 @@ trait ReplaceTestTrait
                     [
                         'id' => 1,
                         'name' => 'Test 1',
-                        'value' => 1
-                    ]
+                        'value' => 1,
+                    ],
                 ])
                 ->values([
                     [
                         'id' => 2,
                         'name' => 'Test 2',
-                        'value' => 2
-                    ]
+                        'value' => 2,
+                    ],
                 ])
                 ->sql()
         );
@@ -142,18 +117,41 @@ trait ReplaceTestTrait
                     [
                         'id' => 1,
                         'name' => 'Test 1',
-                        'value' => 1
-                    ]
+                        'value' => 1,
+                    ],
                 ])
                 ->values([
                     [
                         'id' => 2,
                         'name' => 'Test 2',
-                        'value' => 2
-                    ]
+                        'value' => 2,
+                    ],
                 ], true)
                 ->sql()
         );
     }
 
+    public function testReplaceSelectQuery(): void
+    {
+        $this->assertSame(
+            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
+            $this->db->replace()
+                ->into('test')
+                ->values([
+                    [
+                        'name' => 'Test 1',
+                        'value' => $this->db->select(['id'])
+                            ->from('test')
+                            ->limit(1),
+                    ],
+                    [
+                        'name' => 'Test 2',
+                        'value' => $this->db->select(['id'])
+                            ->from('test')
+                            ->limit(1),
+                    ],
+                ])
+                ->sql()
+        );
+    }
 }

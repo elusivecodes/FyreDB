@@ -11,10 +11,9 @@ use PHPUnit\Framework\TestCase;
 
 final class ConnectionTest extends TestCase
 {
+    use ConnectionTrait;
 
     protected Connection $db;
-
-    use ConnectionTrait;
 
     public function testCharset(): void
     {
@@ -32,14 +31,6 @@ final class ConnectionTest extends TestCase
         );
     }
 
-    public function testVersion(): void
-    {
-        $this->assertMatchesRegularExpression(
-            '/^\d+\.\d+\.\d+.*/',
-            $this->db->version()
-        );
-    }
-
     public function testFailedConnection(): void
     {
         $this->expectException(DbException::class);
@@ -47,7 +38,7 @@ final class ConnectionTest extends TestCase
         ConnectionManager::setConfig('invalid', [
             'className' => MySQLConnection::class,
             'username' => 'root',
-            'database' => 'test'
+            'database' => 'test',
         ]);
 
         ConnectionManager::use('invalid');
@@ -60,9 +51,16 @@ final class ConnectionTest extends TestCase
         $this->db->query('INVALID');
     }
 
+    public function testVersion(): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/^\d+\.\d+\.\d+.*/',
+            $this->db->version()
+        );
+    }
+
     protected function setUp(): void
     {
         $this->db = ConnectionManager::use();
     }
-
 }

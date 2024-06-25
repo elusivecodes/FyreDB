@@ -9,7 +9,6 @@ use Fyre\DB\QueryLiteral;
 
 trait IntersectTestTrait
 {
-
     public function testIntersect(): void
     {
         $this->assertSame(
@@ -17,20 +16,6 @@ trait IntersectTestTrait
             $this->db->select()
                 ->from('test')
                 ->intersect('(SELECT * FROM test2)')
-                ->sql()
-        );
-    }
-
-    public function testIntersectSelectQuery(): void
-    {
-        $query = $this->db->select()
-            ->from('test2');
-
-        $this->assertSame(
-            '(SELECT * FROM test) INTERSECT (SELECT * FROM test2)',
-            $this->db->select()
-                ->from('test')
-                ->intersect($query)
                 ->sql()
         );
     }
@@ -92,4 +77,17 @@ trait IntersectTestTrait
         );
     }
 
+    public function testIntersectSelectQuery(): void
+    {
+        $query = $this->db->select()
+            ->from('test2');
+
+        $this->assertSame(
+            '(SELECT * FROM test) INTERSECT (SELECT * FROM test2)',
+            $this->db->select()
+                ->from('test')
+                ->intersect($query)
+                ->sql()
+        );
+    }
 }

@@ -14,11 +14,11 @@ use function is_string;
  */
 trait JoinTrait
 {
-
     protected array $joins = [];
 
     /**
      * Get the JOIN tables.
+     *
      * @return array The JOIN tables.
      */
     public function getJoin(): array
@@ -28,6 +28,7 @@ trait JoinTrait
 
     /**
      * Set the JOIN tables.
+     *
      * @param array $joins The joins.
      * @param bool $overwrite Whether to overwrite the existing joins.
      * @return Query The Query.
@@ -49,14 +50,16 @@ trait JoinTrait
 
     /**
      * Normalize a joins array.
+     *
      * @param array $joins The joins.
      * @return array The normalize joins.
+     *
      * @throws DbException if an alias is not valid.
      */
     protected static function normalizeJoins(array $joins): array
     {
         $results = [];
-        foreach ($joins AS $alias => $join) {
+        foreach ($joins as $alias => $join) {
             if (is_numeric($alias)) {
                 $alias = $join['alias'] ?? $join['table'] ?? null;
             }
@@ -72,5 +75,4 @@ trait JoinTrait
 
         return $results;
     }
-
 }

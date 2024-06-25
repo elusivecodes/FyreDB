@@ -8,11 +8,11 @@ namespace Fyre\DB\Queries\Traits;
  */
 trait EpilogTrait
 {
-
     protected string $epilog = '';
 
     /**
      * Set the epilog.
+     *
      * @param string $epilog The epilog.
      * @return Query The Query.
      */
@@ -26,11 +26,11 @@ trait EpilogTrait
 
     /**
      * Get the epilog.
+     *
      * @return string The epilog.
      */
     public function getEpilog(): string
     {
         return $this->epilog;
     }
-
 }

@@ -5,12 +5,11 @@ namespace Tests\Query;
 
 trait GetTestTrait
 {
-
     public function testGetAlias(): void
     {
         $this->assertSame(
             [
-                'alt'
+                'alt',
             ],
             $this->db->delete()
                 ->alias('alt')
@@ -22,11 +21,11 @@ trait GetTestTrait
     {
         $this->assertSame(
             [
-                'value' => 1
+                'value' => 1,
             ],
             $this->db->update()
                 ->set([
-                    'value' => 1
+                    'value' => 1,
                 ])
                 ->getData()
         );
@@ -56,7 +55,7 @@ trait GetTestTrait
     {
         $this->assertSame(
             [
-                'test'
+                'test',
             ],
             $this->db->select()
                 ->from('test')
@@ -68,11 +67,11 @@ trait GetTestTrait
     {
         $this->assertSame(
             [
-                'value'
+                'value',
             ],
             $this->db->select()
                 ->groupBy([
-                    'value'
+                    'value',
                 ])
                 ->getGroupBy()
         );
@@ -82,11 +81,11 @@ trait GetTestTrait
     {
         $this->assertSame(
             [
-                'value' => 1
+                'value' => 1,
             ],
             $this->db->select()
                 ->having([
-                    'value' => 1
+                    'value' => 1,
                 ])
                 ->getHaving()
         );
@@ -108,15 +107,15 @@ trait GetTestTrait
             [
                 'test2' => [
                     'table' => 'test2',
-                    'using' => 'id'
-                ]
+                    'using' => 'id',
+                ],
             ],
             $this->db->select()
                 ->join([
                     [
                         'table' => 'test2',
-                        'using' => 'id'
-                    ]
+                        'using' => 'id',
+                    ],
                 ])
                 ->getJoin()
         );
@@ -146,11 +145,11 @@ trait GetTestTrait
     {
         $this->assertSame(
             [
-                'value' => 'ASC'
+                'value' => 'ASC',
             ],
             $this->db->select()
                 ->orderBy([
-                    'value' => 'ASC'
+                    'value' => 'ASC',
                 ])
                 ->getOrderBy()
         );
@@ -160,12 +159,12 @@ trait GetTestTrait
     {
         $this->assertSame(
             [
-                'value'
+                'value',
             ],
             $this->db->select([
-                'value'
+                'value',
             ])
-            ->getSelect()
+                ->getSelect()
         );
     }
 
@@ -173,11 +172,11 @@ trait GetTestTrait
     {
         $this->assertSame(
             [
-                'value'
+                'value',
             ],
             $this->db->select()
                 ->from([
-                    'value'
+                    'value',
                 ])
                 ->getTable()
         );
@@ -192,8 +191,8 @@ trait GetTestTrait
             [
                 [
                     'type' => 'distinct',
-                    'query' => $query
-                ]
+                    'query' => $query,
+                ],
             ],
             $this->db->select()
                 ->union($query)
@@ -206,14 +205,14 @@ trait GetTestTrait
         $this->assertSame(
             [
                 [
-                    'value' => 1
-                ]
+                    'value' => 1,
+                ],
             ],
             $this->db->insert()
                 ->values([
                     [
-                        'value' => 1
-                    ]
+                        'value' => 1,
+                    ],
                 ])
                 ->getValues()
         );
@@ -223,11 +222,11 @@ trait GetTestTrait
     {
         $this->assertSame(
             [
-                'value' => 1
+                'value' => 1,
             ],
             $this->db->select()
                 ->where([
-                    'value' => 1
+                    'value' => 1,
                 ])
                 ->getWhere()
         );
@@ -242,17 +241,16 @@ trait GetTestTrait
             [
                 [
                     'cte' => [
-                        'alt' => $query
+                        'alt' => $query,
                     ],
-                    'recursive' => false
-                ]
+                    'recursive' => false,
+                ],
             ],
             $this->db->select()
                 ->with([
-                    'alt' => $query
+                    'alt' => $query,
                 ])
                 ->getWith()
         );
     }
-
 }

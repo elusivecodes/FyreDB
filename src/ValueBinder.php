@@ -12,11 +12,11 @@ use function count;
  */
 class ValueBinder implements Countable
 {
-
     protected array $bindings = [];
 
     /**
      * Bind a value.
+     *
      * @param mixed $value The value to bind.
      * @return string The parameter placeholder.
      */
@@ -31,7 +31,6 @@ class ValueBinder implements Countable
 
     /**
      * Get the bound values.
-     * @return array
      */
     public function bindings(): array
     {
@@ -40,11 +39,11 @@ class ValueBinder implements Countable
 
     /**
      * Get the number of bound values.
+     *
      * @return int The number of bound values.
      */
     public function count(): int
     {
         return count($this->bindings);
     }
-
 }

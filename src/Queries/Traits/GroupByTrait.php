@@ -10,16 +10,26 @@ use function array_merge;
  */
 trait GroupByTrait
 {
-
     protected array $groupBy = [];
 
     /**
+     * Get the GROUP BY fields.
+     *
+     * @return array The GROUP BY fields.
+     */
+    public function getGroupBy(): array
+    {
+        return $this->groupBy;
+    }
+
+    /**
      * Set the GROUP BY fields.
+     *
      * @param string|array $fields The fields.
      * @param bool $overwrite Whether to overwrite the existing fields.
      * @return Query The Query.
      */
-    public function groupBy(string|array $fields, bool $overwrite = false): static
+    public function groupBy(array|string $fields, bool $overwrite = false): static
     {
         $fields = (array) $fields;
 
@@ -33,14 +43,4 @@ trait GroupByTrait
 
         return $this;
     }
-
-    /**
-     * Get the GROUP BY fields.
-     * @return array The GROUP BY fields.
-     */
-    public function getGroupBy(): array
-    {
-        return $this->groupBy;
-    }
-
 }

@@ -10,7 +10,6 @@ use RuntimeException;
  */
 class DbException extends RuntimeException
 {
-
     public static function forConfigExists(string $key): static
     {
         return new static('Database handler config already exists: '.$key);
@@ -19,11 +18,6 @@ class DbException extends RuntimeException
     public static function forConnectionFailed(string $error): static
     {
         return new static('Unable to connect to database: '.$error);
-    }
-
-    public static function forQueryError(string $error): static
-    {
-        return new static('Database error: '.$error);
     }
 
     public static function forInvalidClass(string $className = ''): static
@@ -44,6 +38,11 @@ class DbException extends RuntimeException
     public static function forMultipleTablesNotSupported(): static
     {
         return new static('Multiple tables are not supported for this query.');
+    }
+
+    public static function forQueryError(string $error): static
+    {
+        return new static('Database error: '.$error);
     }
 
     public static function forTableAliasesNotSupported(): static

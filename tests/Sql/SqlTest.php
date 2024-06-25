@@ -10,25 +10,24 @@ use Tests\ConnectionTrait;
 
 final class SqlTest extends TestCase
 {
-
-    protected Connection $db;
-
     use ConnectionTrait;
     use DeleteTestTrait;
     use ExceptTestTrait;
     use HavingTestTrait;
-    use InsertTestTrait;
     use InsertFromTestTrait;
+    use InsertTestTrait;
     use IntersectTestTrait;
     use JoinTestTrait;
     use ReplaceTestTrait;
     use SelectTestTrait;
-    use UnionTestTrait;
     use UnionAllTestTrait;
-    use UpdateTestTrait;
+    use UnionTestTrait;
     use UpdateBatchTestTrait;
+    use UpdateTestTrait;
     use WhereTestTrait;
     use WithTestTrait;
+
+    protected Connection $db;
 
     public function testGetConnection(): void
     {
@@ -38,7 +37,7 @@ final class SqlTest extends TestCase
                 ->getConnection()
         );
     }
-    
+
     public function testToString(): void
     {
         $this->assertSame(
@@ -52,5 +51,4 @@ final class SqlTest extends TestCase
     {
         $this->db = ConnectionManager::use();
     }
-
 }

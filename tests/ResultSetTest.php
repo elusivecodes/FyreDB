@@ -11,10 +11,9 @@ use PHPUnit\Framework\TestCase;
 
 final class ResultSetTest extends TestCase
 {
+    use ConnectionTrait;
 
     protected Connection $db;
-
-    use ConnectionTrait;
 
     public function testAll(): void
     {
@@ -22,74 +21,21 @@ final class ResultSetTest extends TestCase
             [
                 [
                     'id' => 1,
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
                     'id' => 2,
-                    'name' => 'Test 2'
+                    'name' => 'Test 2',
                 ],
                 [
                     'id' => 3,
-                    'name' => 'Test 3'
-                ]
+                    'name' => 'Test 3',
+                ],
             ],
             $this->db->select()
                 ->from('test')
                 ->execute()
                 ->all()
-        );
-    }
-
-    public function testCount(): void
-    {
-        $this->assertSame(
-            3,
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->count()
-        );
-    }
-
-    public function testFetch(): void
-    {
-        $this->assertSame(
-            [
-                'id' => 2,
-                'name' => 'Test 2'
-            ],
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->fetch(1)
-        );
-    }
-
-    public function testFirst(): void
-    {
-        $this->assertSame(
-            [
-                'id' => 1,
-                'name' => 'Test 1'
-            ],
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->first()
-        );
-    }
-
-    public function testLast(): void
-    {
-        $this->assertSame(
-            [
-                'id' => 3,
-                'name' => 'Test 3'
-            ],
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->last()
         );
     }
 
@@ -109,12 +55,51 @@ final class ResultSetTest extends TestCase
         $this->assertSame(
             [
                 'id',
-                'name'
+                'name',
             ],
             $this->db->select()
                 ->from('test')
                 ->execute()
                 ->columns()
+        );
+    }
+
+    public function testCount(): void
+    {
+        $this->assertSame(
+            3,
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->count()
+        );
+    }
+
+    public function testFetch(): void
+    {
+        $this->assertSame(
+            [
+                'id' => 2,
+                'name' => 'Test 2',
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->fetch(1)
+        );
+    }
+
+    public function testFirst(): void
+    {
+        $this->assertSame(
+            [
+                'id' => 1,
+                'name' => 'Test 1',
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->first()
         );
     }
 
@@ -126,7 +111,7 @@ final class ResultSetTest extends TestCase
 
         $results = [];
 
-        foreach ($query AS $row) {
+        foreach ($query as $row) {
             $results[] = $row;
         }
 
@@ -134,18 +119,32 @@ final class ResultSetTest extends TestCase
             [
                 [
                     'id' => 1,
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
                     'id' => 2,
-                    'name' => 'Test 2'
+                    'name' => 'Test 2',
                 ],
                 [
                     'id' => 3,
-                    'name' => 'Test 3'
-                ]
+                    'name' => 'Test 3',
+                ],
             ],
             $results
+        );
+    }
+
+    public function testLast(): void
+    {
+        $this->assertSame(
+            [
+                'id' => 3,
+                'name' => 'Test 3',
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->last()
         );
     }
 
@@ -160,14 +159,13 @@ final class ResultSetTest extends TestCase
         );
     }
 
-
     public function testTypeVirtualField(): void
     {
         $this->assertInstanceOf(
             DateTimeType::class,
             $this->db->select([
-                    'virtual' => 'NOW()'
-                ])
+                'virtual' => 'NOW()',
+            ])
                 ->execute()
                 ->getType('virtual')
         );
@@ -180,14 +178,14 @@ final class ResultSetTest extends TestCase
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
-                    'name' => 'Test 2'
+                    'name' => 'Test 2',
                 ],
                 [
-                    'name' => 'Test 3'
-                ]
+                    'name' => 'Test 3',
+                ],
             ])
             ->execute();
     }
@@ -196,5 +194,4 @@ final class ResultSetTest extends TestCase
     {
         $this->db->query('TRUNCATE test');
     }
-
 }

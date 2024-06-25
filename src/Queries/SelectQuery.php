@@ -24,11 +24,6 @@ use Fyre\DB\ValueBinder;
  */
 class SelectQuery extends Query
 {
-
-    protected static bool $multipleTables = true;
-    protected static bool $virtualTables = true;
-    protected static bool $tableAliases = true;
-
     use DistinctTrait;
     use EpilogTrait;
     use FromTrait;
@@ -42,12 +37,19 @@ class SelectQuery extends Query
     use WhereTrait;
     use WithTrait;
 
+    protected static bool $multipleTables = true;
+
+    protected static bool $tableAliases = true;
+
+    protected static bool $virtualTables = true;
+
     /**
      * New SelectQuery constructor.
+     *
      * @param Connection $connection The connection.
      * @param string|array $fields The fields.
      */
-    public function __construct(Connection $connection, string|array $fields = '*')
+    public function __construct(Connection $connection, array|string $fields = '*')
     {
         parent::__construct($connection);
 
@@ -56,6 +58,7 @@ class SelectQuery extends Query
 
     /**
      * Generate the SQL query.
+     *
      * @return string The SQL query.
      */
     public function sql(ValueBinder|null $binder = null): string
@@ -80,5 +83,4 @@ class SelectQuery extends Query
 
         return $query;
     }
-
 }

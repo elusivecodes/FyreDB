@@ -17,9 +17,9 @@ use function class_exists;
  */
 class MySQLConnection extends Connection
 {
-
     /**
      * Connect to the database.
+     *
      * @throws RuntimeException if PDO extension is not installed.
      * @throws DbException if the connection failed.
      */
@@ -44,7 +44,7 @@ class MySQLConnection extends Connection
         }
 
         $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ];
 
         if ($this->config['timeout']) {
@@ -92,11 +92,11 @@ class MySQLConnection extends Connection
 
     /**
      * Get the ResultSet class.
+     *
      * @return string The ResultSet class.
      */
     protected static function resultSetClass(): string
     {
         return MySQLResultSet::class;
     }
-
 }

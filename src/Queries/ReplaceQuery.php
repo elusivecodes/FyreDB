@@ -15,14 +15,14 @@ use function array_merge;
  */
 class ReplaceQuery extends Query
 {
-
-    protected array $values = [];
-
     use EpilogTrait;
     use IntoTrait;
 
+    protected array $values = [];
+
     /**
      * Get the values.
+     *
      * @return array The values.
      */
     public function getValues(): array
@@ -32,6 +32,7 @@ class ReplaceQuery extends Query
 
     /**
      * Generate the SQL query.
+     *
      * @return string The SQL query.
      */
     public function sql(ValueBinder|null $binder = null): string
@@ -46,6 +47,7 @@ class ReplaceQuery extends Query
 
     /**
      * Set the REPLACE batch values.
+     *
      * @param array $values The values.
      * @param bool $overwrite Whether to overwrite the existing values.
      * @return ReplaceQuery The ReplaceQuery.
@@ -62,5 +64,4 @@ class ReplaceQuery extends Query
 
         return $this;
     }
-
 }

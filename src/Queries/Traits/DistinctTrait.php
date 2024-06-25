@@ -8,11 +8,11 @@ namespace Fyre\DB\Queries\Traits;
  */
 trait DistinctTrait
 {
-
     protected bool $distinct = false;
 
     /**
      * Set the DISTINCT clause.
+     *
      * @param bool $distinct Whether to set the DISTINCT clause.
      * @return Query The Query.
      */
@@ -26,11 +26,11 @@ trait DistinctTrait
 
     /**
      * Get the DISTINCT clause.
+     *
      * @return bool The DISTINCT clause.
      */
     public function getDistinct(): bool
     {
         return $this->distinct;
     }
-
 }

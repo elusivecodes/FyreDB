@@ -8,147 +8,15 @@ use Fyre\DB\Connection;
 
 trait TransactionTestTrait
 {
-
-    public function testTransactionCommit(): void
+    public function testInTransaction(): void
     {
         $this->db->begin();
 
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 1'
-                ],
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
-
-        $this->db->commit();
-
-        $this->assertSame(
-            [
-                [
-                    'id' => 1,
-                    'name' => 'Test 1'
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Test 2'
-                ]
-            ],
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->all()
+        $this->assertTrue(
+            $this->db->inTransaction()
         );
-    }
-
-    public function testTransactionRollback(): void
-    {
-        $this->db->begin();
-
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 1'
-                ],
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
 
         $this->db->rollback();
-
-        $this->assertSame(
-            [],
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->all()
-        );
-    }
-
-    public function testTransactionNested(): void
-    {
-        $this->db->begin();
-
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 1'
-                ]
-            ])
-            ->execute();
-
-        $this->db->begin();
-
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
-
-        $this->db->rollback();
-
-        $this->db->commit();
-
-        $this->assertSame(
-            [
-                [
-                    'id' => 1,
-                    'name' => 'Test 1'
-                ]
-            ],
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->all()
-        );
-    }
-
-    public function testTransactionNestedRollback(): void
-    {
-        $this->db->begin();
-
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 1'
-                ]
-            ])
-            ->execute();
-
-        $this->db->begin();
-
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 2'
-                ]
-            ])
-            ->execute();
-
-        $this->db->rollback();
-
-        $this->db->rollback();
-
-        $this->assertSame(
-            [],
-            $this->db->select()
-                ->from('test')
-                ->execute()
-                ->all()
-        );
     }
 
     public function testTransactionalCommit(): void
@@ -159,11 +27,11 @@ trait TransactionTestTrait
                     ->into('test')
                     ->values([
                         [
-                            'name' => 'Test 1'
+                            'name' => 'Test 1',
                         ],
                         [
-                            'name' => 'Test 2'
-                        ]
+                            'name' => 'Test 2',
+                        ],
                     ])
                     ->execute();
             })
@@ -173,12 +41,12 @@ trait TransactionTestTrait
             [
                 [
                     'id' => 1,
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
                     'id' => 2,
-                    'name' => 'Test 2'
-                ]
+                    'name' => 'Test 2',
+                ],
             ],
             $this->db->select()
                 ->from('test')
@@ -195,14 +63,14 @@ trait TransactionTestTrait
                     ->into('test')
                     ->values([
                         [
-                            'name' => 'Test 1'
+                            'name' => 'Test 1',
                         ],
                         [
-                            'name' => 'Test 2'
-                        ]
+                            'name' => 'Test 2',
+                        ],
                     ])
                     ->execute();
-    
+
                 return false;
             })
         );
@@ -224,17 +92,18 @@ trait TransactionTestTrait
                     ->into('test')
                     ->values([
                         [
-                            'name' => 'Test 1'
+                            'name' => 'Test 1',
                         ],
                         [
-                            'name' => 'Test 2'
-                        ]
+                            'name' => 'Test 2',
+                        ],
                     ])
                     ->execute();
 
                 throw new Exception();
             });
-        } catch (Exception $e) { }
+        } catch (Exception $e) {
+        }
 
         $this->assertSame(
             [],
@@ -254,15 +123,145 @@ trait TransactionTestTrait
         });
     }
 
-    public function testInTransaction(): void
+    public function testTransactionCommit(): void
     {
         $this->db->begin();
 
-        $this->assertTrue(
-            $this->db->inTransaction()
-        );
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1',
+                ],
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
 
-        $this->db->rollback();
+        $this->db->commit();
+
+        $this->assertSame(
+            [
+                [
+                    'id' => 1,
+                    'name' => 'Test 1',
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'Test 2',
+                ],
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->all()
+        );
     }
 
+    public function testTransactionNested(): void
+    {
+        $this->db->begin();
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1',
+                ],
+            ])
+            ->execute();
+
+        $this->db->begin();
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
+
+        $this->db->rollback();
+
+        $this->db->commit();
+
+        $this->assertSame(
+            [
+                [
+                    'id' => 1,
+                    'name' => 'Test 1',
+                ],
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->all()
+        );
+    }
+
+    public function testTransactionNestedRollback(): void
+    {
+        $this->db->begin();
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1',
+                ],
+            ])
+            ->execute();
+
+        $this->db->begin();
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
+
+        $this->db->rollback();
+
+        $this->db->rollback();
+
+        $this->assertSame(
+            [],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->all()
+        );
+    }
+
+    public function testTransactionRollback(): void
+    {
+        $this->db->begin();
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1',
+                ],
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
+
+        $this->db->rollback();
+
+        $this->assertSame(
+            [],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->all()
+        );
+    }
 }

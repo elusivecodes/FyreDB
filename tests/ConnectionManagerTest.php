@@ -12,7 +12,6 @@ use function getenv;
 
 final class ConnectionManagerTest extends TestCase
 {
-
     use ConnectionTrait;
 
     public function testGetConfig(): void
@@ -29,7 +28,7 @@ final class ConnectionManagerTest extends TestCase
                     'collation' => 'utf8mb4_unicode_ci',
                     'charset' => 'utf8mb4',
                     'compress' => true,
-                    'persist' => true
+                    'persist' => true,
                 ],
                 'other' => [
                     'className' => MySQLConnection::class,
@@ -41,8 +40,8 @@ final class ConnectionManagerTest extends TestCase
                     'collation' => 'utf8mb4_unicode_ci',
                     'charset' => 'utf8mb4',
                     'compress' => true,
-                    'persist' => true
-                ]
+                    'persist' => true,
+                ],
             ],
             ConnectionManager::getConfig()
         );
@@ -61,12 +60,12 @@ final class ConnectionManagerTest extends TestCase
                 'collation' => 'utf8mb4_unicode_ci',
                 'charset' => 'utf8mb4',
                 'compress' => true,
-                'persist' => true
+                'persist' => true,
             ],
             ConnectionManager::getConfig('default')
         );
     }
-    
+
     public function testGetKey(): void
     {
         $handler = ConnectionManager::use();
@@ -85,7 +84,7 @@ final class ConnectionManagerTest extends TestCase
             'username' => getenv('DB_USERNAME'),
             'password' => getenv('DB_PASSWORD'),
             'database' => getenv('DB_NAME'),
-            'port' => getenv('DB_PORT')
+            'port' => getenv('DB_PORT'),
         ]);
 
         $this->assertSame(
@@ -97,18 +96,9 @@ final class ConnectionManagerTest extends TestCase
     public function testIsLoaded(): void
     {
         ConnectionManager::use();
-        
+
         $this->assertTrue(
             ConnectionManager::isLoaded()
-        );
-    }
-
-    public function testIsLoadedKey(): void
-    {
-        ConnectionManager::use('other');
-        
-        $this->assertTrue(
-            ConnectionManager::isLoaded('other')
         );
     }
 
@@ -119,12 +109,21 @@ final class ConnectionManagerTest extends TestCase
         );
     }
 
+    public function testIsLoadedKey(): void
+    {
+        ConnectionManager::use('other');
+
+        $this->assertTrue(
+            ConnectionManager::isLoaded('other')
+        );
+    }
+
     public function testLoadInvalidHandler(): void
     {
         $this->expectException(DbException::class);
 
         ConnectionManager::load([
-            'className' => 'Invalid'
+            'className' => 'Invalid',
         ]);
     }
 
@@ -132,13 +131,13 @@ final class ConnectionManagerTest extends TestCase
     {
         ConnectionManager::setConfig([
             'test' => [
-                'className' => MySQLConnection::class
-            ]
+                'className' => MySQLConnection::class,
+            ],
         ]);
 
         $this->assertSame(
             [
-                'className' => MySQLConnection::class
+                'className' => MySQLConnection::class,
             ],
             ConnectionManager::getConfig('test')
         );
@@ -151,7 +150,7 @@ final class ConnectionManagerTest extends TestCase
         $this->expectException(DbException::class);
 
         ConnectionManager::setConfig('default', [
-            'className' => MySQLConnection::class
+            'className' => MySQLConnection::class,
         ]);
     }
 
@@ -171,6 +170,13 @@ final class ConnectionManagerTest extends TestCase
         );
     }
 
+    public function testUnloadInvalid(): void
+    {
+        $this->assertFalse(
+            ConnectionManager::unload('test')
+        );
+    }
+
     public function testUnloadKey(): void
     {
         ConnectionManager::use('other');
@@ -184,13 +190,6 @@ final class ConnectionManagerTest extends TestCase
         );
         $this->assertFalse(
             ConnectionManager::hasConfig('other')
-        );
-    }
-
-    public function testUnloadInvalid(): void
-    {
-        $this->assertFalse(
-            ConnectionManager::unload('test')
         );
     }
 
@@ -222,7 +221,7 @@ final class ConnectionManagerTest extends TestCase
                 'collation' => 'utf8mb4_unicode_ci',
                 'charset' => 'utf8mb4',
                 'compress' => true,
-                'persist' => true
+                'persist' => true,
             ],
             'other' => [
                 'className' => MySQLConnection::class,
@@ -234,15 +233,15 @@ final class ConnectionManagerTest extends TestCase
                 'collation' => 'utf8mb4_unicode_ci',
                 'charset' => 'utf8mb4',
                 'compress' => true,
-                'persist' => true
-            ]
+                'persist' => true,
+            ],
         ]);
 
         $connection = ConnectionManager::use();
 
         $connection->query('DROP TABLE IF EXISTS `test`');
 
-        $connection->query(<<<EOT
+        $connection->query(<<<'EOT'
             CREATE TABLE `test` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `name` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
@@ -260,5 +259,4 @@ final class ConnectionManagerTest extends TestCase
         $connection = ConnectionManager::use();
         $connection->query('DROP TABLE IF EXISTS `test`');
     }
-
 }

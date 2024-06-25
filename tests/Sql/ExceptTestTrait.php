@@ -9,7 +9,6 @@ use Fyre\DB\QueryLiteral;
 
 trait ExceptTestTrait
 {
-
     public function testExcept(): void
     {
         $this->assertSame(
@@ -17,20 +16,6 @@ trait ExceptTestTrait
             $this->db->select()
                 ->from('test')
                 ->except('(SELECT * FROM test2)')
-                ->sql()
-        );
-    }
-
-    public function testExceptSelectQuery(): void
-    {
-        $query = $this->db->select()
-            ->from('test2');
-
-        $this->assertSame(
-            '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
-            $this->db->select()
-                ->from('test')
-                ->except($query)
                 ->sql()
         );
     }
@@ -92,4 +77,17 @@ trait ExceptTestTrait
         );
     }
 
+    public function testExceptSelectQuery(): void
+    {
+        $query = $this->db->select()
+            ->from('test2');
+
+        $this->assertSame(
+            '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
+            $this->db->select()
+                ->from('test')
+                ->except($query)
+                ->sql()
+        );
+    }
 }

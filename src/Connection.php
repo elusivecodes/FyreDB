@@ -7,12 +7,12 @@ use Closure;
 use Exception;
 use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Queries\DeleteQuery;
-use Fyre\DB\Queries\InsertQuery;
 use Fyre\DB\Queries\InsertFromQuery;
+use Fyre\DB\Queries\InsertQuery;
 use Fyre\DB\Queries\ReplaceQuery;
 use Fyre\DB\Queries\SelectQuery;
-use Fyre\DB\Queries\UpdateQuery;
 use Fyre\DB\Queries\UpdateBatchQuery;
+use Fyre\DB\Queries\UpdateQuery;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -26,7 +26,6 @@ use function implode;
  */
 abstract class Connection
 {
-
     protected static array $defaults = [
         'host' => '127.0.0.1',
         'username' => '',
@@ -43,29 +42,30 @@ abstract class Connection
             'cert' => null,
             'ca' => null,
             'capath' => null,
-            'cipher' => null
+            'cipher' => null,
         ],
-        'flags' => []
+        'flags' => [],
     ];
 
+    protected int|null $affectedRows = null;
+
     protected array $config;
+
+    protected QueryGenerator $generator;
 
     protected PDO|null $pdo = null;
 
     protected ConnectionRetry $retry;
 
-    protected QueryGenerator $generator;
-
-    protected string|null $version = null;
-
-    protected int|null $affectedRows = null;
+    protected int $savePointLevel = 0;
 
     protected bool $useSavePoints = true;
 
-    protected int $savePointLevel = 0;
+    protected string|null $version = null;
 
     /**
      * New Connection constructor.
+     *
      * @param array $options Options for the handler.
      */
     public function __construct(array $options = [])
@@ -85,6 +85,7 @@ abstract class Connection
 
     /**
      * Get the number of affected rows.
+     *
      * @param int|null The number of affected rows.
      */
     public function affectedRows(): int|null
@@ -94,6 +95,7 @@ abstract class Connection
 
     /**
      * Begin a transaction.
+     *
      * @return Connection The Connection.
      */
     public function begin(): static
@@ -111,6 +113,7 @@ abstract class Connection
 
     /**
      * Commit a transaction.
+     *
      * @return Connection The Connection.
      */
     public function commit(): static
@@ -137,10 +140,11 @@ abstract class Connection
 
     /**
      * Create a DeleteQuery.
+     *
      * @param string|array|null $alias The alias to delete.
      * @return DeleteQuery A new DeleteQuery.
      */
-    public function delete(string|array|null $alias = null): DeleteQuery
+    public function delete(array|string|null $alias = null): DeleteQuery
     {
         return new DeleteQuery($this, $alias);
     }
@@ -157,12 +161,14 @@ abstract class Connection
 
     /**
      * Execute a SQL query with bound parameters.
+     *
      * @param string $sql The SQL query.
      * @param array $params The parameters to bind.
      * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
+     *
      * @throws DbException if the query threw an error.
      */
-    public function execute(string $sql, array $params): ResultSet|bool
+    public function execute(string $sql, array $params): bool|ResultSet
     {
         try {
             return $this->retry()->run(function() use ($sql, $params) {
@@ -179,6 +185,7 @@ abstract class Connection
 
     /**
      * Get the query generator.
+     *
      * @return QueryGenerator The query generator.
      */
     public function generator(): QueryGenerator
@@ -188,6 +195,7 @@ abstract class Connection
 
     /**
      * Get the connection charset.
+     *
      * @return string The connection charset.
      */
     public function getCharset(): string
@@ -197,6 +205,7 @@ abstract class Connection
 
     /**
      * Get the connection collation.
+     *
      * @return string The connection collation.
      */
     public function getCollation(): string
@@ -214,6 +223,7 @@ abstract class Connection
 
     /**
      * Get the last connection error.
+     *
      * @return string The last  connection error.
      */
     public function getError(): string
@@ -225,6 +235,7 @@ abstract class Connection
 
     /**
      * Create an InsertQuery.
+     *
      * @return InsertQuery A new InsertQuery.
      */
     public function insert(): InsertQuery
@@ -234,17 +245,19 @@ abstract class Connection
 
     /**
      * Create an InsertFromQuery.
+     *
      * @param Closure|SelectQuery|QueryLiteral|string $from The query.
      * @param array $columns The columns.
      * @return InsertFromQuery A new InsertFromQuery.
      */
-    public function insertFrom(Closure|SelectQuery|QueryLiteral|string $from, array $columns = []): InsertFromQuery
+    public function insertFrom(Closure|QueryLiteral|SelectQuery|string $from, array $columns = []): InsertFromQuery
     {
         return new InsertFromQuery($this, $from, $columns);
     }
 
     /**
      * Get the last inserted ID.
+     *
      * @return int|null The last inserted ID.
      */
     public function insertId(): int|null
@@ -260,6 +273,7 @@ abstract class Connection
 
     /**
      * Determine if a transaction is in progress.
+     *
      * @return bool TRUE if a transaction is in progress, otherwise FALSE.
      */
     public function inTransaction(): bool
@@ -269,6 +283,7 @@ abstract class Connection
 
     /**
      * Create a QueryLiteral.
+     *
      * @param string $string The literal string.
      * @return QueryLiteral A new QueryLiteral.
      */
@@ -279,10 +294,11 @@ abstract class Connection
 
     /**
      * Execute a SQL query.
+     *
      * @param string $sql The SQL query.
      * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
      */
-    public function query(string $sql): ResultSet|bool
+    public function query(string $sql): bool|ResultSet
     {
         $result = $this->rawQuery($sql);
 
@@ -291,6 +307,7 @@ abstract class Connection
 
     /**
      * Quote a string for use in SQL queries.
+     *
      * @param string $value The value to quote.
      * @return string The quoted value.
      */
@@ -301,8 +318,10 @@ abstract class Connection
 
     /**
      * Execute a raw SQL query.
+     *
      * @param string $sql The SQL query.
      * @return PDOStatement The raw result.
+     *
      * @throws DbException if the query threw an error.
      */
     public function rawQuery(string $sql): PDOStatement
@@ -318,6 +337,7 @@ abstract class Connection
 
     /**
      * Create a ReplaceQuery.
+     *
      * @return ReplaceQuery A new ReplaceQuery.
      */
     public function replace(): ReplaceQuery
@@ -327,6 +347,7 @@ abstract class Connection
 
     /**
      * Rollback a transaction.
+     *
      * @return Connection The Connection.
      */
     public function rollback(): static
@@ -348,25 +369,28 @@ abstract class Connection
 
     /**
      * Create a SelectQuery.
+     *
      * @param string|array $fields The fields.
      * @return SelectQuery A new SelectQuery.
      */
-    public function select(string|array $fields = '*'): SelectQuery
+    public function select(array|string $fields = '*'): SelectQuery
     {
         return new SelectQuery($this, $fields);
     }
 
     /**
      * Execute a callback inside a database transaction.
+     *
      * @param Closure $callback The callback.
      * @return bool TRUE if the transaction was successful, otherwise FALSE.
+     *
      * @throws Throwable if the callback throws an exception.
      */
     public function transactional(Closure $callback): bool
     {
         try {
             $this->begin();
-    
+
             $result = $callback($this);
         } catch (Throwable $e) {
             $this->rollback();
@@ -387,16 +411,18 @@ abstract class Connection
 
     /**
      * Create an UpdateQuery.
+     *
      * @param string|array|null $table The table.
      * @return UpdateQuery A new UpdateQuery.
      */
-    public function update(string|array|null $table = null): UpdateQuery
+    public function update(array|string|null $table = null): UpdateQuery
     {
         return new UpdateQuery($this, $table);
     }
 
     /**
      * Create an UpdateBatchQuery.
+     *
      * @param string|null $table The table.
      * @return UpdateBatchQuery A new UpdateBatchQuery.
      */
@@ -407,6 +433,7 @@ abstract class Connection
 
     /**
      * Get the server version.
+     *
      * @return string The server version.
      */
     public function version(): string
@@ -416,10 +443,11 @@ abstract class Connection
 
     /**
      * Generate a result set from a raw result.
+     *
      * @param PDOStatement $result The raw result.
      * @return ResultSet|bool The result set or TRUE if the query was successful.
      */
-    protected function result(PDOStatement $result): ResultSet|bool
+    protected function result(PDOStatement $result): bool|ResultSet
     {
         if ($result->columnCount() === 0) {
             $this->affectedRows = $result->rowCount();
@@ -433,7 +461,15 @@ abstract class Connection
     }
 
     /**
+     * Get the ResultSet class.
+     *
+     * @return string The ResultSet class.
+     */
+    abstract protected static function resultSetClass(): string;
+
+    /**
      * Get the ConnectionRetry.
+     *
      * @return ConnectionRetry The ConnectionRetry.
      */
     protected function retry(): mixed
@@ -461,6 +497,7 @@ abstract class Connection
 
     /**
      * Release a transaction savepoint.
+     *
      * @param string $savePoint The save point name.
      */
     protected function transRelease(string $savePoint): void
@@ -478,6 +515,7 @@ abstract class Connection
 
     /**
      * Rollback to a transaction savepoint.
+     *
      * @param string $savePoint The save point name.
      */
     protected function transRollbackTo(string $savePoint): void
@@ -487,17 +525,11 @@ abstract class Connection
 
     /**
      * Save a transaction save point.
+     *
      * @param string $savePoint The save point name.
      */
     protected function transSavepoint(string $savePoint): void
     {
         $this->query('SAVEPOINT sp_'.$savePoint);
     }
-
-    /**
-     * Get the ResultSet class.
-     * @return string The ResultSet class.
-     */
-    abstract protected static function resultSetClass(): string;
-
 }

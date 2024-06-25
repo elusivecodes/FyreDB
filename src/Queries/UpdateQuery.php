@@ -14,18 +14,19 @@ use Fyre\DB\ValueBinder;
  */
 class UpdateQuery extends Query
 {
-
-    protected static bool $multipleTables = true;
-    protected static bool $tableAliases = true;
-
-    protected array $data = [];
-
     use EpilogTrait;
     use JoinTrait;
     use WhereTrait;
 
+    protected static bool $multipleTables = true;
+
+    protected static bool $tableAliases = true;
+
+    protected array $data = [];
+
     /**
      * Get the data.
+     *
      * @return array The data.
      */
     public function getData(): array
@@ -35,6 +36,7 @@ class UpdateQuery extends Query
 
     /**
      * Set the UPDATE data.
+     *
      * @param array $data The data.
      * @param bool $overwrite Whether to overwrite the existing data.
      * @return UpdateQuery The UpdateQuery.
@@ -54,6 +56,7 @@ class UpdateQuery extends Query
 
     /**
      * Generate the SQL query.
+     *
      * @return string The SQL query.
      */
     public function sql(ValueBinder|null $binder = null): string
@@ -67,5 +70,4 @@ class UpdateQuery extends Query
 
         return $query;
     }
-
 }

@@ -9,7 +9,6 @@ use Fyre\DB\QueryLiteral;
 
 trait UnionAllTestTrait
 {
-
     public function testUnionAll(): void
     {
         $this->assertSame(
@@ -17,20 +16,6 @@ trait UnionAllTestTrait
             $this->db->select()
                 ->from('test')
                 ->unionAll('(SELECT * FROM test2)')
-                ->sql()
-        );
-    }
-
-    public function testUnionAllSelectQuery(): void
-    {
-        $query = $this->db->select()
-            ->from('test2');
-
-        $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
-            $this->db->select()
-                ->from('test')
-                ->unionAll($query)
                 ->sql()
         );
     }
@@ -89,4 +74,17 @@ trait UnionAllTestTrait
         );
     }
 
+    public function testUnionAllSelectQuery(): void
+    {
+        $query = $this->db->select()
+            ->from('test2');
+
+        $this->assertSame(
+            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            $this->db->select()
+                ->from('test')
+                ->unionAll($query)
+                ->sql()
+        );
+    }
 }

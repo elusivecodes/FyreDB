@@ -10,7 +10,6 @@ use function getenv;
 
 trait ConnectionTrait
 {
-
     public static function setUpBeforeClass(): void
     {
         ConnectionManager::clear();
@@ -26,15 +25,15 @@ trait ConnectionTrait
                 'collation' => 'utf8mb4_unicode_ci',
                 'charset' => 'utf8mb4',
                 'compress' => true,
-                'persist' => true
-            ]
+                'persist' => true,
+            ],
         ]);
 
         $connection = ConnectionManager::use();
 
         $connection->query('DROP TABLE IF EXISTS `test`');
 
-        $connection->query(<<<EOT
+        $connection->query(<<<'EOT'
             CREATE TABLE `test` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `name` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
@@ -48,5 +47,4 @@ trait ConnectionTrait
         $connection = ConnectionManager::use();
         $connection->query('DROP TABLE IF EXISTS `test`');
     }
-
 }

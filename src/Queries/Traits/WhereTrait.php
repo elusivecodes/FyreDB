@@ -10,11 +10,11 @@ use function array_merge;
  */
 trait WhereTrait
 {
-
     protected array $conditions = [];
 
     /**
      * Get the WHERE conditions.
+     *
      * @return array The WHERE conditions.
      */
     public function getWhere(): array
@@ -24,11 +24,12 @@ trait WhereTrait
 
     /**
      * Set the WHERE conditions.
+     *
      * @param string|array $conditions The conditions.
      * @param bool $overwrite Whether to overwrite the existing conditions.
      * @return Query The Query.
      */
-    public function where(string|array $conditions, bool $overwrite = false): static
+    public function where(array|string $conditions, bool $overwrite = false): static
     {
         $conditions = (array) $conditions;
 
@@ -42,5 +43,4 @@ trait WhereTrait
 
         return $this;
     }
-
 }

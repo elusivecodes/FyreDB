@@ -15,24 +15,27 @@ use function is_string;
  */
 abstract class Query
 {
-
     protected static bool $multipleTables = false;
-    protected static bool $virtualTables = false;
+
     protected static bool $tableAliases = false;
+
+    protected static bool $virtualTables = false;
 
     protected Connection $connection;
 
+    protected bool $dirty = false;
+
     protected array $table = [];
 
-    protected bool $dirty = false;
     protected bool $useBinder = true;
 
     /**
      * New Query constructor.
+     *
      * @param Connection $connection The connection.
      * @param string|array|null $table The table.
      */
-    public function __construct(Connection $connection, string|array|null $table = null)
+    public function __construct(Connection $connection, array|string|null $table = null)
     {
         $this->connection = $connection;
 
@@ -43,6 +46,7 @@ abstract class Query
 
     /**
      * Generate the SQL query.
+     *
      * @return string The SQL query.
      */
     public function __toString(): string
@@ -52,9 +56,10 @@ abstract class Query
 
     /**
      * Execute the query.
+     *
      * @return ResultSet|bool The query result.
      */
-    public function execute(ValueBinder|null $binder = null): ResultSet|bool
+    public function execute(ValueBinder|null $binder = null): bool|ResultSet
     {
         if ($this->useBinder) {
             $binder ??= new ValueBinder();
@@ -62,7 +67,7 @@ abstract class Query
 
         $query = $this->sql($binder);
 
-        $bindings = $binder ? 
+        $bindings = $binder ?
             $binder->bindings() :
             [];
 
@@ -75,6 +80,7 @@ abstract class Query
 
     /**
      * Get the Connection.
+     *
      * @return Connection The Connection.
      */
     public function getConnection(): Connection
@@ -84,9 +90,10 @@ abstract class Query
 
     /**
      * Get the table.
+     *
      * @return string|array|null The table.
      */
-    public function getTable(): string|array|null
+    public function getTable(): array|string|null
     {
         if (static::$multipleTables) {
             return $this->table;
@@ -97,22 +104,24 @@ abstract class Query
 
     /**
      * Generate the SQL query.
+     *
      * @return string The SQL query.
      */
     abstract public function sql(ValueBinder|null $binder = null): string;
 
     /**
      * Set the table.
+     *
      * @param string|array $table The table.
      * @param bool $overwrite Whether to overwrite the existing table.
      * @return Query The Query.
      */
-    public function table(string|array $table, bool $overwrite = false): static
+    public function table(array|string $table, bool $overwrite = false): static
     {
         $table = (array) $table;
 
         if (!static::$virtualTables) {
-            foreach ($table AS $test) {
+            foreach ($table as $test) {
                 if (!is_string($test)) {
                     throw DbException::forVirtualTablesNotSupported();
                 }
@@ -145,5 +154,4 @@ abstract class Query
     {
         $this->dirty = true;
     }
-
 }

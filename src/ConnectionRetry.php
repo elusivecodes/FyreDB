@@ -12,23 +12,23 @@ use Throwable;
  */
 class ConnectionRetry
 {
-
     protected const RECONNECT_ERRORS = [
         1317, // interrupted
         2002, // refused
-        2006 // gone away
+        2006, // gone away
     ];
 
     protected Connection $connection;
 
-    protected int $reconnectDelay;
-
     protected int $maxRetries;
+
+    protected int $reconnectDelay;
 
     protected int $retries = 0;
 
     /**
      * New Retry constructor.
+     *
      * @param Connection $connection The Connection.
      * @param int $reconnectDelay The number of milliseconds to wait before reconnecting.
      * @param int $maxRetries The maximum number of retries.
@@ -41,9 +41,21 @@ class ConnectionRetry
     }
 
     /**
+     * Get the number of retry attempts.
+     *
+     * @return int The number of retry attempts.
+     */
+    public function getRetries(): int
+    {
+        return $this->retries;
+    }
+
+    /**
      * Run a callback and retry if an exception is thrown.
+     *
      * @param Closure $action The callback to execute.
      * @return mixed The callback result.
+     *
      * @throws Throwable The last exception thrown.
      */
     public function run(Closure $action): mixed
@@ -55,6 +67,7 @@ class ConnectionRetry
             } catch (PDOException $e) {
                 if ($this->shouldRetry($e)) {
                     $this->retries++;
+
                     continue;
                 }
 
@@ -64,35 +77,8 @@ class ConnectionRetry
     }
 
     /**
-     * Get the number of retry attempts.
-     * @return int The number of retry attempts.
-     */
-    public function getRetries(): int
-    {
-        return $this->retries;
-    }
-
-    /**
-     * Determine whether a retry attempt should be made.
-     * @param PDOException $exception The Exception.
-     * @return bool TRUE if a retry attempt should be made, otherwise FALSE.
-     */
-    protected function shouldRetry(PDOException $exception): bool
-    {
-        if (
-            $this->retries < $this->maxRetries &&
-            !$this->connection->inTransaction() &&
-            $exception->errorInfo &&
-            in_array($exception->errorInfo[1], static::RECONNECT_ERRORS)
-        ) {
-            return $this->reconnect();
-        }
-
-        return false;
-    }
-
-    /**
      * Re-establish the connection.
+     *
      * @return bool TRUE if the connection was re-established, otherwise FALSE.
      */
     protected function reconnect(): bool
@@ -109,4 +95,23 @@ class ConnectionRetry
         }
     }
 
+    /**
+     * Determine whether a retry attempt should be made.
+     *
+     * @param PDOException $exception The Exception.
+     * @return bool TRUE if a retry attempt should be made, otherwise FALSE.
+     */
+    protected function shouldRetry(PDOException $exception): bool
+    {
+        if (
+            $this->retries < $this->maxRetries &&
+            !$this->connection->inTransaction() &&
+            $exception->errorInfo &&
+            in_array($exception->errorInfo[1], static::RECONNECT_ERRORS)
+        ) {
+            return $this->reconnect();
+        }
+
+        return false;
+    }
 }

@@ -21,12 +21,6 @@ use function array_merge;
  */
 class DeleteQuery extends Query
 {
-
-    protected static bool $multipleTables = true;
-    protected static bool $tableAliases = true;
-
-    protected array $alias = [];
-
     use EpilogTrait;
     use FromTrait;
     use JoinTrait;
@@ -34,12 +28,19 @@ class DeleteQuery extends Query
     use OrderByTrait;
     use WhereTrait;
 
+    protected static bool $multipleTables = true;
+
+    protected static bool $tableAliases = true;
+
+    protected array $alias = [];
+
     /**
      * New DeleteQuery constructor.
+     *
      * @param Connection $connection The connection.
      * @param string|array|null $alias The alias to delete.
      */
-    public function __construct(Connection $connection, string|array|null $alias = null)
+    public function __construct(Connection $connection, array|string|null $alias = null)
     {
         parent::__construct($connection);
 
@@ -50,11 +51,10 @@ class DeleteQuery extends Query
 
     /**
      * Set the delete alias.
-     * @param string|array $alias
-     * @param bool $overwrite
+     *
      * @return DeleteQuery The DeleteQuery.
      */
-    public function alias(string|array $alias, bool $overwrite = false): static
+    public function alias(array|string $alias, bool $overwrite = false): static
     {
         $alias = (array) $alias;
         $alias = array_filter($alias);
@@ -70,6 +70,7 @@ class DeleteQuery extends Query
 
     /**
      * Get the delete alias.
+     *
      * @return array The delete alias.
      */
     public function getAlias(): array
@@ -79,6 +80,7 @@ class DeleteQuery extends Query
 
     /**
      * Generate the SQL query.
+     *
      * @return string The SQL query.
      */
     public function sql(ValueBinder|null $binder = null): string
@@ -94,5 +96,4 @@ class DeleteQuery extends Query
 
         return $query;
     }
-
 }

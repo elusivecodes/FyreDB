@@ -7,8 +7,6 @@ use Closure;
 use Fyre\DateTime\DateTime;
 use Fyre\DB\Queries\SelectQuery;
 
-use const FILTER_VALIDATE_FLOAT;
-
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -26,16 +24,112 @@ use function preg_match;
 use function strtoupper;
 use function trim;
 
+use const FILTER_VALIDATE_FLOAT;
+
 /**
  * QueryGenerator
  */
 class QueryGenerator
 {
-
     protected Connection $connection;
 
     /**
+     * Combine conditions.
+     *
+     * @param array $fields The fields.
+     * @param array $values The values.
+     * @return array The combined conditions.
+     */
+    public static function combineConditions(array $fields, array $values): array
+    {
+        $fields = array_values($fields);
+        $values = array_values($values);
+
+        $fields = array_slice($fields, 0, count($values));
+
+        $conditions = [];
+
+        foreach ($fields as $i => $field) {
+            $value = $values[$i] ?? null;
+
+            if ($value === null) {
+                $conditions[] = $field.' IS NULL';
+            } else {
+                $conditions[$field] = $value;
+            }
+        }
+
+        return $conditions;
+    }
+
+    /**
+     * Normalize conditions.
+     *
+     * @param array $fields The fields.
+     * @param array $allValues The values.
+     * @return array The normalized conditions.
+     */
+    public static function normalizeConditions(array $fields, array $allValues): array
+    {
+        if ($fields === [] || $allValues === []) {
+            return [];
+        }
+
+        $allConditions = array_map(
+            fn(array $values): array => static::combineConditions($fields, $values),
+            $allValues
+        );
+
+        if (count($allConditions) === 1) {
+            return array_shift($allConditions);
+        }
+
+        if (count($fields) > 1) {
+            return [
+                'or' => $allConditions,
+            ];
+        }
+
+        $nullCondition = null;
+        $values = [];
+
+        foreach ($allConditions as $conditions) {
+            foreach ($conditions as $key => $value) {
+                if (is_numeric($key)) {
+                    $nullCondition ??= $value;
+                } else if (!in_array($value, $values)) {
+                    $values[] = $value;
+                }
+            }
+        }
+
+        $valueCount = count($values);
+
+        $conditions = [];
+
+        $field = array_shift($fields);
+        if ($valueCount === 1) {
+            $conditions[$field] = array_shift($values);
+        } else if ($valueCount > 1) {
+            $conditions[$field.' IN'] = $values;
+        }
+
+        if ($nullCondition) {
+            $conditions[] = $nullCondition;
+        }
+
+        if (count($conditions) > 1) {
+            return [
+                'or' => $conditions,
+            ];
+        }
+
+        return $conditions;
+    }
+
+    /**
      * New QueryGenerator constructor.
+     *
      * @param Connection $connection The connection.
      */
     public function __construct(Connection $connection)
@@ -45,6 +139,7 @@ class QueryGenerator
 
     /**
      * Generate the DELETE portion of the query.
+     *
      * @param array $tables The tables.
      * @param array $aliases The table aliases to delete.
      * @return string The query string.
@@ -80,6 +175,7 @@ class QueryGenerator
 
     /**
      * Generate the epilog portion of the query.
+     *
      * @param string $string The string.
      * @return string The query string.
      */
@@ -94,6 +190,7 @@ class QueryGenerator
 
     /**
      * Generate the GROUP BY portion of the query.
+     *
      * @param array $fields The fields.
      * @return string The query string.
      */
@@ -111,6 +208,7 @@ class QueryGenerator
 
     /**
      * Generate the HAVING portion of the query.
+     *
      * @param array $conditions The conditions.
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
@@ -129,6 +227,7 @@ class QueryGenerator
 
     /**
      * Generate an INSERT query.
+     *
      * @param array $tables The tables.
      * @param array $values The values.
      * @param ValueBinder|null $binder The value binder.
@@ -141,6 +240,7 @@ class QueryGenerator
         $values = array_map(
             function(array $values) use ($binder): string {
                 $values = array_map(fn(mixed $value): string => $this->parseExpression($value, $binder), $values);
+
                 return '('.implode(', ', $values).')';
             },
             $values
@@ -158,18 +258,19 @@ class QueryGenerator
 
     /**
      * Generate an INSERT query from another query.
+     *
      * @param array $tables The tables.
      * @param Closure|SelectQuery|QueryLiteral|string $from The query.
      * @param array $columns The columns.
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildInsertFrom(array $tables, Closure|SelectQuery|QueryLiteral|string $from, array $columns, ValueBinder|null $binder = null): string
+    public function buildInsertFrom(array $tables, Closure|QueryLiteral|SelectQuery|string $from, array $columns, ValueBinder|null $binder = null): string
     {
         $query = 'INSERT INTO ';
         $query .= $this->buildTables($tables);
 
-        if ($columns !== []) { 
+        if ($columns !== []) {
             $query .= ' ('.implode(', ', $columns).')';
         }
 
@@ -182,6 +283,7 @@ class QueryGenerator
 
     /**
      * Generate the JOIN portion of the query.
+     *
      * @param array $joins The joins.
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
@@ -194,14 +296,14 @@ class QueryGenerator
 
         $query = '';
 
-        foreach ($joins AS $alias => $join) {
+        foreach ($joins as $alias => $join) {
             $join['type'] ??= 'INNER';
             $join['using'] ??= null;
             $join['conditions'] ??= [];
 
             $query .= ' '.strtoupper($join['type']).' JOIN ';
             $query .= $this->buildTables([
-                $alias => $join['table']
+                $alias => $join['table'],
             ]);
 
             if ($join['using']) {
@@ -216,6 +318,7 @@ class QueryGenerator
 
     /**
      * Generate the LIMIT portion of the query.
+     *
      * @param int|null $limit The limit.
      * @param int $offset The offset.
      * @return string The query string.
@@ -239,6 +342,7 @@ class QueryGenerator
 
     /**
      * Generate the ORDER BY portion of the query.
+     *
      * @param array $fields The fields.
      * @return string The query string.
      */
@@ -264,6 +368,7 @@ class QueryGenerator
 
     /**
      * Generate the SELECT portion of the query.
+     *
      * @param array $tables The tables.
      * @param array $fields The fields.
      * @param bool $distinct Whether to use a DISTINCT clause.
@@ -303,7 +408,44 @@ class QueryGenerator
     }
 
     /**
+     * Generate the UNION portion of the query.
+     *
+     * @param array $unions The unions.
+     * @return string The query string.
+     */
+    public function buildUnion(array $unions): string
+    {
+        if ($unions === []) {
+            return '';
+        }
+
+        $query = '';
+
+        foreach ($unions as $union) {
+            switch ($union['type']) {
+                case 'all':
+                    $query .= ' UNION ALL ';
+                    break;
+                case 'distinct':
+                    $query .= ' UNION DISTINCT ';
+                    break;
+                case 'except':
+                    $query .= ' EXCEPT ';
+                    break;
+                case 'intersect':
+                    $query .= ' INTERSECT ';
+                    break;
+            }
+
+            $query .= $this->parseExpression($union['query'], quote: false);
+        }
+
+        return $query;
+    }
+
+    /**
      * Generate the UPDATE portion of the query.
+     *
      * @param array $tables The tables.
      * @param array $data The data.
      * @param ValueBinder|null $binder The value binder.
@@ -333,6 +475,7 @@ class QueryGenerator
 
     /**
      * Generate a batch UPDATE query.
+     *
      * @param array $tables The tables.
      * @param array $data The data.
      * @param array $keys The key to use for updating.
@@ -352,13 +495,14 @@ class QueryGenerator
         $allValues = [];
         $updateData = [];
 
-        foreach ($columns AS $i => $column) {
+        foreach ($columns as $i => $column) {
             $sql = $column.' = CASE';
 
             $useElse = false;
-            foreach ($data AS $j => $values) {
+            foreach ($data as $j => $values) {
                 if (!array_key_exists($column, $values)) {
                     $useElse = true;
+
                     continue;
                 }
 
@@ -403,42 +547,8 @@ class QueryGenerator
     }
 
     /**
-     * Generate the UNION portion of the query.
-     * @param array $unions The unions.
-     * @return string The query string.
-     */
-    public function buildUnion(array $unions): string
-    {
-        if ($unions === []) {
-            return '';
-        }
-
-        $query = '';
-
-        foreach ($unions AS $union) {
-            switch ($union['type']) {
-                case 'all':
-                    $query .= ' UNION ALL ';
-                    break;
-                case 'distinct':
-                    $query .= ' UNION DISTINCT ';
-                    break;
-                case 'except':
-                    $query .= ' EXCEPT ';
-                    break;
-                case 'intersect':
-                    $query .= ' INTERSECT ';
-                    break;
-            }
-
-            $query .= $this->parseExpression($union['query'], quote: false);
-        }
-
-        return  $query;
-    }
-
-    /**
      * Generate the WHERE portion of the query.
+     *
      * @param array $conditions The conditions.
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
@@ -457,6 +567,7 @@ class QueryGenerator
 
     /**
      * Generate the WITH portion of the query.
+     *
      * @param array $withs The common table expressions.
      * @return string The query string.
      */
@@ -468,7 +579,7 @@ class QueryGenerator
 
         $query = 'WITH ';
 
-        foreach ($withs AS $with) {
+        foreach ($withs as $with) {
             if (!$with['recursive']) {
                 continue;
             }
@@ -490,6 +601,7 @@ class QueryGenerator
 
     /**
      * Recursively build conditions.
+     *
      * @param array $conditions The conditions.
      * @param ValueBinder|null $binder The value binder.
      * @param string $type The condition separator.
@@ -499,7 +611,7 @@ class QueryGenerator
     {
         $query = '';
 
-        foreach ($conditions AS $field => $value) {
+        foreach ($conditions as $field => $value) {
             if ($query) {
                 $query .= ' '.$type.' ';
             }
@@ -546,7 +658,7 @@ class QueryGenerator
                 }
 
                 $value = $this->parseExpression($value, $binder);
-        
+
                 $query .= $field.' '.$comparison.' '.$value;
             }
         }
@@ -556,6 +668,7 @@ class QueryGenerator
 
     /**
      * Build query tables.
+     *
      * @param array $tables The tables.
      * @param bool $with Whether this is a WITH clause.
      * @return string The table string.
@@ -583,6 +696,7 @@ class QueryGenerator
 
     /**
      * Parse an expression string.
+     *
      * @param mixed $value The value to parse.
      * @param ValueBinder|null $binder The value binder.
      * @param bool $quote Whether to quote the string.
@@ -635,97 +749,4 @@ class QueryGenerator
 
         return $this->connection->quote($value);
     }
-
-    /**
-     * Combine conditions.
-     * @param array $fields The fields.
-     * @param array $values The values.
-     * @return array The combined conditions.
-     */
-    public static function combineConditions(array $fields, array $values): array
-    {
-        $fields = array_values($fields);
-        $values = array_values($values);
-
-        $fields = array_slice($fields, 0, count($values));
-
-        $conditions = [];
-
-        foreach ($fields AS $i => $field) {
-            $value = $values[$i] ?? null;
-
-            if ($value === null) {
-                $conditions[] = $field.' IS NULL';
-            } else {
-                $conditions[$field] = $value;
-            }
-        }
-
-        return $conditions;
-    }
-
-    /**
-     * Normalize conditions.
-     * @param array $fields The fields.
-     * @param array $allValues The values.
-     * @return array The normalized conditions.
-     */
-    public static function normalizeConditions(array $fields, array $allValues): array
-    {
-        if ($fields === [] || $allValues === []) {
-            return [];
-        }
-
-        $allConditions =  array_map(
-            fn(array $values): array => static::combineConditions($fields, $values),
-            $allValues
-        );
-
-        if (count($allConditions) === 1) {
-            return array_shift($allConditions);
-        }
-
-        if (count($fields) > 1) {
-            return [
-                'or' => $allConditions
-            ];
-        }
-
-        $nullCondition = null;
-        $values = [];
-
-        foreach ($allConditions AS $conditions) {
-            foreach ($conditions AS $key => $value) {
-                if (is_numeric($key)) {
-                    $nullCondition ??= $value;
-                } else if (!in_array($value, $values)) {
-                    $values[] = $value;
-                }
-            }
-        }
-
-        $valueCount = count($values);
-
-        $conditions = [];
-
-        $field = array_shift($fields);
-        if ($valueCount === 1) {
-            $conditions[$field] = array_shift($values);
-        } else if ($valueCount > 1) {
-            $conditions[$field.' IN'] = $values;
-        }
-
-        if ($nullCondition) {
-            $conditions[] = $nullCondition;
-        }
-
-        if (count($conditions) > 1) {
-            return [
-                'or' => $conditions
-            ];
-        }
-
-        return $conditions;
-    }
-
 }

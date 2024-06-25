@@ -7,15 +7,14 @@ use Fyre\DB\Exceptions\DbException;
 
 trait ReplaceTestTrait
 {
-
     public function testReplace(): void
     {
         $this->db->insert()
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test'
-                ]
+                    'name' => 'Test',
+                ],
             ])
             ->execute();
 
@@ -25,8 +24,8 @@ trait ReplaceTestTrait
                 ->values([
                     [
                         'id' => 1,
-                        'name' => 'Test 2'
-                    ]
+                        'name' => 'Test 2',
+                    ],
                 ])
                 ->execute()
         );
@@ -34,7 +33,7 @@ trait ReplaceTestTrait
         $this->assertSame(
             [
                 'id' => 1,
-                'name' => 'Test 2'
+                'name' => 'Test 2',
             ],
             $this->db->select()
                 ->from('test')
@@ -49,11 +48,11 @@ trait ReplaceTestTrait
             ->into('test')
             ->values([
                 [
-                    'name' => 'Test 1'
+                    'name' => 'Test 1',
                 ],
                 [
-                    'name' => 'Test 2'
-                ]
+                    'name' => 'Test 2',
+                ],
             ])
             ->execute();
 
@@ -63,12 +62,12 @@ trait ReplaceTestTrait
                 ->values([
                     [
                         'id' => 1,
-                        'name' => 'Test 3'
+                        'name' => 'Test 3',
                     ],
                     [
                         'id' => 2,
-                        'name' => 'Test 4'
-                    ]
+                        'name' => 'Test 4',
+                    ],
                 ])
                 ->execute()
         );
@@ -77,12 +76,12 @@ trait ReplaceTestTrait
             [
                 [
                     'id' => 1,
-                    'name' => 'Test 3'
+                    'name' => 'Test 3',
                 ],
                 [
                     'id' => 2,
-                    'name' => 'Test 4'
-                ]
+                    'name' => 'Test 4',
+                ],
             ],
             $this->db->select()
                 ->from('test')
@@ -98,7 +97,17 @@ trait ReplaceTestTrait
         $this->db->replace()
             ->table([
                 'alt' => 'test',
-                'alt2' => 'test2'
+                'alt2' => 'test2',
+            ]);
+    }
+
+    public function testReplaceTableAliases(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->replace()
+            ->table([
+                'alt' => 'test',
             ]);
     }
 
@@ -109,18 +118,7 @@ trait ReplaceTestTrait
         $this->db->replace()
             ->table([
                 'alt' => $this->db->select()
-                    ->from('test')
+                    ->from('test'),
             ]);
     }
-
-    public function testReplaceTableAliases(): void
-    {
-        $this->expectException(DbException::class);
-
-        $this->db->replace()
-            ->table([
-                'alt' => 'test'
-            ]);
-    }
-
 }
