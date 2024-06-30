@@ -25,7 +25,7 @@ trait HavingTrait
     /**
      * Set the HAVING conditions.
      *
-     * @param string|array $conditions The conditions.
+     * @param array|string $conditions The conditions.
      * @param bool $overwrite Whether to overwrite the existing conditions.
      * @return Query The Query.
      */

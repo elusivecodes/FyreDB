@@ -37,12 +37,8 @@ class ReplaceQuery extends Query
      */
     public function sql(ValueBinder|null $binder = null): string
     {
-        $generator = $this->connection->generator();
-
-        $query = $generator->buildInsert($this->table, $this->values, $binder, 'REPLACE');
-        $query .= $generator->buildEpilog($this->epilog);
-
-        return $query;
+        return $this->connection->generator()
+            ->compileReplace($this, $binder);
     }
 
     /**

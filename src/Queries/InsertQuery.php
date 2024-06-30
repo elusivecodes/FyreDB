@@ -37,12 +37,8 @@ class InsertQuery extends Query
      */
     public function sql(ValueBinder|null $binder = null): string
     {
-        $generator = $this->connection->generator();
-
-        $query = $generator->buildInsert($this->table, $this->values, $binder);
-        $query .= $generator->buildEpilog($this->epilog);
-
-        return $query;
+        return $this->connection->generator()
+            ->compileInsert($this, $binder);
     }
 
     /**

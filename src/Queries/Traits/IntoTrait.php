@@ -11,11 +11,11 @@ trait IntoTrait
     /**
      * Get the INTO clause.
      *
-     * @return string|array|null The table.
+     * @return array|string|null The table.
      */
     public function getInto(): array|string|null
     {
-        return $this->getTable();
+        return $this->getTable()[0] ?? null;
     }
 
     /**

@@ -5,7 +5,13 @@ namespace Fyre\DB;
 
 use Closure;
 use Fyre\DateTime\DateTime;
+use Fyre\DB\Queries\DeleteQuery;
+use Fyre\DB\Queries\InsertFromQuery;
+use Fyre\DB\Queries\InsertQuery;
+use Fyre\DB\Queries\ReplaceQuery;
 use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\Queries\UpdateBatchQuery;
+use Fyre\DB\Queries\UpdateQuery;
 
 use function array_filter;
 use function array_key_exists;
@@ -138,13 +144,205 @@ class QueryGenerator
     }
 
     /**
+     * Compile a DeleteQuery to SQL.
+     *
+     * @param DeleteQuery $query The DeleteQuery.
+     * @param ValueBinder|null $binder The ValueBinder.
+     * @return string The compiled SQL query.
+     */
+    public function compileDelete(DeleteQuery $query, ValueBinder|null $binder = null): string
+    {
+        $sql = $this->buildDelete($query->getTable(), $query->getAlias());
+        $sql .= $this->buildJoin($query->getJoin(), $binder);
+        $sql .= $this->buildWhere($query->getWhere(), $binder);
+        $sql .= $this->buildOrderBy($query->getOrderBy());
+        $sql .= $this->buildLimit($query->getLimit(), 0);
+        $sql .= $this->buildEpilog($query->getEpilog());
+
+        return $sql;
+    }
+
+    /**
+     * Compile an InsertQuery to SQL.
+     *
+     * @param InsertQuery $query The InsertQuery.
+     * @param ValueBinder|null $binder The ValueBinder.
+     * @return string The compiled SQL query.
+     */
+    public function compileInsert(InsertQuery $query, ValueBinder|null $binder = null): string
+    {
+        $sql = $this->buildInsert($query->getTable(), $query->getValues(), $binder);
+        $sql .= $this->buildEpilog($query->getEpilog());
+
+        return $sql;
+    }
+
+    /**
+     * Compile an InsertFromQuery to SQL.
+     *
+     * @param InsertFromQuery $query The InsertFromQuery.
+     * @param ValueBinder|null $binder The ValueBinder.
+     * @return string The compiled SQL query.
+     */
+    public function compileInsertFrom(InsertFromQuery $query, ValueBinder|null $binder = null): string
+    {
+        $sql = $this->buildInsertFrom($query->getTable(), $query->getFrom(), $query->getColumns(), $binder);
+        $sql .= $this->buildEpilog($query->getEpilog());
+
+        return $sql;
+    }
+
+    /**
+     * Compile a ReplaceQuery to SQL.
+     *
+     * @param ReplaceQuery $query The ReplaceQuery.
+     * @param ValueBinder|null $binder The ValueBinder.
+     * @return string The compiled SQL query.
+     */
+    public function compileReplace(ReplaceQuery $query, ValueBinder|null $binder = null): string
+    {
+        $sql = $this->buildInsert($query->getTable(), $query->getValues(), $binder, 'REPLACE');
+        $sql .= $this->buildEpilog($query->getEpilog());
+
+        return $sql;
+    }
+
+    /**
+     * Compile a SelectQuery to SQL.
+     *
+     * @param SelectQuery $query The SelectQuery.
+     * @param ValueBinder|null $binder The ValueBinder.
+     * @return string The compiled SQL query.
+     */
+    public function compileSelect(SelectQuery $query, ValueBinder|null $binder = null): string
+    {
+        $sql = $this->buildWith($query->getWith(), $binder);
+        $sql .= $this->buildSelect($query->getTable(), $query->getSelect(), $query->getDistinct(), $binder);
+        $sql .= $this->buildJoin($query->getJoin(), $binder);
+        $sql .= $this->buildWhere($query->getWhere(), $binder);
+
+        $unions = $query->getUnion();
+        if ($unions !== []) {
+            $sql = '('.$sql.')';
+            $sql .= $this->buildUnion($unions);
+        }
+
+        $sql .= $this->buildGroupBy($query->getGroupBy());
+        $sql .= $this->buildOrderBy($query->getOrderBy());
+        $sql .= $this->buildHaving($query->getHaving(), $binder);
+        $sql .= $this->buildLimit($query->getLimit(), $query->getOffset());
+        $sql .= $this->buildEpilog($query->getEpilog());
+
+        return $sql;
+    }
+
+    /**
+     * Compile an UpdateQuery to SQL.
+     *
+     * @param UpdateQuery $query The UpdateQuery.
+     * @param ValueBinder|null $binder The ValueBinder.
+     * @return string The compiled SQL query.
+     */
+    public function compileUpdate(UpdateQuery $query, ValueBinder|null $binder = null): string
+    {
+        $sql = $this->buildUpdate($query->getTable(), $query->getData(), $binder);
+        $sql .= $this->buildJoin($query->getJoin(), $binder);
+        $sql .= $this->buildWhere($query->getWhere(), $binder);
+        $sql .= $this->buildEpilog($query->getEpilog());
+
+        return $sql;
+    }
+
+    /**
+     * Compile an UpdateBatchQuery to SQL.
+     *
+     * @param UpdateBatchQuery $query The UpdateBatchQuery.
+     * @param ValueBinder|null $binder The ValueBinder.
+     * @return string The compiled SQL query.
+     */
+    public function compileUpdateBatch(UpdateBatchQuery $query, ValueBinder|null $binder = null): string
+    {
+        $sql = $this->buildUpdateBatch($query->getTable(), $query->getData(), $query->getKeys(), $binder);
+        $sql .= $this->buildEpilog($query->getEpilog());
+
+        return $sql;
+    }
+
+    /**
+     * Recursively build conditions.
+     *
+     * @param array $conditions The conditions.
+     * @param ValueBinder|null $binder The value binder.
+     * @param string $type The condition separator.
+     * @return string The conditions.
+     */
+    protected function buildConditions(array $conditions, ValueBinder|null $binder = null, string $type = 'AND'): string
+    {
+        $query = '';
+
+        foreach ($conditions as $field => $value) {
+            if ($query) {
+                $query .= ' '.$type.' ';
+            }
+
+            if (is_array($value)) {
+                if (is_numeric($field)) {
+                    $subType = 'AND';
+                } else {
+                    $subType = strtoupper($field);
+                }
+
+                if (in_array($subType, ['AND', 'OR'])) {
+                    $query .= '('.$this->buildConditions($value, $binder, $subType).')';
+                } else if ($subType === 'NOT') {
+                    $query .= 'NOT ('.$this->buildConditions($value, $binder).')';
+                } else {
+                    $field = trim($field);
+
+                    preg_match('/^(.+?)\s+((?:NOT )?IN)$/i', $field, $match);
+
+                    if ($match) {
+                        $field = $match[1];
+                        $comparison = strtoupper($match[2]);
+                    } else {
+                        $comparison = 'IN';
+                    }
+
+                    $value = array_map(fn(mixed $val): string => $this->parseExpression($val, $binder), $value);
+
+                    $query .= $field.' '.$comparison.' ('.implode(', ', $value).')';
+                }
+            } else if (is_numeric($field)) {
+                $query .= $this->parseExpression($value, $binder, false);
+            } else {
+                $field = trim($field);
+
+                preg_match('/^(.+?)\s+([\>\<]\=?|\!?\=|(?:NOT\s+)?(?:LIKE|IN)|IS(?:\s+NOT)?)$/i', $field, $match);
+
+                if ($match) {
+                    $field = $match[1];
+                    $comparison = strtoupper($match[2]);
+                } else {
+                    $comparison = '=';
+                }
+
+                $value = $this->parseExpression($value, $binder);
+
+                $query .= $field.' '.$comparison.' '.$value;
+            }
+        }
+
+        return $query;
+    }
+
+    /**
      * Generate the DELETE portion of the query.
      *
      * @param array $tables The tables.
      * @param array $aliases The table aliases to delete.
      * @return string The query string.
      */
-    public function buildDelete(array $tables, array $aliases = []): string
+    protected function buildDelete(array $tables, array $aliases = []): string
     {
         $query = 'DELETE';
 
@@ -179,7 +377,7 @@ class QueryGenerator
      * @param string $string The string.
      * @return string The query string.
      */
-    public function buildEpilog(string $string): string
+    protected function buildEpilog(string $string): string
     {
         if (!$string) {
             return '';
@@ -194,7 +392,7 @@ class QueryGenerator
      * @param array $fields The fields.
      * @return string The query string.
      */
-    public function buildGroupBy(array $fields): string
+    protected function buildGroupBy(array $fields): string
     {
         if ($fields === []) {
             return '';
@@ -213,7 +411,7 @@ class QueryGenerator
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildHaving(array $conditions, ValueBinder|null $binder = null): string
+    protected function buildHaving(array $conditions, ValueBinder|null $binder = null): string
     {
         if ($conditions === []) {
             return '';
@@ -234,7 +432,7 @@ class QueryGenerator
      * @param string $type The type of INSERT query.
      * @return string The query string.
      */
-    public function buildInsert(array $tables, array $values, ValueBinder|null $binder = null, string $type = 'INSERT'): string
+    protected function buildInsert(array $tables, array $values, ValueBinder|null $binder = null, string $type = 'INSERT'): string
     {
         $columns = array_keys($values[0] ?? []);
         $values = array_map(
@@ -260,12 +458,12 @@ class QueryGenerator
      * Generate an INSERT query from another query.
      *
      * @param array $tables The tables.
-     * @param Closure|SelectQuery|QueryLiteral|string $from The query.
+     * @param Closure|QueryLiteral|SelectQuery|string $from The query.
      * @param array $columns The columns.
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildInsertFrom(array $tables, Closure|QueryLiteral|SelectQuery|string $from, array $columns, ValueBinder|null $binder = null): string
+    protected function buildInsertFrom(array $tables, Closure|QueryLiteral|SelectQuery|string $from, array $columns, ValueBinder|null $binder = null): string
     {
         $query = 'INSERT INTO ';
         $query .= $this->buildTables($tables);
@@ -288,7 +486,7 @@ class QueryGenerator
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildJoin(array $joins, ValueBinder|null $binder = null): string
+    protected function buildJoin(array $joins, ValueBinder|null $binder = null): string
     {
         if ($joins === []) {
             return '';
@@ -323,7 +521,7 @@ class QueryGenerator
      * @param int $offset The offset.
      * @return string The query string.
      */
-    public function buildLimit(int|null $limit, int $offset): string
+    protected function buildLimit(int|null $limit, int $offset): string
     {
         if (!$limit && !$offset) {
             return '';
@@ -346,7 +544,7 @@ class QueryGenerator
      * @param array $fields The fields.
      * @return string The query string.
      */
-    public function buildOrderBy(array $fields): string
+    protected function buildOrderBy(array $fields): string
     {
         if ($fields === []) {
             return '';
@@ -375,7 +573,7 @@ class QueryGenerator
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildSelect(array $tables, array $fields, bool $distinct = false, ValueBinder|null $binder = null): string
+    protected function buildSelect(array $tables, array $fields, bool $distinct = false, ValueBinder|null $binder = null): string
     {
         $fields = array_map(
             function(mixed $key, mixed $value) use ($binder) {
@@ -408,12 +606,40 @@ class QueryGenerator
     }
 
     /**
+     * Build query tables.
+     *
+     * @param array $tables The tables.
+     * @param bool $with Whether this is a WITH clause.
+     * @return string The table string.
+     */
+    protected function buildTables(array $tables, bool $with = false): string
+    {
+        $tables = array_map(
+            function(mixed $alias, mixed $table) use ($with): string {
+                $query = $this->parseExpression($table, quote: $with);
+
+                if ($with) {
+                    $query = $alias.' AS '.$query;
+                } else if ($alias !== $table && !is_numeric($alias)) {
+                    $query .= ' AS '.$alias;
+                }
+
+                return $query;
+            },
+            array_keys($tables),
+            $tables
+        );
+
+        return implode(', ', $tables);
+    }
+
+    /**
      * Generate the UNION portion of the query.
      *
      * @param array $unions The unions.
      * @return string The query string.
      */
-    public function buildUnion(array $unions): string
+    protected function buildUnion(array $unions): string
     {
         if ($unions === []) {
             return '';
@@ -451,7 +677,7 @@ class QueryGenerator
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildUpdate(array $tables, array $data, ValueBinder|null $binder = null): string
+    protected function buildUpdate(array $tables, array $data, ValueBinder|null $binder = null): string
     {
         $data = array_map(
             function(mixed $field, mixed $value) use ($binder): string {
@@ -482,7 +708,7 @@ class QueryGenerator
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildUpdateBatch(array $tables, array $data, array $keys, ValueBinder|null $binder = null): string
+    protected function buildUpdateBatch(array $tables, array $data, array $keys, ValueBinder|null $binder = null): string
     {
         $columns = array_filter(
             array_keys($data[0] ?? []),
@@ -553,7 +779,7 @@ class QueryGenerator
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    public function buildWhere(array $conditions, ValueBinder|null $binder = null): string
+    protected function buildWhere(array $conditions, ValueBinder|null $binder = null): string
     {
         if ($conditions === []) {
             return '';
@@ -571,7 +797,7 @@ class QueryGenerator
      * @param array $withs The common table expressions.
      * @return string The query string.
      */
-    public function buildWith(array $withs): string
+    protected function buildWith(array $withs): string
     {
         if ($withs === []) {
             return '';
@@ -597,101 +823,6 @@ class QueryGenerator
         $query .= ' ';
 
         return $query;
-    }
-
-    /**
-     * Recursively build conditions.
-     *
-     * @param array $conditions The conditions.
-     * @param ValueBinder|null $binder The value binder.
-     * @param string $type The condition separator.
-     * @return string The conditions.
-     */
-    protected function buildConditions(array $conditions, ValueBinder|null $binder = null, string $type = 'AND'): string
-    {
-        $query = '';
-
-        foreach ($conditions as $field => $value) {
-            if ($query) {
-                $query .= ' '.$type.' ';
-            }
-
-            if (is_array($value)) {
-                if (is_numeric($field)) {
-                    $subType = 'AND';
-                } else {
-                    $subType = strtoupper($field);
-                }
-
-                if (in_array($subType, ['AND', 'OR'])) {
-                    $query .= '('.$this->buildConditions($value, $binder, $subType).')';
-                } else if ($subType === 'NOT') {
-                    $query .= 'NOT ('.$this->buildConditions($value, $binder).')';
-                } else {
-                    $field = trim($field);
-
-                    preg_match('/^(.+?)\s+((?:NOT )?IN)$/i', $field, $match);
-
-                    if ($match) {
-                        $field = $match[1];
-                        $comparison = strtoupper($match[2]);
-                    } else {
-                        $comparison = '=';
-                    }
-
-                    $value = array_map(fn(mixed $val): string => $this->parseExpression($val, $binder), $value);
-
-                    $query .= $field.' '.$comparison.' ('.implode(', ', $value).')';
-                }
-            } else if (is_numeric($field)) {
-                $query .= $this->parseExpression($value, $binder, false);
-            } else {
-                $field = trim($field);
-
-                preg_match('/^(.+?)\s+([\>\<]\=?|\!?\=|(?:NOT\s+)?(?:LIKE|IN)|IS(?:\s+NOT)?)$/i', $field, $match);
-
-                if ($match) {
-                    $field = $match[1];
-                    $comparison = strtoupper($match[2]);
-                } else {
-                    $comparison = '=';
-                }
-
-                $value = $this->parseExpression($value, $binder);
-
-                $query .= $field.' '.$comparison.' '.$value;
-            }
-        }
-
-        return $query;
-    }
-
-    /**
-     * Build query tables.
-     *
-     * @param array $tables The tables.
-     * @param bool $with Whether this is a WITH clause.
-     * @return string The table string.
-     */
-    protected function buildTables(array $tables, bool $with = false): string
-    {
-        $tables = array_map(
-            function(mixed $alias, mixed $table) use ($with): string {
-                $query = $this->parseExpression($table, quote: $with);
-
-                if ($with) {
-                    $query = $alias.' AS '.$query;
-                } else if ($alias !== $table && !is_numeric($alias)) {
-                    $query .= ' AS '.$alias;
-                }
-
-                return $query;
-            },
-            array_keys($tables),
-            $tables
-        );
-
-        return implode(', ', $tables);
     }
 
     /**

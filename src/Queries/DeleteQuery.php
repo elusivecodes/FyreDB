@@ -38,7 +38,7 @@ class DeleteQuery extends Query
      * New DeleteQuery constructor.
      *
      * @param Connection $connection The connection.
-     * @param string|array|null $alias The alias to delete.
+     * @param array|string|null $alias The alias to delete.
      */
     public function __construct(Connection $connection, array|string|null $alias = null)
     {
@@ -85,15 +85,7 @@ class DeleteQuery extends Query
      */
     public function sql(ValueBinder|null $binder = null): string
     {
-        $generator = $this->connection->generator();
-
-        $query = $generator->buildDelete($this->table, $this->alias);
-        $query .= $generator->buildJoin($this->joins, $binder);
-        $query .= $generator->buildWhere($this->conditions, $binder);
-        $query .= $generator->buildOrderBy($this->orderBy);
-        $query .= $generator->buildLimit($this->limit, 0);
-        $query .= $generator->buildEpilog($this->epilog);
-
-        return $query;
+        return $this->connection->generator()
+            ->compileDelete($this, $binder);
     }
 }

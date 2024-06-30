@@ -9,7 +9,6 @@ use Iterator;
 use PDO;
 use PDOStatement;
 
-use function array_filter;
 use function array_keys;
 use function array_merge;
 use function count;
@@ -19,22 +18,27 @@ use function count;
  */
 abstract class ResultSet implements Countable, Iterator
 {
-    protected array|null $buffer = null;
+    protected static array $types = [];
+
+    protected array $buffer = [];
 
     protected array|null $columnMeta = null;
+
+    protected Connection $connection;
 
     protected int $index = 0;
 
     protected PDOStatement $result;
 
     /**
-     * New MySQLResultSet constructor.
+     * New ResultSet constructor.
      *
      * @param PDOStatement $result The raw result.
      */
-    public function __construct(PDOStatement $result)
+    public function __construct(PDOStatement $result, Connection $connection)
     {
         $this->result = $result;
+        $this->connection = $connection;
     }
 
     /**
@@ -44,15 +48,7 @@ abstract class ResultSet implements Countable, Iterator
      */
     public function all(): array
     {
-        if (!$this->buffer) {
-            $this->buffer = $this->result->fetchAll(PDO::FETCH_ASSOC);
-        } else if (count($this->buffer) < $this->count()) {
-            $results = $this->result->fetchAll(PDO::FETCH_ASSOC);
-            $results = array_filter($results);
-            $this->buffer = array_merge($this->buffer, $results);
-        }
-
-        return $this->buffer;
+        return $this->buffer = array_merge($this->buffer, $this->result->fetchAll(PDO::FETCH_ASSOC));
     }
 
     /**
@@ -105,20 +101,16 @@ abstract class ResultSet implements Countable, Iterator
      */
     public function fetch(int $index = 0): array|null
     {
-        $count = $this->count();
+        $bufferIndex = $index - count($this->buffer);
 
-        if ($index >= $count) {
-            return null;
-        }
+        while ($bufferIndex-- >= 0) {
+            $row = $this->result->fetch(PDO::FETCH_ASSOC);
 
-        if ($index === $count - 1) {
-            return $this->all()[$index];
-        }
+            if (!$row) {
+                break;
+            }
 
-        $this->buffer ??= [];
-
-        while (count($this->buffer) <= $index) {
-            $this->buffer[] = $this->result->fetch(PDO::FETCH_ASSOC);
+            $this->buffer[] = $row;
         }
 
         return $this->buffer[$index] ?? null;
@@ -244,5 +236,17 @@ abstract class ResultSet implements Countable, Iterator
      * @param string $name The column name.
      * @return string|null The database type.
      */
-    abstract protected function getColumnType(string $name): string|null;
+    protected function getColumnType(string $name): string|null
+    {
+        $columns = $this->getColumnMeta();
+        $column = $columns[$name] ?? null;
+
+        if (!$column) {
+            return $column;
+        }
+
+        $nativeType = $column['native_type'];
+
+        return static::$types[$nativeType] ?? 'string';
+    }
 }

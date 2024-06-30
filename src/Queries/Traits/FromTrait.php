@@ -11,7 +11,7 @@ trait FromTrait
     /**
      * Set the FROM clause.
      *
-     * @param string|array $table The table.
+     * @param array|string $table The table.
      * @param bool $overwrite Whether to overwrite the existing table.
      * @return Query The Query.
      */
@@ -23,7 +23,7 @@ trait FromTrait
     /**
      * Get the FROM clause.
      *
-     * @return string|array|null The table.
+     * @return array|string|null The table.
      */
     public function getFrom(): array|string|null
     {

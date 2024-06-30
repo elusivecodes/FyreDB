@@ -25,7 +25,7 @@ trait OrderByTrait
     /**
      * Set the ORDER BY fields.
      *
-     * @param string|array $fields The fields.
+     * @param array|string $fields The fields.
      * @param bool $overwrite Whether to overwrite the existing fields.
      * @return Query The Query.
      */

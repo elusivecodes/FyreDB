@@ -61,13 +61,7 @@ class UpdateQuery extends Query
      */
     public function sql(ValueBinder|null $binder = null): string
     {
-        $generator = $this->connection->generator();
-
-        $query = $generator->buildUpdate($this->table, $this->data, $binder);
-        $query .= $generator->buildJoin($this->joins, $binder);
-        $query .= $generator->buildWhere($this->conditions, $binder);
-        $query .= $generator->buildEpilog($this->epilog);
-
-        return $query;
+        return $this->connection->generator()
+            ->compileUpdate($this, $binder);
     }
 }

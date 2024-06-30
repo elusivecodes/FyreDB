@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Fyre\DB\Handlers\MySQL;
+namespace Fyre\DB\Handlers\Mysql;
 
 use Fyre\DB\Connection;
 use Fyre\DB\Exceptions\DbException;
@@ -13,10 +13,31 @@ use function array_replace;
 use function class_exists;
 
 /**
- * MySQLConnection
+ * MysqlConnection
  */
-class MySQLConnection extends Connection
+class MysqlConnection extends Connection
 {
+    protected static array $defaults = [
+        'host' => '127.0.0.1',
+        'username' => '',
+        'password' => '',
+        'database' => '',
+        'port' => '3306',
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'compress' => false,
+        'persist' => false,
+        'timeout' => null,
+        'ssl' => [
+            'key' => null,
+            'cert' => null,
+            'ca' => null,
+            'capath' => null,
+            'cipher' => null,
+        ],
+        'flags' => [],
+    ];
+
     /**
      * Connect to the database.
      *
@@ -30,7 +51,7 @@ class MySQLConnection extends Connection
         }
 
         if (!class_exists('PDO')) {
-            throw new RuntimeException('MySQL handler requires PDO extension');
+            throw new RuntimeException('Mysql handler requires PDO extension');
         }
 
         $dsn = 'mysql:host='.$this->config['host'].';dbname='.$this->config['database'];
@@ -91,12 +112,32 @@ class MySQLConnection extends Connection
     }
 
     /**
+     * Get the connection charset.
+     *
+     * @return string The connection charset.
+     */
+    public function getCharset(): string
+    {
+        return $this->rawQuery('SELECT @@character_set_client')->fetchColumn();
+    }
+
+    /**
+     * Get the connection collation.
+     *
+     * @return string The connection collation.
+     */
+    public function getCollation(): string
+    {
+        return $this->rawQuery('SELECT @@collation_connection')->fetchColumn();
+    }
+
+    /**
      * Get the ResultSet class.
      *
      * @return string The ResultSet class.
      */
     protected static function resultSetClass(): string
     {
-        return MySQLResultSet::class;
+        return MysqlResultSet::class;
     }
 }

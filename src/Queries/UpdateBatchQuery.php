@@ -33,11 +33,16 @@ class UpdateBatchQuery extends Query
         return $this->data;
     }
 
+    public function getKeys(): array
+    {
+        return $this->keys;
+    }
+
     /**
      * Set the UPDATE batch data.
      *
      * @param array $data The data.
-     * @param string|array $keys The key to use for updating.
+     * @param array|string $keys The key to use for updating.
      * @param bool $overwrite Whether to overwrite the existing data.
      * @return UpdateBatchQuery The UpdateBatchQuery.
      */
@@ -67,11 +72,7 @@ class UpdateBatchQuery extends Query
      */
     public function sql(ValueBinder|null $binder = null): string
     {
-        $generator = $this->connection->generator();
-
-        $query = $generator->buildUpdateBatch($this->table, $this->data, $this->keys, $binder);
-        $query .= $generator->buildEpilog($this->epilog);
-
-        return $query;
+        return $this->connection->generator()
+            ->compileUpdateBatch($this, $binder);
     }
 }

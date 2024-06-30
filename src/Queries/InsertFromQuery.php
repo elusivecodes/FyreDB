@@ -27,7 +27,7 @@ class InsertFromQuery extends Query
      * New SelectQuery constructor.
      *
      * @param Connection $connection The connection.
-     * @param Closure|SelectQuery|QueryLiteral|string $from The query.
+     * @param Closure|QueryLiteral|SelectQuery|string $from The query.
      * @param array $columns The columns.
      */
     public function __construct(Connection $connection, Closure|QueryLiteral|SelectQuery|string $from, array $columns = [])
@@ -38,6 +38,16 @@ class InsertFromQuery extends Query
         $this->columns = $columns;
     }
 
+    public function getColumns(): array
+    {
+        return $this->columns;
+    }
+
+    public function getFrom(): Closure|QueryLiteral|SelectQuery|string
+    {
+        return $this->from;
+    }
+
     /**
      * Generate the SQL query.
      *
@@ -45,11 +55,7 @@ class InsertFromQuery extends Query
      */
     public function sql(ValueBinder|null $binder = null): string
     {
-        $generator = $this->connection->generator();
-
-        $query = $generator->buildInsertFrom($this->table, $this->from, $this->columns, $binder);
-        $query .= $generator->buildEpilog($this->epilog);
-
-        return $query;
+        return $this->connection->generator()
+            ->compileInsertFrom($this, $binder);
     }
 }

@@ -8,6 +8,8 @@
 - [Methods](#methods)
 - [Connections](#connections)
     - [MySQL](#mysql)
+    - [Postgres](#postgres)
+    - [Sqlite](#sqlite)
 - [Queries](#queries)
     - [Delete](#delete)
     - [Insert](#insert)
@@ -222,14 +224,6 @@ Get the connection character set.
 $charset = $connection->getCharset();
 ```
 
-**Get Collation**
-
-Get the connection collation.
-
-```php
-$collation = $connection->getCollation();
-```
-
 **Get Error**
 
 Get the last connection error.
@@ -272,6 +266,8 @@ Get the last inserted ID.
 ```php
 $id = $connection->insertId();
 ```
+
+When performing bulk inserts, this method will return the first ID for [*MySQL*](#mysql) connections, and the last ID for [*Postgres*](#postgres) and [*Sqlite*](#sqlite).
 
 **Literal**
 
@@ -337,6 +333,16 @@ If a *SelectQuery* or *QueryLiteral* is supplied as an array value they will be 
 
 A *Closure* can also be supplied as an array value, where the first argument will be the *Connection* and the second argument will be the *ValueBinder*.
 
+**Set Charset**
+
+Set the connection character set.
+
+- `$charset` is a string representing the connection character set.
+
+```php
+$connection->setCharset($charset);
+```
+
 **Transactional**
 
 Execute a callback inside a database transaction.
@@ -388,7 +394,7 @@ The MySQL connection can be loaded using custom configuration.
 
 - `$key` is a string representing the connection key.
 - `$options` is an array containing configuration options.
-    - `className` must be set to `\Fyre\DB\Handlers\MySQL\MySQLConnection`.
+    - `className` must be set to `\Fyre\DB\Handlers\Mysql\MysqlConnection`.
     - `host` is a string representing the MySQL host, and will default to "*127.0.0.1*".
     - `username` is a string representing the MySQL username.
     - `password` is a string representing the MySQL password.
@@ -412,6 +418,62 @@ ConnectionManager::setConfig($key, $options);
 
 $connection = ConnectionManager::use($key);
 ```
+
+**Get Collation**
+
+Get the connection collation.
+
+```php
+$collation = $connection->getCollation();
+```
+
+### Postgres
+
+The Postgres connection can be loaded using custom configuration.
+
+- `$key` is a string representing the connection key.
+- `$options` is an array containing configuration options.
+    - `className` must be set to `\Fyre\DB\Handlers\Postgres\PostgresConnection`.
+    - `host` is a string representing the Postgres host, and will default to "*127.0.0.1*".
+    - `username` is a string representing the Postgres username.
+    - `password` is a string representing the Postgres password.
+    - `database` is a string representing the Postgres database.
+    - `port` is a number indicating the Postgres port, and will default to *5432*.
+    - `charset` is a string representing the character set, and will default to "*utf8*".
+    - `schema` is a string representing the character set, and will default to "*public*".
+    - `persist` is a boolean indicating whether to use a persistent connection, and will default to *false*.
+    - `timeout` is a number indicating the connection timeout.
+    - `flags` is an array containing PDO connection options.
+
+```php
+ConnectionManager::setConfig($key, $options);
+
+$connection = ConnectionManager::use($key);
+```
+
+**Set Schema**
+
+Set the connection schema.
+
+- `$schema` is a string representing the connection schema.
+
+```php
+$connection->setSchema($schema);
+```
+
+### Sqlite
+
+The Sqlite connection can be loaded using custom configuration.
+
+- `$key` is a string representing the connection key.
+- `$options` is an array containing configuration options.
+    - `className` must be set to `\Fyre\DB\Handlers\Sqlite\SqliteConnection`.
+    - `database` is a string representing the Sqlite database file, and will default to "*:memory:*".
+    - `mask ` is a number indicating the database file permissions, and will default to 0644.
+    - `cache` is a string representing the cache flag.
+    - `mode` is a string representing the mode flag.
+    - `persist` is a boolean indicating whether to use a persistent connection, and will default to *false*.
+    - `flags` is an array containing PDO connection options.
 
 
 ## Queries

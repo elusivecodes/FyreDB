@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Fyre\DB;
 
 use Closure;
-use Exception;
 use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Queries\DeleteQuery;
 use Fyre\DB\Queries\InsertFromQuery;
@@ -26,26 +25,7 @@ use function implode;
  */
 abstract class Connection
 {
-    protected static array $defaults = [
-        'host' => '127.0.0.1',
-        'username' => '',
-        'password' => '',
-        'database' => '',
-        'port' => '3306',
-        'collation' => 'utf8mb4_unicode_ci',
-        'charset' => 'utf8mb4',
-        'compress' => false,
-        'persist' => false,
-        'timeout' => null,
-        'ssl' => [
-            'key' => null,
-            'cert' => null,
-            'ca' => null,
-            'capath' => null,
-            'cipher' => null,
-        ],
-        'flags' => [],
-    ];
+    protected static array $defaults = [];
 
     protected int|null $affectedRows = null;
 
@@ -70,7 +50,7 @@ abstract class Connection
      */
     public function __construct(array $options = [])
     {
-        $this->config = array_replace_recursive(self::$defaults, static::$defaults, $options);
+        $this->config = array_replace_recursive(static::$defaults, $options);
 
         $this->connect();
     }
@@ -141,7 +121,7 @@ abstract class Connection
     /**
      * Create a DeleteQuery.
      *
-     * @param string|array|null $alias The alias to delete.
+     * @param array|string|null $alias The alias to delete.
      * @return DeleteQuery A new DeleteQuery.
      */
     public function delete(array|string|null $alias = null): DeleteQuery
@@ -164,11 +144,11 @@ abstract class Connection
      *
      * @param string $sql The SQL query.
      * @param array $params The parameters to bind.
-     * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
+     * @return ResultSet The ResultSet.
      *
      * @throws DbException if the query threw an error.
      */
-    public function execute(string $sql, array $params): bool|ResultSet
+    public function execute(string $sql, array $params): ResultSet
     {
         try {
             return $this->retry()->run(function() use ($sql, $params) {
@@ -198,20 +178,7 @@ abstract class Connection
      *
      * @return string The connection charset.
      */
-    public function getCharset(): string
-    {
-        return $this->rawQuery('SELECT CHARSET("")')->fetchColumn();
-    }
-
-    /**
-     * Get the connection collation.
-     *
-     * @return string The connection collation.
-     */
-    public function getCollation(): string
-    {
-        return $this->rawQuery('SELECT COLLATION("")')->fetchColumn();
-    }
+    abstract public function getCharset(): string;
 
     /**
      * Get the config.
@@ -246,7 +213,7 @@ abstract class Connection
     /**
      * Create an InsertFromQuery.
      *
-     * @param Closure|SelectQuery|QueryLiteral|string $from The query.
+     * @param Closure|QueryLiteral|SelectQuery|string $from The query.
      * @param array $columns The columns.
      * @return InsertFromQuery A new InsertFromQuery.
      */
@@ -296,9 +263,9 @@ abstract class Connection
      * Execute a SQL query.
      *
      * @param string $sql The SQL query.
-     * @return ResultSet|bool The result for SELECT queries, otherwise TRUE for successful queries.
+     * @return ResultSet The ResultSet.
      */
-    public function query(string $sql): bool|ResultSet
+    public function query(string $sql): ResultSet
     {
         $result = $this->rawQuery($sql);
 
@@ -370,12 +337,25 @@ abstract class Connection
     /**
      * Create a SelectQuery.
      *
-     * @param string|array $fields The fields.
+     * @param array|string $fields The fields.
      * @return SelectQuery A new SelectQuery.
      */
     public function select(array|string $fields = '*'): SelectQuery
     {
         return new SelectQuery($this, $fields);
+    }
+
+    /**
+     * Set the connection charset.
+     *
+     * @param string $charset The charset.
+     * @return Connection The Connection.
+     */
+    public function setCharset(string $charset): static
+    {
+        $this->rawQuery('SET NAMES '.$this->quote($charset));
+
+        return $this;
     }
 
     /**
@@ -412,7 +392,7 @@ abstract class Connection
     /**
      * Create an UpdateQuery.
      *
-     * @param string|array|null $table The table.
+     * @param array|string|null $table The table.
      * @return UpdateQuery A new UpdateQuery.
      */
     public function update(array|string|null $table = null): UpdateQuery
@@ -445,19 +425,17 @@ abstract class Connection
      * Generate a result set from a raw result.
      *
      * @param PDOStatement $result The raw result.
-     * @return ResultSet|bool The result set or TRUE if the query was successful.
+     * @return ResultSet The result set.
      */
-    protected function result(PDOStatement $result): bool|ResultSet
+    protected function result(PDOStatement $result): ResultSet
     {
-        if ($result->columnCount() === 0) {
-            $this->affectedRows = $result->rowCount();
-
-            return true;
-        }
+        $this->affectedRows = $result->rowCount();
 
         $class = static::resultSetClass();
 
-        return new $class($result);
+        $resultSet = new $class($result, $this);
+
+        return $resultSet;
     }
 
     /**

@@ -47,7 +47,7 @@ class SelectQuery extends Query
      * New SelectQuery constructor.
      *
      * @param Connection $connection The connection.
-     * @param string|array $fields The fields.
+     * @param array|string $fields The fields.
      */
     public function __construct(Connection $connection, array|string $fields = '*')
     {
@@ -63,24 +63,7 @@ class SelectQuery extends Query
      */
     public function sql(ValueBinder|null $binder = null): string
     {
-        $generator = $this->connection->generator();
-
-        $query = $generator->buildWith($this->with, $binder);
-        $query .= $generator->buildSelect($this->table, $this->fields, $this->distinct, $binder);
-        $query .= $generator->buildJoin($this->joins, $binder);
-        $query .= $generator->buildWhere($this->conditions, $binder);
-
-        if ($this->unions !== []) {
-            $query = '('.$query.')';
-            $query .= $generator->buildUnion($this->unions);
-        }
-
-        $query .= $generator->buildGroupBy($this->groupBy);
-        $query .= $generator->buildOrderBy($this->orderBy);
-        $query .= $generator->buildHaving($this->having, $binder);
-        $query .= $generator->buildLimit($this->limit, $this->offset);
-        $query .= $generator->buildEpilog($this->epilog);
-
-        return $query;
+        return $this->connection->generator()
+            ->compileSelect($this, $binder);
     }
 }

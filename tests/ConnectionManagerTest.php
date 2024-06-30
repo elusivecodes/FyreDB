@@ -5,38 +5,39 @@ namespace Tests;
 
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Exceptions\DbException;
-use Fyre\DB\Handlers\MySQL\MySQLConnection;
+use Fyre\DB\Handlers\Mysql\MysqlConnection;
 use PHPUnit\Framework\TestCase;
+use Tests\Mysql\MysqlConnectionTrait;
 
 use function getenv;
 
 final class ConnectionManagerTest extends TestCase
 {
-    use ConnectionTrait;
+    use MysqlConnectionTrait;
 
     public function testGetConfig(): void
     {
         $this->assertSame(
             [
                 'default' => [
-                    'className' => MySQLConnection::class,
-                    'host' => getenv('DB_HOST'),
-                    'username' => getenv('DB_USERNAME'),
-                    'password' => getenv('DB_PASSWORD'),
-                    'database' => getenv('DB_NAME'),
-                    'port' => getenv('DB_PORT'),
+                    'className' => MysqlConnection::class,
+                    'host' => getenv('MYSQL_HOST'),
+                    'username' => getenv('MYSQL_USERNAME'),
+                    'password' => getenv('MYSQL_PASSWORD'),
+                    'database' => getenv('MYSQL_DATABASE'),
+                    'port' => getenv('MYSQL_PORT'),
                     'collation' => 'utf8mb4_unicode_ci',
                     'charset' => 'utf8mb4',
                     'compress' => true,
                     'persist' => true,
                 ],
                 'other' => [
-                    'className' => MySQLConnection::class,
-                    'host' => getenv('DB_HOST'),
-                    'username' => getenv('DB_USERNAME'),
-                    'password' => getenv('DB_PASSWORD'),
-                    'database' => getenv('DB_NAME'),
-                    'port' => getenv('DB_PORT'),
+                    'className' => MysqlConnection::class,
+                    'host' => getenv('MYSQL_HOST'),
+                    'username' => getenv('MYSQL_USERNAME'),
+                    'password' => getenv('MYSQL_PASSWORD'),
+                    'database' => getenv('MYSQL_DATABASE'),
+                    'port' => getenv('MYSQL_PORT'),
                     'collation' => 'utf8mb4_unicode_ci',
                     'charset' => 'utf8mb4',
                     'compress' => true,
@@ -51,12 +52,12 @@ final class ConnectionManagerTest extends TestCase
     {
         $this->assertSame(
             [
-                'className' => MySQLConnection::class,
-                'host' => getenv('DB_HOST'),
-                'username' => getenv('DB_USERNAME'),
-                'password' => getenv('DB_PASSWORD'),
-                'database' => getenv('DB_NAME'),
-                'port' => getenv('DB_PORT'),
+                'className' => MysqlConnection::class,
+                'host' => getenv('MYSQL_HOST'),
+                'username' => getenv('MYSQL_USERNAME'),
+                'password' => getenv('MYSQL_PASSWORD'),
+                'database' => getenv('MYSQL_DATABASE'),
+                'port' => getenv('MYSQL_PORT'),
                 'collation' => 'utf8mb4_unicode_ci',
                 'charset' => 'utf8mb4',
                 'compress' => true,
@@ -79,12 +80,12 @@ final class ConnectionManagerTest extends TestCase
     public function testGetKeyInvalid(): void
     {
         $handler = ConnectionManager::load([
-            'className' => MySQLConnection::class,
-            'host' => getenv('DB_HOST'),
-            'username' => getenv('DB_USERNAME'),
-            'password' => getenv('DB_PASSWORD'),
-            'database' => getenv('DB_NAME'),
-            'port' => getenv('DB_PORT'),
+            'className' => MysqlConnection::class,
+            'host' => getenv('MYSQL_HOST'),
+            'username' => getenv('MYSQL_USERNAME'),
+            'password' => getenv('MYSQL_PASSWORD'),
+            'database' => getenv('MYSQL_DATABASE'),
+            'port' => getenv('MYSQL_PORT'),
         ]);
 
         $this->assertSame(
@@ -131,13 +132,13 @@ final class ConnectionManagerTest extends TestCase
     {
         ConnectionManager::setConfig([
             'test' => [
-                'className' => MySQLConnection::class,
+                'className' => MysqlConnection::class,
             ],
         ]);
 
         $this->assertSame(
             [
-                'className' => MySQLConnection::class,
+                'className' => MysqlConnection::class,
             ],
             ConnectionManager::getConfig('test')
         );
@@ -150,7 +151,7 @@ final class ConnectionManagerTest extends TestCase
         $this->expectException(DbException::class);
 
         ConnectionManager::setConfig('default', [
-            'className' => MySQLConnection::class,
+            'className' => MysqlConnection::class,
         ]);
     }
 
@@ -201,7 +202,7 @@ final class ConnectionManagerTest extends TestCase
         $this->assertSame($handler1, $handler2);
 
         $this->assertInstanceOf(
-            MySQLConnection::class,
+            MysqlConnection::class,
             $handler1
         );
     }
@@ -212,24 +213,24 @@ final class ConnectionManagerTest extends TestCase
 
         ConnectionManager::setConfig([
             'default' => [
-                'className' => MySQLConnection::class,
-                'host' => getenv('DB_HOST'),
-                'username' => getenv('DB_USERNAME'),
-                'password' => getenv('DB_PASSWORD'),
-                'database' => getenv('DB_NAME'),
-                'port' => getenv('DB_PORT'),
+                'className' => MysqlConnection::class,
+                'host' => getenv('MYSQL_HOST'),
+                'username' => getenv('MYSQL_USERNAME'),
+                'password' => getenv('MYSQL_PASSWORD'),
+                'database' => getenv('MYSQL_DATABASE'),
+                'port' => getenv('MYSQL_PORT'),
                 'collation' => 'utf8mb4_unicode_ci',
                 'charset' => 'utf8mb4',
                 'compress' => true,
                 'persist' => true,
             ],
             'other' => [
-                'className' => MySQLConnection::class,
-                'host' => getenv('DB_HOST'),
-                'username' => getenv('DB_USERNAME'),
-                'password' => getenv('DB_PASSWORD'),
-                'database' => getenv('DB_NAME'),
-                'port' => getenv('DB_PORT'),
+                'className' => MysqlConnection::class,
+                'host' => getenv('MYSQL_HOST'),
+                'username' => getenv('MYSQL_USERNAME'),
+                'password' => getenv('MYSQL_PASSWORD'),
+                'database' => getenv('MYSQL_DATABASE'),
+                'port' => getenv('MYSQL_PORT'),
                 'collation' => 'utf8mb4_unicode_ci',
                 'charset' => 'utf8mb4',
                 'compress' => true,

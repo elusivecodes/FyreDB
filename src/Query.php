@@ -33,7 +33,7 @@ abstract class Query
      * New Query constructor.
      *
      * @param Connection $connection The connection.
-     * @param string|array|null $table The table.
+     * @param array|string|null $table The table.
      */
     public function __construct(Connection $connection, array|string|null $table = null)
     {
@@ -57,9 +57,9 @@ abstract class Query
     /**
      * Execute the query.
      *
-     * @return ResultSet|bool The query result.
+     * @return ResultSet The query result.
      */
-    public function execute(ValueBinder|null $binder = null): bool|ResultSet
+    public function execute(ValueBinder|null $binder = null): ResultSet
     {
         if ($this->useBinder) {
             $binder ??= new ValueBinder();
@@ -91,15 +91,11 @@ abstract class Query
     /**
      * Get the table.
      *
-     * @return string|array|null The table.
+     * @return array|null The table.
      */
-    public function getTable(): array|string|null
+    public function getTable(): array|null
     {
-        if (static::$multipleTables) {
-            return $this->table;
-        }
-
-        return $this->table[0] ?? null;
+        return $this->table;
     }
 
     /**
@@ -112,7 +108,7 @@ abstract class Query
     /**
      * Set the table.
      *
-     * @param string|array $table The table.
+     * @param array|string $table The table.
      * @param bool $overwrite Whether to overwrite the existing table.
      * @return Query The Query.
      */
