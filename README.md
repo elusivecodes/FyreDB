@@ -475,6 +475,12 @@ The Sqlite connection can be loaded using custom configuration.
     - `persist` is a boolean indicating whether to use a persistent connection, and will default to *false*.
     - `flags` is an array containing PDO connection options.
 
+```php
+ConnectionManager::setConfig($key, $options);
+
+$connection = ConnectionManager::use($key);
+```
+
 
 ## Queries
 
