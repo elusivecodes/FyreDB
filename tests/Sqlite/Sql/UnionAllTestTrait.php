@@ -12,7 +12,7 @@ trait UnionAllTestTrait
     public function testUnionAll(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            '(SELECT * FROM "test") UNION ALL (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->unionAll('(SELECT * FROM test2)')
@@ -23,7 +23,7 @@ trait UnionAllTestTrait
     public function testUnionAllClosure(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            '(SELECT * FROM "test") UNION ALL (SELECT * FROM "test2")',
             $this->db->select()
                 ->from('test')
                 ->unionAll(function(Connection $db): SelectQuery {
@@ -36,11 +36,8 @@ trait UnionAllTestTrait
 
     public function testUnionAllLiteral(): void
     {
-        $query = $this->db->select()
-            ->from('test2');
-
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            '(SELECT * FROM "test") UNION ALL (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->unionAll(function(Connection $db): QueryLiteral {
@@ -53,7 +50,7 @@ trait UnionAllTestTrait
     public function testUnionAllMerge(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2) UNION ALL (SELECT * FROM test3)',
+            '(SELECT * FROM "test") UNION ALL (SELECT * FROM test2) UNION ALL (SELECT * FROM test3)',
             $this->db->select()
                 ->from('test')
                 ->unionAll('(SELECT * FROM test2)')
@@ -65,7 +62,7 @@ trait UnionAllTestTrait
     public function testUnionAllOverwrite(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test3)',
+            '(SELECT * FROM "test") UNION ALL (SELECT * FROM test3)',
             $this->db->select()
                 ->from('test')
                 ->unionAll('(SELECT * FROM test2)')
@@ -80,7 +77,7 @@ trait UnionAllTestTrait
             ->from('test2');
 
         $this->assertSame(
-            '(SELECT * FROM test) UNION ALL (SELECT * FROM test2)',
+            '(SELECT * FROM "test") UNION ALL (SELECT * FROM "test2")',
             $this->db->select()
                 ->from('test')
                 ->unionAll($query)

@@ -12,7 +12,7 @@ trait ReplaceTestTrait
     public function testReplace(): void
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
+            'REPLACE INTO `test` (`id`, `name`, `value`) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
             $this->db->replace()
                 ->into('test')
                 ->values([
@@ -34,7 +34,7 @@ trait ReplaceTestTrait
     public function testReplaceClosure(): void
     {
         $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO `test` (`name`, `value`) VALUES (\'Test 1\', (SELECT `id` FROM `test` LIMIT 1)), (\'Test 2\', (SELECT `id` FROM `test` LIMIT 1))',
             $this->db->replace()
                 ->into('test')
                 ->values([
@@ -62,7 +62,7 @@ trait ReplaceTestTrait
     public function testReplaceLiteral(): void
     {
         $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
+            'REPLACE INTO `test` (`name`, `value`) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
             $this->db->replace()
                 ->into('test')
                 ->values([
@@ -86,7 +86,7 @@ trait ReplaceTestTrait
     public function testReplaceMerge(): void
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
+            'REPLACE INTO `test` (`id`, `name`, `value`) VALUES (1, \'Test 1\', 1), (2, \'Test 2\', 2)',
             $this->db->replace()
                 ->into('test')
                 ->values([
@@ -110,7 +110,7 @@ trait ReplaceTestTrait
     public function testReplaceOverwrite(): void
     {
         $this->assertSame(
-            'REPLACE INTO test (id, name, value) VALUES (2, \'Test 2\', 2)',
+            'REPLACE INTO `test` (`id`, `name`, `value`) VALUES (2, \'Test 2\', 2)',
             $this->db->replace()
                 ->into('test')
                 ->values([
@@ -134,7 +134,7 @@ trait ReplaceTestTrait
     public function testReplaceSelectQuery(): void
     {
         $this->assertSame(
-            'REPLACE INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
+            'REPLACE INTO `test` (`name`, `value`) VALUES (\'Test 1\', (SELECT `id` FROM `test` LIMIT 1)), (\'Test 2\', (SELECT `id` FROM `test` LIMIT 1))',
             $this->db->replace()
                 ->into('test')
                 ->values([

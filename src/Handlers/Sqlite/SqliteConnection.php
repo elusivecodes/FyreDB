@@ -89,7 +89,7 @@ class SqliteConnection extends Connection
      */
     public function getCharset(): string
     {
-        return $this->rawQuery('PRAGMA ENCODING;')->fetchColumn();
+        return $this->rawQuery('PRAGMA ENCODING')->fetchColumn();
     }
 
     /**

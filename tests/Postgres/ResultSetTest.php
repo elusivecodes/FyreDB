@@ -171,7 +171,7 @@ final class ResultSetTest extends TestCase
         $result = $this->db->select([
             'v_bigint' => 'CAST(9223372036854775807 AS BIGINT)',
             'v_boolean' => 'CAST(1 AS BOOLEAN)',
-            'v_date' => 'CAST(LOCALTIMESTAMP AS DATE)',
+            'v_date' => 'CAST(LOCALTIMESTAMP(0) AS DATE)',
             'v_double' => 'CAST(1 AS DOUBLE PRECISION)',
             'v_integer' => 'CAST(2147483647 AS INTEGER)',
             'v_money' => 'CAST(1 AS MONEY)',

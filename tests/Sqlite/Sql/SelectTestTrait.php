@@ -12,7 +12,7 @@ trait SelectTestTrait
     public function testSelect(): void
     {
         $this->assertSame(
-            'SELECT * FROM test',
+            'SELECT * FROM "test"',
             $this->db->select()
                 ->from('test')
                 ->sql()
@@ -22,7 +22,7 @@ trait SelectTestTrait
     public function testSelectAlias(): void
     {
         $this->assertSame(
-            'SELECT * FROM test AS alt',
+            'SELECT * FROM "test" AS "alt"',
             $this->db->select()
                 ->from([
                     'alt' => 'test',
@@ -34,7 +34,7 @@ trait SelectTestTrait
     public function testSelectClosure(): void
     {
         $this->assertSame(
-            'SELECT * FROM (SELECT * FROM test) AS alt',
+            'SELECT * FROM (SELECT * FROM "test") AS "alt"',
             $this->db->select()
                 ->from([
                     'alt' => function(Connection $db): SelectQuery {
@@ -50,7 +50,7 @@ trait SelectTestTrait
     public function testSelectDistinct(): void
     {
         $this->assertSame(
-            'SELECT DISTINCT * FROM test',
+            'SELECT DISTINCT * FROM "test"',
             $this->db->select()
                 ->from('test')
                 ->distinct()
@@ -61,7 +61,7 @@ trait SelectTestTrait
     public function testSelectEpilog(): void
     {
         $this->assertSame(
-            'SELECT * FROM test FOR UPDATE',
+            'SELECT * FROM "test" FOR UPDATE',
             $this->db->select()
                 ->from('test')
                 ->epilog('FOR UPDATE')
@@ -72,7 +72,7 @@ trait SelectTestTrait
     public function testSelectFields(): void
     {
         $this->assertSame(
-            'SELECT id, name FROM test',
+            'SELECT id, name FROM "test"',
             $this->db->select('id, name')
                 ->from('test')
                 ->sql()
@@ -82,7 +82,7 @@ trait SelectTestTrait
     public function testSelectFieldsArray(): void
     {
         $this->assertSame(
-            'SELECT id, name FROM test',
+            'SELECT "id", "name" FROM "test"',
             $this->db->select([
                 'id',
                 'name',
@@ -95,7 +95,7 @@ trait SelectTestTrait
     public function testSelectFieldsAs(): void
     {
         $this->assertSame(
-            'SELECT name AS alt FROM test',
+            'SELECT "name" AS "alt" FROM "test"',
             $this->db->select([
                 'alt' => 'name',
             ])
@@ -107,7 +107,7 @@ trait SelectTestTrait
     public function testSelectFieldsClosure(): void
     {
         $this->assertSame(
-            'SELECT (SELECT name FROM test LIMIT 1) AS alt FROM test',
+            'SELECT (SELECT "name" FROM "test" LIMIT 1) AS "alt" FROM "test"',
             $this->db->select([
                 'alt' => function(Connection $db): SelectQuery {
                     return $db->select(['name'])
@@ -123,7 +123,7 @@ trait SelectTestTrait
     public function testSelectFieldsLiteral(): void
     {
         $this->assertSame(
-            'SELECT UPPER(test) AS alt FROM test',
+            'SELECT UPPER(test) AS "alt" FROM "test"',
             $this->db->select([
                 'alt' => function(Connection $db): QueryLiteral {
                     return $db->literal('UPPER(test)');
@@ -137,7 +137,7 @@ trait SelectTestTrait
     public function testSelectFieldsSelectQuery(): void
     {
         $this->assertSame(
-            'SELECT (SELECT name FROM test) AS alt FROM test',
+            'SELECT (SELECT "name" FROM "test") AS "alt" FROM "test"',
             $this->db->select([
                 'alt' => $this->db->select(['name'])
                     ->from('test'),
@@ -150,7 +150,7 @@ trait SelectTestTrait
     public function testSelectFull(): void
     {
         $this->assertSame(
-            'SELECT DISTINCT test.id, test.name FROM test INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\' GROUP BY test.id ORDER BY test.id ASC HAVING value = 1 LIMIT 10, 20 FOR UPDATE',
+            'SELECT DISTINCT "test"."id", "test"."name" FROM "test" INNER JOIN "test2" ON "test2"."id" = "test"."id" WHERE "test"."name" = \'test\' GROUP BY "test"."id" ORDER BY "test"."id" ASC HAVING "value" = 1 LIMIT 10, 20 FOR UPDATE',
             $this->db->select([
                 'test.id',
                 'test.name',
@@ -186,7 +186,7 @@ trait SelectTestTrait
     public function testSelectGroupBy(): void
     {
         $this->assertSame(
-            'SELECT * FROM test GROUP BY id',
+            'SELECT * FROM "test" GROUP BY "id"',
             $this->db->select()
                 ->from('test')
                 ->groupBy('id')
@@ -197,7 +197,7 @@ trait SelectTestTrait
     public function testSelectGroupByArray(): void
     {
         $this->assertSame(
-            'SELECT * FROM test GROUP BY id, name',
+            'SELECT * FROM "test" GROUP BY "id", "name"',
             $this->db->select()
                 ->from('test')
                 ->groupBy([
@@ -211,7 +211,7 @@ trait SelectTestTrait
     public function testSelectGroupByMerge(): void
     {
         $this->assertSame(
-            'SELECT * FROM test GROUP BY id, name',
+            'SELECT * FROM "test" GROUP BY "id", "name"',
             $this->db->select()
                 ->from('test')
                 ->groupBy('id')
@@ -223,7 +223,7 @@ trait SelectTestTrait
     public function testSelectGroupByOverwrite(): void
     {
         $this->assertSame(
-            'SELECT * FROM test GROUP BY name',
+            'SELECT * FROM "test" GROUP BY "name"',
             $this->db->select()
                 ->from('test')
                 ->groupBy('id')
@@ -235,7 +235,7 @@ trait SelectTestTrait
     public function testSelectLimit(): void
     {
         $this->assertSame(
-            'SELECT * FROM test LIMIT 1',
+            'SELECT * FROM "test" LIMIT 1',
             $this->db->select()
                 ->from('test')
                 ->limit(1)
@@ -246,7 +246,7 @@ trait SelectTestTrait
     public function testSelectLimitWithOffset(): void
     {
         $this->assertSame(
-            'SELECT * FROM test LIMIT 10, 20',
+            'SELECT * FROM "test" LIMIT 10, 20',
             $this->db->select()
                 ->from('test')
                 ->limit(20, 10)
@@ -257,7 +257,7 @@ trait SelectTestTrait
     public function testSelectLiteral(): void
     {
         $this->assertSame(
-            'SELECT * FROM (SELECT * FROM test) AS alt',
+            'SELECT * FROM (SELECT * FROM test) AS "alt"',
             $this->db->select()
                 ->from([
                     'alt' => function(Connection $db): QueryLiteral {
@@ -271,7 +271,7 @@ trait SelectTestTrait
     public function testSelectMerge(): void
     {
         $this->assertSame(
-            'SELECT id, name FROM test',
+            'SELECT "id", "name" FROM "test"',
             $this->db->select('id')
                 ->select('name')
                 ->from('test')
@@ -282,7 +282,7 @@ trait SelectTestTrait
     public function testSelectMultipleTables(): void
     {
         $this->assertSame(
-            'SELECT * FROM test AS alt, test2 AS alt2',
+            'SELECT * FROM "test" AS "alt", "test2" AS "alt2"',
             $this->db->select()
                 ->from([
                     'alt' => 'test',
@@ -295,7 +295,7 @@ trait SelectTestTrait
     public function testSelectOffset(): void
     {
         $this->assertSame(
-            'SELECT * FROM test LIMIT 10, 20',
+            'SELECT * FROM "test" LIMIT 10, 20',
             $this->db->select()
                 ->from('test')
                 ->limit(20)
@@ -307,7 +307,7 @@ trait SelectTestTrait
     public function testSelectOrderBy(): void
     {
         $this->assertSame(
-            'SELECT * FROM test ORDER BY id ASC',
+            'SELECT * FROM "test" ORDER BY id ASC',
             $this->db->select()
                 ->from('test')
                 ->orderBy('id ASC')
@@ -318,7 +318,7 @@ trait SelectTestTrait
     public function testSelectOrderByArray(): void
     {
         $this->assertSame(
-            'SELECT * FROM test ORDER BY id ASC, value DESC',
+            'SELECT * FROM "test" ORDER BY "id" ASC, "value" DESC',
             $this->db->select()
                 ->from('test')
                 ->orderBy([
@@ -332,7 +332,7 @@ trait SelectTestTrait
     public function testSelectOrderByMerge(): void
     {
         $this->assertSame(
-            'SELECT * FROM test ORDER BY id ASC, value DESC',
+            'SELECT * FROM "test" ORDER BY "id" ASC, "value" DESC',
             $this->db->select()
                 ->from('test')
                 ->orderBy([
@@ -348,7 +348,7 @@ trait SelectTestTrait
     public function testSelectOrderByOverwrite(): void
     {
         $this->assertSame(
-            'SELECT * FROM test ORDER BY value DESC',
+            'SELECT * FROM "test" ORDER BY "value" DESC',
             $this->db->select()
                 ->from('test')
                 ->orderBy([
@@ -364,7 +364,7 @@ trait SelectTestTrait
     public function testSelectOverwrite(): void
     {
         $this->assertSame(
-            'SELECT name FROM test',
+            'SELECT "name" FROM "test"',
             $this->db->select('id')
                 ->select('name', true)
                 ->from('test')
@@ -375,7 +375,7 @@ trait SelectTestTrait
     public function testSelectSelectQuery(): void
     {
         $this->assertSame(
-            'SELECT * FROM (SELECT * FROM test) AS alt',
+            'SELECT * FROM (SELECT * FROM "test") AS "alt"',
             $this->db->select()
                 ->from([
                     'alt' => $this->db->select()
@@ -388,7 +388,7 @@ trait SelectTestTrait
     public function testSelectTableMerge(): void
     {
         $this->assertSame(
-            'SELECT * FROM test AS alt, test2 AS alt2',
+            'SELECT * FROM "test" AS "alt", "test2" AS "alt2"',
             $this->db->select()
                 ->from([
                     'alt' => 'test',
@@ -403,7 +403,7 @@ trait SelectTestTrait
     public function testSelectTableOverwrite(): void
     {
         $this->assertSame(
-            'SELECT * FROM test2 AS alt2',
+            'SELECT * FROM "test2" AS "alt2"',
             $this->db->select()
                 ->from([
                     'alt' => 'test',

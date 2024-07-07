@@ -27,6 +27,7 @@ use function in_array;
 use function is_array;
 use function is_numeric;
 use function preg_match;
+use function preg_replace;
 use function strtoupper;
 use function trim;
 
@@ -37,6 +38,12 @@ use const FILTER_VALIDATE_FLOAT;
  */
 class QueryGenerator
 {
+    protected const QUOTE_IDENTIFIER = 'identifier';
+
+    protected const QUOTE_NONE = 'none';
+
+    protected const QUOTE_VALUE = 'value';
+
     protected Connection $connection;
 
     /**
@@ -224,7 +231,7 @@ class QueryGenerator
         $unions = $query->getUnion();
         if ($unions !== []) {
             $sql = '('.$sql.')';
-            $sql .= $this->buildUnion($unions);
+            $sql .= $this->buildUnion($unions, $binder);
         }
 
         $sql .= $this->buildGroupBy($query->getGroupBy());
@@ -299,36 +306,54 @@ class QueryGenerator
                 } else {
                     $field = trim($field);
 
-                    preg_match('/^(.+?)\s+((?:NOT )?IN)$/i', $field, $match);
-
-                    if ($match) {
+                    if (preg_match('/^(.+?)\s+((?:NOT\s+)?IN)$/i', $field, $match)) {
                         $field = $match[1];
                         $comparison = strtoupper($match[2]);
+                        $comparison = preg_replace('/\s+/', ' ', $comparison);
                     } else {
                         $comparison = 'IN';
                     }
 
                     $value = array_map(fn(mixed $val): string => $this->parseExpression($val, $binder), $value);
 
-                    $query .= $field.' '.$comparison.' ('.implode(', ', $value).')';
+                    $query .= $this->connection->quoteIdentifier($field).' '.$comparison.' ('.implode(', ', $value).')';
                 }
             } else if (is_numeric($field)) {
-                $query .= $this->parseExpression($value, $binder, false);
+                if (is_string($value)) {
+                    $value = trim($value);
+
+                    if (preg_match('/^(.+?)\s+([\>\<]\=?|\!?\=)\s+(.+)$/i', $value, $match)) {
+                        $field = $match[1];
+                        $comparison = strtoupper($match[2]);
+                        $comparison = preg_replace('/\s+/', ' ', $comparison);
+                        $value = $match[3];
+
+                        $query .= $this->connection->quoteIdentifier($field).' '.$comparison.' '.$this->connection->quoteIdentifier($value);
+                    } else if (preg_match('/^(.+?)\s+(IS(?:\s+NOT)?\s+NULL)$/i', $value, $match)) {
+                        $field = $match[1];
+                        $condition = strtoupper($match[2]);
+                        $condition = preg_replace('/\s+/', ' ', $condition);
+
+                        $query .= $this->connection->quoteIdentifier($field).' '.$condition;
+                    } else {
+                        $query .= $value;
+                    }
+                } else {
+                    $query .= $this->parseExpression($value, $binder, static::QUOTE_NONE);
+                }
+
             } else {
                 $field = trim($field);
 
-                preg_match('/^(.+?)\s+([\>\<]\=?|\!?\=|(?:NOT\s+)?(?:LIKE|IN)|IS(?:\s+NOT)?)$/i', $field, $match);
-
-                if ($match) {
+                if (preg_match('/^(.+?)\s+([\>\<]\=?|\!?\=|(?:NOT\s+)?(?:LIKE|IN)|IS(?:\s+NOT)?)$/i', $field, $match)) {
                     $field = $match[1];
                     $comparison = strtoupper($match[2]);
+                    $comparison = preg_replace('/\s+/', ' ', $comparison);
                 } else {
                     $comparison = '=';
                 }
 
-                $value = $this->parseExpression($value, $binder);
-
-                $query .= $field.' '.$comparison.' '.$value;
+                $query .= $this->connection->quoteIdentifier($field).' '.$comparison.' '.$this->parseExpression($value, $binder);
             }
         }
 
@@ -361,6 +386,7 @@ class QueryGenerator
         }
 
         if ($aliases !== []) {
+            $aliases = array_map(fn(string $alias): string => $this->connection->quoteIdentifier($alias), $aliases);
             $query .= ' ';
             $query .= implode(', ', $aliases);
         }
@@ -397,6 +423,8 @@ class QueryGenerator
         if ($fields === []) {
             return '';
         }
+
+        $fields = array_map(fn(string $field): string => $this->connection->quoteIdentifier($field), $fields);
 
         $query = ' GROUP BY ';
         $query .= implode(', ', $fields);
@@ -435,6 +463,8 @@ class QueryGenerator
     protected function buildInsert(array $tables, array $values, ValueBinder|null $binder = null, string $type = 'INSERT'): string
     {
         $columns = array_keys($values[0] ?? []);
+        $columns = array_map(fn(string $column): string => $this->connection->quoteIdentifier($column), $columns);
+
         $values = array_map(
             function(array $values) use ($binder): string {
                 $values = array_map(fn(mixed $value): string => $this->parseExpression($value, $binder), $values);
@@ -465,6 +495,8 @@ class QueryGenerator
      */
     protected function buildInsertFrom(array $tables, Closure|QueryLiteral|SelectQuery|string $from, array $columns, ValueBinder|null $binder = null): string
     {
+        $columns = array_map(fn(string $column): string => $this->connection->quoteIdentifier($column), $columns);
+
         $query = 'INSERT INTO ';
         $query .= $this->buildTables($tables);
 
@@ -474,7 +506,7 @@ class QueryGenerator
 
         $query .= ' VALUES ';
 
-        $query .= $this->parseExpression($from, $binder, false);
+        $query .= $this->parseExpression($from, $binder, static::QUOTE_NONE);
 
         return $query;
     }
@@ -502,10 +534,10 @@ class QueryGenerator
             $query .= ' '.strtoupper($join['type']).' JOIN ';
             $query .= $this->buildTables([
                 $alias => $join['table'],
-            ]);
+            ], $binder);
 
             if ($join['using']) {
-                $query .= ' USING '.$join['using'];
+                $query .= ' USING '.$this->connection->quoteIdentifier($join['using']);
             } else {
                 $query .= ' ON '.$this->buildConditions($join['conditions'], $binder);
             }
@@ -553,7 +585,7 @@ class QueryGenerator
         $fields = array_map(
             fn(mixed $field, string $dir): string => is_numeric($field) ?
                 $dir :
-                $field.' '.strtoupper($dir),
+                $this->connection->quoteIdentifier($field).' '.strtoupper($dir),
             array_keys($fields),
             $fields
         );
@@ -577,13 +609,13 @@ class QueryGenerator
     {
         $fields = array_map(
             function(mixed $key, mixed $value) use ($binder) {
-                $value = $this->parseExpression($value, $binder, false);
+                $value = $this->parseExpression($value, $binder, static::QUOTE_IDENTIFIER);
 
                 if (is_numeric($key)) {
                     return $value;
                 }
 
-                return $value.' AS '.$key;
+                return $value.' AS '.$this->connection->quoteIdentifier($key);
             },
             array_keys($fields),
             $fields
@@ -599,7 +631,7 @@ class QueryGenerator
 
         if ($tables !== []) {
             $query .= ' FROM ';
-            $query .= $this->buildTables($tables);
+            $query .= $this->buildTables($tables, $binder);
         }
 
         return $query;
@@ -609,19 +641,24 @@ class QueryGenerator
      * Build query tables.
      *
      * @param array $tables The tables.
+     * @param ValueBinder|null $binder The value binder.
      * @param bool $with Whether this is a WITH clause.
      * @return string The table string.
      */
-    protected function buildTables(array $tables, bool $with = false): string
+    protected function buildTables(array $tables, ValueBinder|null $binder = null, bool $with = false): string
     {
         $tables = array_map(
-            function(mixed $alias, mixed $table) use ($with): string {
-                $query = $this->parseExpression($table, quote: $with);
-
+            function(mixed $alias, mixed $table) use ($binder, $with): string {
                 if ($with) {
-                    $query = $alias.' AS '.$query;
-                } else if ($alias !== $table && !is_numeric($alias)) {
-                    $query .= ' AS '.$alias;
+                    return $this->connection->quoteIdentifier($alias).' AS '.$this->parseExpression($table, $binder, static::QUOTE_NONE);
+                }
+
+                $fullTable = $this->parseExpression($table, $binder, static::QUOTE_IDENTIFIER);
+
+                $query = $fullTable;
+
+                if ($alias !== $table && !is_numeric($alias)) {
+                    $query .= ' AS '.$this->connection->quoteIdentifier($alias);
                 }
 
                 return $query;
@@ -637,9 +674,10 @@ class QueryGenerator
      * Generate the UNION portion of the query.
      *
      * @param array $unions The unions.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    protected function buildUnion(array $unions): string
+    protected function buildUnion(array $unions, ValueBinder|null $binder = null): string
     {
         if ($unions === []) {
             return '';
@@ -663,7 +701,7 @@ class QueryGenerator
                     break;
             }
 
-            $query .= $this->parseExpression($union['query'], quote: false);
+            $query .= $this->parseExpression($union['query'], $binder, static::QUOTE_NONE);
         }
 
         return $query;
@@ -682,10 +720,10 @@ class QueryGenerator
         $data = array_map(
             function(mixed $field, mixed $value) use ($binder): string {
                 if (is_numeric($field)) {
-                    return $this->parseExpression($value, $binder, false);
+                    return $this->parseExpression($value, $binder, static::QUOTE_NONE);
                 }
 
-                return $field.' = '.$this->parseExpression($value, $binder);
+                return $this->connection->quoteIdentifier($field).' = '.$this->parseExpression($value, $binder);
             },
             array_keys($data),
             $data
@@ -722,7 +760,7 @@ class QueryGenerator
         $updateData = [];
 
         foreach ($columns as $i => $column) {
-            $sql = $column.' = CASE';
+            $sql = $this->connection->quoteIdentifier($column).' = CASE';
 
             $useElse = false;
             foreach ($data as $j => $values) {
@@ -795,9 +833,10 @@ class QueryGenerator
      * Generate the WITH portion of the query.
      *
      * @param array $withs The common table expressions.
+     * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    protected function buildWith(array $withs): string
+    protected function buildWith(array $withs, ValueBinder|null $binder = null): string
     {
         if ($withs === []) {
             return '';
@@ -815,7 +854,7 @@ class QueryGenerator
         }
 
         $withs = array_map(
-            fn(array $with): string => $this->buildTables($with['cte'], true),
+            fn(array $with): string => $this->buildTables($with['cte'], $binder, true),
             $withs
         );
 
@@ -830,10 +869,10 @@ class QueryGenerator
      *
      * @param mixed $value The value to parse.
      * @param ValueBinder|null $binder The value binder.
-     * @param bool $quote Whether to quote the string.
+     * @param string $quote The type of quoting to apply.
      * @return string The expression string.
      */
-    protected function parseExpression(mixed $value, ValueBinder|null $binder = null, bool $quote = true): string
+    protected function parseExpression(mixed $value, ValueBinder|null $binder = null, string $quote = self::QUOTE_VALUE): string
     {
         if ($value instanceof Closure) {
             $value = $value($this->connection, $binder);
@@ -864,8 +903,11 @@ class QueryGenerator
             $value = '1';
         }
 
-        if (!$quote) {
-            return (string) $value;
+        switch ($quote) {
+            case static::QUOTE_NONE:
+                return (string) $value;
+            case static::QUOTE_IDENTIFIER:
+                return $this->connection->quoteIdentifier((string) $value);
         }
 
         if ($binder) {

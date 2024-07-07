@@ -8,7 +8,7 @@ trait DeleteTestTrait
     public function testDelete(): void
     {
         $this->assertSame(
-            'DELETE FROM test',
+            'DELETE FROM `test`',
             $this->db->delete()
                 ->from('test')
                 ->sql()
@@ -18,7 +18,7 @@ trait DeleteTestTrait
     public function testDeleteAlias(): void
     {
         $this->assertSame(
-            'DELETE alt FROM test AS alt',
+            'DELETE `alt` FROM `test` AS `alt`',
             $this->db->delete('alt')
                 ->from([
                     'alt' => 'test',
@@ -30,7 +30,7 @@ trait DeleteTestTrait
     public function testDeleteFull(): void
     {
         $this->assertSame(
-            'DELETE FROM test INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\' ORDER BY test.id ASC LIMIT 20',
+            'DELETE FROM `test` INNER JOIN `test2` ON `test2`.`id` = `test`.`id` WHERE `test`.`name` = \'test\' ORDER BY `test`.`id` ASC LIMIT 20',
             $this->db->delete()
                 ->from('test')
                 ->join([
@@ -55,7 +55,7 @@ trait DeleteTestTrait
     public function testDeleteJoin(): void
     {
         $this->assertSame(
-            'DELETE FROM test INNER JOIN test2 ON test2.id = test.id',
+            'DELETE FROM `test` INNER JOIN `test2` ON `test2`.`id` = `test`.`id`',
             $this->db->delete()
                 ->from('test')
                 ->join([
@@ -73,7 +73,7 @@ trait DeleteTestTrait
     public function testDeleteLimit(): void
     {
         $this->assertSame(
-            'DELETE FROM test LIMIT 1',
+            'DELETE FROM `test` LIMIT 1',
             $this->db->delete()
                 ->from('test')
                 ->limit(1)
@@ -84,7 +84,7 @@ trait DeleteTestTrait
     public function testDeleteMerge(): void
     {
         $this->assertSame(
-            'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
+            'DELETE `alt1`, `alt2` FROM `test` AS `alt1` LEFT JOIN `test2` AS `alt2` ON `alt2`.`id` = `alt`.`id`',
             $this->db->delete()
                 ->alias('alt1')
                 ->alias('alt2')
@@ -107,7 +107,7 @@ trait DeleteTestTrait
     public function testDeleteMultipleAliases(): void
     {
         $this->assertSame(
-            'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
+            'DELETE `alt1`, `alt2` FROM `test` AS `alt1` LEFT JOIN `test2` AS `alt2` ON `alt2`.`id` = `alt`.`id`',
             $this->db->delete()
                 ->alias([
                     'alt1',
@@ -132,7 +132,7 @@ trait DeleteTestTrait
     public function testDeleteMultipleTables(): void
     {
         $this->assertSame(
-            'DELETE alt, alt2 FROM test AS alt, test2 AS alt2',
+            'DELETE `alt`, `alt2` FROM `test` AS `alt`, `test2` AS `alt2`',
             $this->db->delete()
                 ->from([
                     'alt' => 'test',
@@ -145,7 +145,7 @@ trait DeleteTestTrait
     public function testDeleteOrderBy(): void
     {
         $this->assertSame(
-            'DELETE FROM test ORDER BY id ASC',
+            'DELETE FROM `test` ORDER BY id ASC',
             $this->db->delete()
                 ->from('test')
                 ->orderBy('id ASC')
@@ -156,7 +156,7 @@ trait DeleteTestTrait
     public function testDeleteOrderByArray(): void
     {
         $this->assertSame(
-            'DELETE FROM test ORDER BY id ASC, value DESC',
+            'DELETE FROM `test` ORDER BY `id` ASC, `value` DESC',
             $this->db->delete()
                 ->from('test')
                 ->orderBy([
@@ -170,7 +170,7 @@ trait DeleteTestTrait
     public function testDeleteOverwrite(): void
     {
         $this->assertSame(
-            'DELETE alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
+            'DELETE `alt2` FROM `test` AS `alt1` LEFT JOIN `test2` AS `alt2` ON `alt2`.`id` = `alt`.`id`',
             $this->db->delete()
                 ->alias('alt1')
                 ->alias('alt2', true)
@@ -193,7 +193,7 @@ trait DeleteTestTrait
     public function testDeleteTables(): void
     {
         $this->assertSame(
-            'DELETE FROM test AS alt',
+            'DELETE FROM `test` AS `alt`',
             $this->db->delete()
                 ->from([
                     'alt' => 'test',
@@ -205,7 +205,7 @@ trait DeleteTestTrait
     public function testDeleteWhere(): void
     {
         $this->assertSame(
-            'DELETE FROM test WHERE id = 1',
+            'DELETE FROM `test` WHERE `id` = 1',
             $this->db->delete()
                 ->from('test')
                 ->where([

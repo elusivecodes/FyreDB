@@ -12,7 +12,7 @@ trait UnionTestTrait
     public function testUnion(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
+            '(SELECT * FROM "test") UNION DISTINCT (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->union('(SELECT * FROM test2)')
@@ -23,7 +23,7 @@ trait UnionTestTrait
     public function testUnionClosure(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
+            '(SELECT * FROM "test") UNION DISTINCT (SELECT * FROM "test2")',
             $this->db->select()
                 ->from('test')
                 ->union(function(Connection $db): SelectQuery {
@@ -36,11 +36,8 @@ trait UnionTestTrait
 
     public function testUnionLiteral(): void
     {
-        $query = $this->db->select()
-            ->from('test2');
-
         $this->assertSame(
-            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
+            '(SELECT * FROM "test") UNION DISTINCT (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->union(function(Connection $db): QueryLiteral {
@@ -53,7 +50,7 @@ trait UnionTestTrait
     public function testUnionMerge(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2) UNION DISTINCT (SELECT * FROM test3)',
+            '(SELECT * FROM "test") UNION DISTINCT (SELECT * FROM test2) UNION DISTINCT (SELECT * FROM test3)',
             $this->db->select()
                 ->from('test')
                 ->union('(SELECT * FROM test2)')
@@ -65,7 +62,7 @@ trait UnionTestTrait
     public function testUnionOverwrite(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test3)',
+            '(SELECT * FROM "test") UNION DISTINCT (SELECT * FROM test3)',
             $this->db->select()
                 ->from('test')
                 ->union('(SELECT * FROM test2)')
@@ -80,7 +77,7 @@ trait UnionTestTrait
             ->from('test2');
 
         $this->assertSame(
-            '(SELECT * FROM test) UNION DISTINCT (SELECT * FROM test2)',
+            '(SELECT * FROM "test") UNION DISTINCT (SELECT * FROM "test2")',
             $this->db->select()
                 ->from('test')
                 ->union($query)

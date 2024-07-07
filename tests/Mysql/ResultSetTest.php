@@ -169,7 +169,7 @@ final class ResultSetTest extends TestCase
         $result = $this->db->select([
             'v_bigint' => 'CAST(18446744073709551615 AS UNSIGNED INT)',
             // 'v_boolean' => 'CAST(1 AS BOOLEAN)',
-            'v_date' => 'CAST(LOCALTIMESTAMP AS DATE)',
+            'v_date' => 'CAST(LOCALTIMESTAMP() AS DATE)',
             'v_decimal' => 'CAST(1 AS DECIMAL)',
             'v_double' => 'CAST(1 AS DOUBLE)',
             'v_float' => 'CAST(1 AS FLOAT)',
@@ -177,8 +177,8 @@ final class ResultSetTest extends TestCase
             'v_mediumint' => 'CAST(16777215 AS UNSIGNED INT)',
             'v_smallint' => 'CAST(65535 AS UNSIGNED INT)',
             'v_tinyint' => 'CAST(255 AS UNSIGNED INT)',
-            'v_time' => 'CAST(LOCALTIMESTAMP AS TIME)',
-            'v_timestamp' => 'LOCALTIMESTAMP',
+            'v_time' => 'CAST(LOCALTIMESTAMP() AS TIME)',
+            'v_timestamp' => 'LOCALTIMESTAMP()',
         ])
             ->execute();
 
@@ -259,6 +259,6 @@ final class ResultSetTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->db->query('TRUNCATE test');
+        $this->db->query('TRUNCATE `test`');
     }
 }

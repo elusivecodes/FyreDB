@@ -12,7 +12,7 @@ trait IntersectTestTrait
     public function testIntersect(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) INTERSECT (SELECT * FROM test2)',
+            '(SELECT * FROM "test") INTERSECT (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->intersect('(SELECT * FROM test2)')
@@ -26,7 +26,7 @@ trait IntersectTestTrait
             ->from('test2');
 
         $this->assertSame(
-            '(SELECT * FROM test) INTERSECT (SELECT * FROM test2)',
+            '(SELECT * FROM "test") INTERSECT (SELECT * FROM "test2")',
             $this->db->select()
                 ->from('test')
                 ->intersect(function(Connection $db): SelectQuery {
@@ -43,7 +43,7 @@ trait IntersectTestTrait
             ->from('test2');
 
         $this->assertSame(
-            '(SELECT * FROM test) INTERSECT (SELECT * FROM test2)',
+            '(SELECT * FROM "test") INTERSECT (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->intersect(function(Connection $db): QueryLiteral {
@@ -56,7 +56,7 @@ trait IntersectTestTrait
     public function testIntersectMerge(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) INTERSECT (SELECT * FROM test2) INTERSECT (SELECT * FROM test3)',
+            '(SELECT * FROM "test") INTERSECT (SELECT * FROM test2) INTERSECT (SELECT * FROM test3)',
             $this->db->select()
                 ->from('test')
                 ->intersect('(SELECT * FROM test2)')
@@ -68,7 +68,7 @@ trait IntersectTestTrait
     public function testIntersectOverwrite(): void
     {
         $this->assertSame(
-            '(SELECT * FROM test) INTERSECT (SELECT * FROM test3)',
+            '(SELECT * FROM "test") INTERSECT (SELECT * FROM test3)',
             $this->db->select()
                 ->from('test')
                 ->intersect('(SELECT * FROM test2)')
@@ -83,7 +83,7 @@ trait IntersectTestTrait
             ->from('test2');
 
         $this->assertSame(
-            '(SELECT * FROM test) INTERSECT (SELECT * FROM test2)',
+            '(SELECT * FROM "test") INTERSECT (SELECT * FROM "test2")',
             $this->db->select()
                 ->from('test')
                 ->intersect($query)

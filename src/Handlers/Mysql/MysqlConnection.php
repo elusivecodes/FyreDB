@@ -38,6 +38,10 @@ class MysqlConnection extends Connection
         'flags' => [],
     ];
 
+    protected static string $endQuote = '`';
+
+    protected static string $startQuote = '`';
+
     /**
      * Connect to the database.
      *

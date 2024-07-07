@@ -13,7 +13,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatch(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN 1 WHEN id = 2 THEN 2 END WHERE id IN (1, 2)',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 1 THEN \'Test 1\' WHEN `id` = 2 THEN \'Test 2\' END, `value` = CASE WHEN `id` = 1 THEN 1 WHEN `id` = 2 THEN 2 END WHERE `id` IN (1, 2)',
             $this->db->updateBatch('test')
                 ->set([
                     [
@@ -34,7 +34,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatchArray(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 AND value = 1 THEN \'Test 1\' WHEN id = 2 AND value = 2 THEN \'Test 2\' END WHERE ((id = 1 AND value = 1) OR (id = 2 AND value = 2))',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 1 AND `value` = 1 THEN \'Test 1\' WHEN `id` = 2 AND `value` = 2 THEN \'Test 2\' END WHERE ((`id` = 1 AND `value` = 1) OR (`id` = 2 AND `value` = 2))',
             $this->db->updateBatch('test')
                 ->set([
                     [
@@ -55,7 +55,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatchArrayNull(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 AND value = 1 THEN \'Test 1\' WHEN id = 2 AND value IS NULL THEN \'Test 2\' END WHERE ((id = 1 AND value = 1) OR (id = 2 AND value IS NULL))',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 1 AND `value` = 1 THEN \'Test 1\' WHEN `id` = 2 AND `value` IS NULL THEN \'Test 2\' END WHERE ((`id` = 1 AND `value` = 1) OR (`id` = 2 AND `value` IS NULL))',
             $this->db->updateBatch('test')
                 ->set([
                     [
@@ -76,7 +76,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatchClosure(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 1 THEN \'Test 1\' WHEN `id` = 2 THEN \'Test 2\' END, `value` = CASE WHEN `id` = 1 THEN (SELECT `id` FROM `test` LIMIT 1) WHEN `id` = 2 THEN (SELECT `id` FROM `test` LIMIT 1) END WHERE `id` IN (1, 2)',
             $this->db->updateBatch('test')
                 ->set([
                     [
@@ -105,7 +105,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatchDateTime(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN \'2020-01-01 00:00:00\' WHEN id = 2 THEN \'2021-01-01 00:00:00\' END WHERE id IN (1, 2)',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 1 THEN \'Test 1\' WHEN `id` = 2 THEN \'Test 2\' END, `value` = CASE WHEN `id` = 1 THEN \'2020-01-01 00:00:00\' WHEN `id` = 2 THEN \'2021-01-01 00:00:00\' END WHERE `id` IN (1, 2)',
             $this->db->updateBatch('test')
                 ->set([
                     [
@@ -126,7 +126,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatchLiteral(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN 2 * 10 WHEN id = 2 THEN 2 * 20 END WHERE id IN (1, 2)',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 1 THEN \'Test 1\' WHEN `id` = 2 THEN \'Test 2\' END, `value` = CASE WHEN `id` = 1 THEN 2 * 10 WHEN `id` = 2 THEN 2 * 20 END WHERE `id` IN (1, 2)',
             $this->db->updateBatch('test')
                 ->set([
                     [
@@ -151,7 +151,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatchMerge(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN 1 WHEN id = 2 THEN 2 END WHERE id IN (1, 2)',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 1 THEN \'Test 1\' WHEN `id` = 2 THEN \'Test 2\' END, `value` = CASE WHEN `id` = 1 THEN 1 WHEN `id` = 2 THEN 2 END WHERE `id` IN (1, 2)',
             $this->db->updateBatch('test')
                 ->set([
                     [
@@ -174,7 +174,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatchOverwrite(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 2 THEN 2 END WHERE id = 2',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 2 THEN \'Test 2\' END, `value` = CASE WHEN `id` = 2 THEN 2 END WHERE `id` = 2',
             $this->db->updateBatch('test')
                 ->set([
                     [
@@ -197,7 +197,7 @@ trait UpdateBatchTestTrait
     public function testUpdateBatchSelectQuery(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = CASE WHEN id = 1 THEN \'Test 1\' WHEN id = 2 THEN \'Test 2\' END, value = CASE WHEN id = 1 THEN (SELECT id FROM test LIMIT 1) WHEN id = 2 THEN (SELECT id FROM test LIMIT 1) END WHERE id IN (1, 2)',
+            'UPDATE `test` SET `name` = CASE WHEN `id` = 1 THEN \'Test 1\' WHEN `id` = 2 THEN \'Test 2\' END, `value` = CASE WHEN `id` = 1 THEN (SELECT `id` FROM `test` LIMIT 1) WHEN `id` = 2 THEN (SELECT `id` FROM `test` LIMIT 1) END WHERE `id` IN (1, 2)',
             $this->db->updateBatch('test')
                 ->set([
                     [

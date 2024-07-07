@@ -33,6 +33,8 @@ class PostgresConnection extends Connection
         'flags' => [],
     ];
 
+    protected string $schema;
+
     /**
      * Connect to the database.
      *
@@ -105,6 +107,16 @@ class PostgresConnection extends Connection
     }
 
     /**
+     * Get the connection schema.
+     *
+     * @return string The schema name.
+     */
+    public function getSchema(): string
+    {
+        return $this->schema ?? $this->config['schema'];
+    }
+
+    /**
      * Create a ReplaceQuery.
      *
      * @return ReplaceQuery A new ReplaceQuery.
@@ -125,6 +137,8 @@ class PostgresConnection extends Connection
     public function setSchema(string $schema): static
     {
         $this->rawQuery('SET search_path TO '.$this->quote($schema));
+
+        $this->schema = $schema;
 
         return $this;
     }
