@@ -266,6 +266,6 @@ final class ResultSetTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->db->query('TRUNCATE "test" RESTART IDENTITY');
+        $this->db->query('TRUNCATE test RESTART IDENTITY');
     }
 }

@@ -13,7 +13,7 @@ trait JoinTestTrait
     public function testJoinAlias(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" AS "t2" ON "t2"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN test2 AS t2 ON t2.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -32,7 +32,7 @@ trait JoinTestTrait
     public function testJoinAliasKey(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" AS "t2" ON "t2"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN test2 AS t2 ON t2.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -50,7 +50,7 @@ trait JoinTestTrait
     public function testJoinClosure(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN (SELECT * FROM "test") AS "t2" ON "t2"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN (SELECT * FROM test) AS t2 ON t2.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -71,7 +71,7 @@ trait JoinTestTrait
     public function testJoinConditions(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -89,7 +89,7 @@ trait JoinTestTrait
     public function testJoinConditionsAnd(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON ("test2"."id" = "test"."id" AND "test2"."value" = 1)',
+            'SELECT * FROM test INNER JOIN test2 ON (test2.id = test.id AND test2.value = 1)',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -110,7 +110,7 @@ trait JoinTestTrait
     public function testJoinConditionsBooleanFalse(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" = 0',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value = 0',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -128,7 +128,7 @@ trait JoinTestTrait
     public function testJoinConditionsBooleanTrue(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" = 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value = 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -146,7 +146,7 @@ trait JoinTestTrait
     public function testJoinConditionsClosure(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" IN (SELECT "id" FROM "test")',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value IN (SELECT id FROM test)',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -167,7 +167,7 @@ trait JoinTestTrait
     public function testJoinConditionsDateTime(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" = \'2020-01-01 00:00:00\'',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value = \'2020-01-01 00:00:00\'',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -185,7 +185,7 @@ trait JoinTestTrait
     public function testJoinConditionsEqual(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" = 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value = 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -203,7 +203,7 @@ trait JoinTestTrait
     public function testJoinConditionsFloat(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" = 1.25',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value = 1.25',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -221,7 +221,7 @@ trait JoinTestTrait
     public function testJoinConditionsGreaterThan(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" > 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value > 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -239,7 +239,7 @@ trait JoinTestTrait
     public function testJoinConditionsGreaterThanOrEqual(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" >= 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value >= 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -257,7 +257,7 @@ trait JoinTestTrait
     public function testJoinConditionsGroups(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON ("test2"."id" = "test"."id" AND ("test2"."value" = 1 OR "test2"."value" IS NULL))',
+            'SELECT * FROM test INNER JOIN test2 ON (test2.id = test.id AND (test2.value = 1 OR test2.value IS NULL))',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -281,7 +281,7 @@ trait JoinTestTrait
     public function testJoinConditionsIn(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" IN (1, 2, 3)',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value IN (1, 2, 3)',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -299,7 +299,7 @@ trait JoinTestTrait
     public function testJoinConditionsInteger(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."id" = 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.id = 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -317,7 +317,7 @@ trait JoinTestTrait
     public function testJoinConditionsIsNotNull(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" IS NOT NULL',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value IS NOT NULL',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -335,7 +335,7 @@ trait JoinTestTrait
     public function testJoinConditionsIsNull(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" IS NULL',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value IS NULL',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -353,7 +353,7 @@ trait JoinTestTrait
     public function testJoinConditionsLessThan(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" < 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value < 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -371,7 +371,7 @@ trait JoinTestTrait
     public function testJoinConditionsLessThanOrEqual(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" <= 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value <= 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -389,7 +389,7 @@ trait JoinTestTrait
     public function testJoinConditionsLike(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."name" LIKE \'%test%\'',
+            'SELECT * FROM test INNER JOIN test2 ON test2.name LIKE \'%test%\'',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -407,7 +407,7 @@ trait JoinTestTrait
     public function testJoinConditionsLiteral(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" = UPPER(test.test)',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value = UPPER(test.test)',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -427,7 +427,7 @@ trait JoinTestTrait
     public function testJoinConditionsMerge(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."id" = "test"."id" INNER JOIN "test3" ON "test3"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id INNER JOIN test3 ON test3.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -451,7 +451,7 @@ trait JoinTestTrait
     public function testJoinConditionsMultiple(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."id" = "test"."id" AND "test2"."value" = 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id AND test2.value = 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -470,7 +470,7 @@ trait JoinTestTrait
     public function testJoinConditionsNot(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON NOT ("test2"."id" = "test"."id" AND "test2"."value" = 1)',
+            'SELECT * FROM test INNER JOIN test2 ON NOT (test2.id = test.id AND test2.value = 1)',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -491,7 +491,7 @@ trait JoinTestTrait
     public function testJoinConditionsNotEqual(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" != 1',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value != 1',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -509,7 +509,7 @@ trait JoinTestTrait
     public function testJoinConditionsNotIn(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" NOT IN (1, 2, 3)',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value NOT IN (1, 2, 3)',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -527,7 +527,7 @@ trait JoinTestTrait
     public function testJoinConditionsNotLike(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."name" NOT LIKE \'%test%\'',
+            'SELECT * FROM test INNER JOIN test2 ON test2.name NOT LIKE \'%test%\'',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -545,7 +545,7 @@ trait JoinTestTrait
     public function testJoinConditionsOr(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON ("test2"."id" = "test"."id" OR "test2"."value" = 1)',
+            'SELECT * FROM test INNER JOIN test2 ON (test2.id = test.id OR test2.value = 1)',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -566,7 +566,7 @@ trait JoinTestTrait
     public function testJoinConditionsOverwrite(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test3" ON "test3"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN test3 ON test3.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -590,7 +590,7 @@ trait JoinTestTrait
     public function testJoinConditionsSelectQuery(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."value" IN (SELECT "id" FROM "test")',
+            'SELECT * FROM test INNER JOIN test2 ON test2.value IN (SELECT id FROM test)',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -609,7 +609,7 @@ trait JoinTestTrait
     public function testJoinLiteral(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN (SELECT * FROM test) AS "t2" ON "t2"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN (SELECT * FROM test) AS t2 ON t2.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -629,7 +629,7 @@ trait JoinTestTrait
     public function testJoinMultipleJoins(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."id" = "test"."id" INNER JOIN "test3" ON "test3"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id INNER JOIN test3 ON test3.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -651,7 +651,7 @@ trait JoinTestTrait
     public function testJoinSelectQuery(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN (SELECT * FROM "test") AS "t2" ON "t2"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN (SELECT * FROM test) AS t2 ON t2.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -670,7 +670,7 @@ trait JoinTestTrait
     public function testJoinTableKey(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" ON "test2"."id" = "test"."id"',
+            'SELECT * FROM test INNER JOIN test2 ON test2.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -687,7 +687,7 @@ trait JoinTestTrait
     public function testJoinType(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" LEFT OUTER JOIN "test2" ON "test2"."id" = "test"."id"',
+            'SELECT * FROM test LEFT OUTER JOIN test2 ON test2.id = test.id',
             $this->db->select()
                 ->from('test')
                 ->join([
@@ -706,7 +706,7 @@ trait JoinTestTrait
     public function testJoinUsing(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test" INNER JOIN "test2" USING "id"',
+            'SELECT * FROM test INNER JOIN test2 USING id',
             $this->db->select()
                 ->from('test')
                 ->join([

@@ -13,7 +13,7 @@ trait InsertTestTrait
     public function testInsert(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`name`, `value`) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
             $this->db->insert()
                 ->into('test')
                 ->values([
@@ -33,7 +33,7 @@ trait InsertTestTrait
     public function testInsertClosure(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`name`, `value`) VALUES (\'Test 1\', (SELECT `id` FROM `test` LIMIT 1)), (\'Test 2\', (SELECT `id` FROM `test` LIMIT 1))',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
             $this->db->insert()
                 ->into('test')
                 ->values([
@@ -61,7 +61,7 @@ trait InsertTestTrait
     public function testInsertDateTime(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`name`, `value`) VALUES (\'Test 1\', \'2020-01-01 00:00:00\')',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', \'2020-01-01 00:00:00\')',
             $this->db->insert()
                 ->into('test')
                 ->values([
@@ -77,7 +77,7 @@ trait InsertTestTrait
     public function testInsertLiteral(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`name`, `value`) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', 2 * 10), (\'Test 2\', 2 * 20)',
             $this->db->insert()
                 ->into('test')
                 ->values([
@@ -101,7 +101,7 @@ trait InsertTestTrait
     public function testInsertMerge(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`name`, `value`) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', 1), (\'Test 2\', 2)',
             $this->db->insert()
                 ->into('test')
                 ->values([
@@ -123,7 +123,7 @@ trait InsertTestTrait
     public function testInsertOverwrite(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`name`, `value`) VALUES (\'Test 2\', 2)',
+            'INSERT INTO test (name, value) VALUES (\'Test 2\', 2)',
             $this->db->insert()
                 ->into('test')
                 ->values([
@@ -145,7 +145,7 @@ trait InsertTestTrait
     public function testInsertSelectQuery(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`name`, `value`) VALUES (\'Test 1\', (SELECT `id` FROM `test` LIMIT 1)), (\'Test 2\', (SELECT `id` FROM `test` LIMIT 1))',
+            'INSERT INTO test (name, value) VALUES (\'Test 1\', (SELECT id FROM test LIMIT 1)), (\'Test 2\', (SELECT id FROM test LIMIT 1))',
             $this->db->insert()
                 ->into('test')
                 ->values([

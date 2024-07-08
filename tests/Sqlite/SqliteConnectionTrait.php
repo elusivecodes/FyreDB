@@ -21,13 +21,13 @@ trait SqliteConnectionTrait
 
         $connection = ConnectionManager::use();
 
-        $connection->query('DROP TABLE IF EXISTS "test"');
+        $connection->query('DROP TABLE IF EXISTS test');
 
         $connection->query(<<<'EOT'
-            CREATE TABLE "test" (
-                "id" INTEGER NOT NULL,
-                "name" VARCHAR(255) NULL DEFAULT NULL,
-                PRIMARY KEY ("id")
+            CREATE TABLE test (
+                id INTEGER NOT NULL,
+                name VARCHAR(255) NULL DEFAULT NULL,
+                PRIMARY KEY (id)
             )
         EOT);
     }
@@ -35,6 +35,6 @@ trait SqliteConnectionTrait
     public static function tearDownAfterClass(): void
     {
         $connection = ConnectionManager::use();
-        $connection->query('DELETE FROM "test"');
+        $connection->query('DELETE FROM test');
     }
 }

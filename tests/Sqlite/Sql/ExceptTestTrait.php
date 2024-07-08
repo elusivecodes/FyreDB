@@ -12,7 +12,7 @@ trait ExceptTestTrait
     public function testExcept(): void
     {
         $this->assertSame(
-            '(SELECT * FROM "test") EXCEPT (SELECT * FROM test2)',
+            '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->except('(SELECT * FROM test2)')
@@ -26,7 +26,7 @@ trait ExceptTestTrait
             ->from('test2');
 
         $this->assertSame(
-            '(SELECT * FROM "test") EXCEPT (SELECT * FROM "test2")',
+            '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->except(function(Connection $db): SelectQuery {
@@ -43,7 +43,7 @@ trait ExceptTestTrait
             ->from('test2');
 
         $this->assertSame(
-            '(SELECT * FROM "test") EXCEPT (SELECT * FROM test2)',
+            '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->except(function(Connection $db): QueryLiteral {
@@ -56,7 +56,7 @@ trait ExceptTestTrait
     public function testExceptMerge(): void
     {
         $this->assertSame(
-            '(SELECT * FROM "test") EXCEPT (SELECT * FROM test2) EXCEPT (SELECT * FROM test3)',
+            '(SELECT * FROM test) EXCEPT (SELECT * FROM test2) EXCEPT (SELECT * FROM test3)',
             $this->db->select()
                 ->from('test')
                 ->except('(SELECT * FROM test2)')
@@ -68,7 +68,7 @@ trait ExceptTestTrait
     public function testExceptOverwrite(): void
     {
         $this->assertSame(
-            '(SELECT * FROM "test") EXCEPT (SELECT * FROM test3)',
+            '(SELECT * FROM test) EXCEPT (SELECT * FROM test3)',
             $this->db->select()
                 ->from('test')
                 ->except('(SELECT * FROM test2)')
@@ -83,7 +83,7 @@ trait ExceptTestTrait
             ->from('test2');
 
         $this->assertSame(
-            '(SELECT * FROM "test") EXCEPT (SELECT * FROM "test2")',
+            '(SELECT * FROM test) EXCEPT (SELECT * FROM test2)',
             $this->db->select()
                 ->from('test')
                 ->except($query)

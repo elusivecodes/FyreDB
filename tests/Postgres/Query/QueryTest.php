@@ -28,6 +28,6 @@ final class QueryTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->db->query('TRUNCATE "test" RESTART IDENTITY');
+        $this->db->query('TRUNCATE test RESTART IDENTITY');
     }
 }

@@ -12,7 +12,7 @@ trait InsertFromTestTrait
     public function testInsertFromClosure(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` VALUES (SELECT * FROM `test2`)',
+            'INSERT INTO test VALUES (SELECT * FROM test2)',
             $this->db->insertFrom(function(Connection $db): SelectQuery {
                 return $db->select()
                     ->from('test2');
@@ -25,7 +25,7 @@ trait InsertFromTestTrait
     public function testInsertFromColumnsClosure(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`id`, `name`) VALUES (SELECT * FROM `test2`)',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->insertFrom(function(Connection $db): SelectQuery {
                 return $db->select()
                     ->table('test2');
@@ -38,7 +38,7 @@ trait InsertFromTestTrait
     public function testInsertFromColumnsLiteral(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`id`, `name`) VALUES (SELECT * FROM test2)',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->insertFrom(function(Connection $db): QueryLiteral {
                 return $db->literal('(SELECT * FROM test2)');
             }, ['id', 'name'])
@@ -53,7 +53,7 @@ trait InsertFromTestTrait
             ->from('test2');
 
         $this->assertSame(
-            'INSERT INTO `test` (`id`, `name`) VALUES (SELECT * FROM `test2`)',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->insertFrom($query, ['id', 'name'])
                 ->into('test')
                 ->sql()
@@ -63,7 +63,7 @@ trait InsertFromTestTrait
     public function testInsertFromColumnsString(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`id`, `name`) VALUES (SELECT * FROM test2)',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->insertFrom('(SELECT * FROM test2)', ['id', 'name'])
                 ->into('test')
                 ->sql()
@@ -73,7 +73,7 @@ trait InsertFromTestTrait
     public function testInsertFromLiteral(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` VALUES (SELECT * FROM test2)',
+            'INSERT INTO test VALUES (SELECT * FROM test2)',
             $this->db->insertFrom(function(Connection $db): QueryLiteral {
                 return $db->literal('(SELECT * FROM test2)');
             })
@@ -88,7 +88,7 @@ trait InsertFromTestTrait
             ->from('test2');
 
         $this->assertSame(
-            'INSERT INTO `test` VALUES (SELECT * FROM `test2`)',
+            'INSERT INTO test VALUES (SELECT * FROM test2)',
             $this->db->insertFrom($query)
                 ->into('test')
                 ->sql()
@@ -98,7 +98,7 @@ trait InsertFromTestTrait
     public function testInsertFromString(): void
     {
         $this->assertSame(
-            'INSERT INTO `test` (`id`, `name`) VALUES (SELECT * FROM test2)',
+            'INSERT INTO test (id, name) VALUES (SELECT * FROM test2)',
             $this->db->insertFrom('(SELECT * FROM test2)', ['id', 'name'])
                 ->into('test')
                 ->sql()

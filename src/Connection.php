@@ -19,8 +19,6 @@ use Throwable;
 
 use function array_replace_recursive;
 use function implode;
-use function preg_match;
-use function trim;
 
 /**
  * Connection
@@ -28,10 +26,6 @@ use function trim;
 abstract class Connection
 {
     protected static array $defaults = [];
-
-    protected static string $endQuote = '"';
-
-    protected static string $startQuote = '"';
 
     protected int|null $affectedRows = null;
 
@@ -287,43 +281,6 @@ abstract class Connection
     public function quote(string $value): string
     {
         return $this->pdo->quote($value);
-    }
-
-    /**
-     * Quote identifiers for use in SQL queries.
-     *
-     * @param string $value The value to quote.
-     * @return string The quoted value.
-     */
-    public function quoteIdentifier(string $value): string
-    {
-        $value = trim($value);
-
-        if (!$value || $value === '*') {
-            return $value;
-        }
-
-        // string
-        if (preg_match('/^[a-zA-Z_]+[\w]*$/', $value)) {
-            return static::$startQuote.$value.static::$endQuote;
-        }
-
-        // string.*
-        if (preg_match('/^([a-zA-Z_]+[\w]*)\.\*$/u', $value, $match)) {
-            return static::$startQuote.$match[1].static::$endQuote.'.*';
-        }
-
-        // string.string
-        if (preg_match('/^([a-zA-Z_]+[\w]*)\.([a-zA-Z_]+[\w]*)$/', $value, $match)) {
-            return static::$startQuote.$match[1].static::$endQuote.'.'.static::$startQuote.$match[2].static::$endQuote;
-        }
-
-        // Functions
-        if (preg_match('/^([\w-]+)\((.*)\)$/', $value, $matches)) {
-            return $matches[1].'('.$this->quoteIdentifier($matches[2]).')';
-        }
-
-        return $value;
     }
 
     /**

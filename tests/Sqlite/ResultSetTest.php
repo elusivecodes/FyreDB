@@ -243,6 +243,6 @@ final class ResultSetTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->db->query('DELETE FROM "test"');
+        $this->db->query('DELETE FROM test');
     }
 }

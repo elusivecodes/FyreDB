@@ -41,7 +41,7 @@ final class SqlTest extends TestCase
     public function testToString(): void
     {
         $this->assertSame(
-            'SELECT * FROM "test"',
+            'SELECT * FROM test',
             (string) $this->db->select()
                 ->from('test')
         );
