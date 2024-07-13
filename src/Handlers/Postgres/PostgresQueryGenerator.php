@@ -34,6 +34,7 @@ class PostgresQueryGenerator extends QueryGenerator
 
     /**
      * Build the SELECT field AS alias portion of a SELECT query.
+     *
      * @param string $field The field.
      * @param string $alias The field alias.
      * @return string The SELECT field AS alias portion of a SELECT query.

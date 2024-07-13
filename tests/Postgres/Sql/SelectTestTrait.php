@@ -104,6 +104,18 @@ trait SelectTestTrait
         );
     }
 
+    public function testSelectFieldsAsEscaped(): void
+    {
+        $this->assertSame(
+            'SELECT name AS """alt""" FROM test',
+            $this->db->select([
+                '"alt"' => 'name',
+            ])
+                ->from('test')
+                ->sql()
+        );
+    }
+
     public function testSelectFieldsClosure(): void
     {
         $this->assertSame(
@@ -141,18 +153,6 @@ trait SelectTestTrait
             $this->db->select([
                 'alt' => $this->db->select(['name'])
                     ->from('test'),
-            ])
-                ->from('test')
-                ->sql()
-        );
-    }
-
-    public function testSelectFieldsAsEscaped(): void
-    {
-        $this->assertSame(
-            'SELECT name AS """alt""" FROM test',
-            $this->db->select([
-                '"alt"' => 'name',
             ])
                 ->from('test')
                 ->sql()
