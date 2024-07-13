@@ -95,7 +95,7 @@ trait SelectTestTrait
     public function testSelectFieldsAs(): void
     {
         $this->assertSame(
-            'SELECT name AS alt FROM test',
+            'SELECT name AS "alt" FROM test',
             $this->db->select([
                 'alt' => 'name',
             ])
@@ -107,7 +107,7 @@ trait SelectTestTrait
     public function testSelectFieldsClosure(): void
     {
         $this->assertSame(
-            'SELECT (SELECT name FROM test LIMIT 1) AS alt FROM test',
+            'SELECT (SELECT name FROM test LIMIT 1) AS "alt" FROM test',
             $this->db->select([
                 'alt' => function(Connection $db): SelectQuery {
                     return $db->select(['name'])
@@ -123,7 +123,7 @@ trait SelectTestTrait
     public function testSelectFieldsLiteral(): void
     {
         $this->assertSame(
-            'SELECT UPPER(test) AS alt FROM test',
+            'SELECT UPPER(test) AS "alt" FROM test',
             $this->db->select([
                 'alt' => function(Connection $db): QueryLiteral {
                     return $db->literal('UPPER(test)');
@@ -137,10 +137,22 @@ trait SelectTestTrait
     public function testSelectFieldsSelectQuery(): void
     {
         $this->assertSame(
-            'SELECT (SELECT name FROM test) AS alt FROM test',
+            'SELECT (SELECT name FROM test) AS "alt" FROM test',
             $this->db->select([
                 'alt' => $this->db->select(['name'])
                     ->from('test'),
+            ])
+                ->from('test')
+                ->sql()
+        );
+    }
+
+    public function testSelectFieldsAsEscaped(): void
+    {
+        $this->assertSame(
+            'SELECT name AS """alt""" FROM test',
+            $this->db->select([
+                '"alt"' => 'name',
             ])
                 ->from('test')
                 ->sql()

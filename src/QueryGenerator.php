@@ -346,7 +346,7 @@ class QueryGenerator
 
         if ($aliases === [] && count($tables) > 1) {
             $aliases = array_map(
-                function(mixed $alias, string $table): string {
+                function(int|string $alias, string $table): string {
                     if (is_numeric($alias)) {
                         return $table;
                     }
@@ -550,7 +550,7 @@ class QueryGenerator
         }
 
         $fields = array_map(
-            fn(mixed $field, string $dir): string => is_numeric($field) ?
+            fn(int|string $field, string $dir): string => is_numeric($field) ?
                 $dir :
                 $field.' '.strtoupper($dir),
             array_keys($fields),
@@ -575,14 +575,14 @@ class QueryGenerator
     protected function buildSelect(array $tables, array $fields, bool $distinct = false, ValueBinder|null $binder = null): string
     {
         $fields = array_map(
-            function(mixed $key, mixed $value) use ($binder) {
+            function(int|string $key, mixed $value) use ($binder): string {
                 $value = $this->parseExpression($value, $binder, false);
 
                 if (is_numeric($key)) {
                     return $value;
                 }
 
-                return $value.' AS '.$key;
+                return static::buildSelectAs($value, $key);
             },
             array_keys($fields),
             $fields
@@ -615,7 +615,7 @@ class QueryGenerator
     protected function buildTables(array $tables, ValueBinder|null $binder = null, bool $with = false): string
     {
         $tables = array_map(
-            function(mixed $alias, mixed $table) use ($binder, $with): string {
+            function(int|string $alias, mixed $table) use ($binder, $with): string {
                 if ($with) {
                     return $alias.' AS '.$this->parseExpression($table, $binder, false);
                 }
@@ -685,7 +685,7 @@ class QueryGenerator
     protected function buildUpdate(array $tables, array $data, ValueBinder|null $binder = null): string
     {
         $data = array_map(
-            function(mixed $field, mixed $value) use ($binder): string {
+            function(int|string $field, mixed $value) use ($binder): string {
                 if (is_numeric($field)) {
                     return $this->parseExpression($value, $binder, false);
                 }
@@ -885,5 +885,16 @@ class QueryGenerator
         }
 
         return $this->connection->quote($value);
+    }
+
+    /**
+     * Build the SELECT field AS alias portion of a SELECT query.
+     * @param string $field The field.
+     * @param string $alias The field alias.
+     * @return string The SELECT field AS alias portion of a SELECT query.
+     */
+    protected static function buildSelectAs(string $field, string $alias): string
+    {
+        return $field.' AS '.$alias;
     }
 }
