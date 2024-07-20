@@ -5,6 +5,7 @@ namespace Tests\Mysql\Sql;
 
 use Fyre\DateTime\DateTime;
 use Fyre\DB\Connection;
+use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\QueryLiteral;
 
@@ -70,6 +71,14 @@ trait UpdateTestTrait
                 ])
                 ->sql()
         );
+    }
+
+    public function testUpdateFrom(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->update('test')
+            ->from('test2');
     }
 
     public function testUpdateFull(): void

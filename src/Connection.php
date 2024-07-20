@@ -124,7 +124,7 @@ abstract class Connection
      * @param array|string|null $alias The alias to delete.
      * @return DeleteQuery A new DeleteQuery.
      */
-    public function delete(array|string|null $alias = null): DeleteQuery
+    public function delete(array|string $alias = []): DeleteQuery
     {
         return new DeleteQuery($this, $alias);
     }
@@ -309,6 +309,10 @@ abstract class Connection
      */
     public function replace(): ReplaceQuery
     {
+        if (!$this->supports(DbFeature::Replace)) {
+            throw DbException::forUnsupportedFeature('REPLACE');
+        }
+
         return new ReplaceQuery($this);
     }
 
@@ -357,6 +361,14 @@ abstract class Connection
 
         return $this;
     }
+
+    /**
+     * Determine if the connection supports a feature.
+     *
+     * @param DbFeature $feature The DB feature.
+     * @return bool TRUE if the connection supports the feature, otherwise FALSE.
+     */
+    abstract public function supports(DbFeature $feature): bool;
 
     /**
      * Execute a callback inside a database transaction.

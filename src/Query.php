@@ -15,8 +15,6 @@ use function is_string;
  */
 abstract class Query
 {
-    protected static bool $multipleTables = false;
-
     protected static bool $tableAliases = false;
 
     protected static bool $virtualTables = false;
@@ -24,6 +22,8 @@ abstract class Query
     protected Connection $connection;
 
     protected bool $dirty = false;
+
+    protected bool $multipleTables = false;
 
     protected array $table = [];
 
@@ -134,7 +134,7 @@ abstract class Query
             $this->table = array_merge($this->table, $table);
         }
 
-        if (!static::$multipleTables && count($table) > 1) {
+        if (!$this->multipleTables && count($this->table) > 1) {
             throw DbException::forMultipleTablesNotSupported();
         }
 

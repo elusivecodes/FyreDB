@@ -5,18 +5,6 @@ namespace Tests\Postgres\Query;
 
 trait GetTestTrait
 {
-    public function testGetAlias(): void
-    {
-        $this->assertSame(
-            [
-                'alt',
-            ],
-            $this->db->delete()
-                ->alias('alt')
-                ->getAlias()
-        );
-    }
-
     public function testGetData(): void
     {
         $this->assertSame(

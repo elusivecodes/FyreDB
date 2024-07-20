@@ -50,6 +50,11 @@ class DbException extends RuntimeException
         return new static('Table aliases are not supported for this query.');
     }
 
+    public static function forUnsupportedFeature(string $feature): static
+    {
+        return new static('Database feature not supported: '.$feature);
+    }
+
     public static function forVirtualTablesNotSupported(): static
     {
         return new static('Virtual tables are not supported for this query.');

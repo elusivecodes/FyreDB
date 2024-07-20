@@ -309,6 +309,8 @@ Create a [*ReplaceQuery*](#replace).
 $query = $connection->replace();
 ```
 
+This method is only supported for queries using a *MysqlConnection* or *SqliteConnection*.
+
 **Rollback**
 
 Rollback a transaction.
@@ -549,6 +551,8 @@ $connection
     ->execute();
 ```
 
+Multiple tables is only supported for queries using a *MysqlConnection*.
+
 **Alias**
 
 Set the delete alias(es).
@@ -556,10 +560,11 @@ Set the delete alias(es).
 - `$alias` is a string or array containing the table aliases to delete, and will default to *null*.
 - `$overwrite` is a boolean indicating whether to overwrite existing aliases, and will default to *false*.
 
-
 ```php
 $query->alias($alias, $overwrite);
 ```
+
+This method is only supported for queries using a *MysqlConnection*.
 
 **Epilog**
 
@@ -632,6 +637,14 @@ Get the ORDER BY fields.
 $orderBy = $query->getOrderBy();
 ```
 
+**Get Using**
+
+Get the USING tables.
+
+```php
+$table = $query->getUsing();
+```
+
 **Get Where**
 
 Get the WHERE conditions.
@@ -653,6 +666,8 @@ $query->join($joins, $overwrite);
 
 Each join array can contain a `table`, `alias`, `type` and an array of `conditions`. If the `type` is not specified it will default to INNER.
 
+This method is only supported for queries using a *MysqlConnection*.
+
 **Limit**
 
 Set the LIMIT clause.
@@ -673,6 +688,19 @@ Set the ORDER BY fields.
 ```php
 $query->orderBy($fields, $overwrite);
 ```
+
+**Using**
+
+Set the USING tables.
+
+- `$table` is an array or string representing the using table(s).
+- `$overwrite` is a boolean indicating whether to overwrite existing using tables, and will default to *false*.
+
+```php
+$query->using($table, $overwrite);
+```
+
+This method is only supported for queries using a *PostgresConnection*.
 
 **Where**
 
@@ -1242,6 +1270,8 @@ $connection
     ->execute();
 ```
 
+Multiple tables is only supported for queries using a *MysqlConnection*.
+
 **Epilog**
 
 Set the epilog.
@@ -1251,6 +1281,19 @@ Set the epilog.
 ```php
 $query->epilog($epilog);
 ```
+
+**From**
+
+Set the FROM tables.
+
+- `$table` is an array or string representing the from table(s).
+- `$overwrite` is a boolean indicating whether to overwrite existing from tables, and will default to *false*.
+
+```php
+$query->from($table, $overwrite);
+```
+
+This method is only supported for queries using a *PostgresConnection* or *SqliteConnection*.
 
 **Get Data**
 
@@ -1266,6 +1309,14 @@ Get the epilog.
 
 ```php
 $epilog = $query->getEpilog();
+```
+
+**Get From**
+
+Get the FROM table(s).
+
+```php
+$table = $query->getFrom();
 ```
 
 **Get Join**
@@ -1296,6 +1347,8 @@ $query->join($joins, $overwrite);
 ```
 
 Each join array can contain a `table`, `alias`, `type` and an array of `conditions`. If the `type` is not specified it will default to INNER.
+
+This method is only supported for queries using a *MysqlConnection*.
 
 **Set**
 

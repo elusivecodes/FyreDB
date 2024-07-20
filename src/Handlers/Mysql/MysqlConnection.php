@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\DB\Handlers\Mysql;
 
 use Fyre\DB\Connection;
+use Fyre\DB\DbFeature;
 use Fyre\DB\Exceptions\DbException;
 use PDO;
 use PDOException;
@@ -129,6 +130,25 @@ class MysqlConnection extends Connection
     public function getCollation(): string
     {
         return $this->rawQuery('SELECT @@collation_connection')->fetchColumn();
+    }
+
+    /**
+     * Determine if the connection supports a feature.
+     *
+     * @param DbFeature $feature The DB feature.
+     * @return bool TRUE if the connection supports the feature, otherwise FALSE.
+     */
+    public function supports(DbFeature $feature): bool
+    {
+        return match ($feature) {
+            DbFeature::DeleteAlias,
+            DbFeature::DeleteJoin,
+            DbFeature::DeleteMultipleTables,
+            DbFeature::Replace,
+            DbFeature::UpdateJoin,
+            DbFeature::UpdateMultipleTables => true,
+            default => false,
+        };
     }
 
     /**

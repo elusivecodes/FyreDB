@@ -38,11 +38,21 @@ class InsertFromQuery extends Query
         $this->columns = $columns;
     }
 
+    /**
+     * Get the columns to insert.
+     *
+     * @return array The columns to insert.
+     */
     public function getColumns(): array
     {
         return $this->columns;
     }
 
+    /**
+     * Get the query to insert from.
+     *
+     * @return Closure|QueryLiteral|SelectQuery|string The query to insert from.
+     */
     public function getFrom(): Closure|QueryLiteral|SelectQuery|string
     {
         return $this->from;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\DB\Handlers\Sqlite;
 
 use Fyre\DB\Connection;
+use Fyre\DB\DbFeature;
 use Fyre\DB\Exceptions\DbException;
 use PDO;
 use PDOException;
@@ -103,6 +104,21 @@ class SqliteConnection extends Connection
         $this->rawQuery('PRAGMA ENCODING = '.$this->quote($charset));
 
         return $this;
+    }
+
+    /**
+     * Determine if the connection supports a feature.
+     *
+     * @param DbFeature $feature The DB feature.
+     * @return bool TRUE if the connection supports the feature, otherwise FALSE.
+     */
+    public function supports(DbFeature $feature): bool
+    {
+        return match ($feature) {
+            DbFeature::Replace,
+            DbFeature::UpdateFrom => true,
+            default => false,
+        };
     }
 
     /**

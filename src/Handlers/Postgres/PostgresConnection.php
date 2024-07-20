@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace Fyre\DB\Handlers\Postgres;
 
-use BadMethodCallException;
 use Fyre\DB\Connection;
+use Fyre\DB\DbFeature;
 use Fyre\DB\Exceptions\DbException;
-use Fyre\DB\Queries\ReplaceQuery;
 use Fyre\DB\QueryGenerator;
 use PDO;
 use PDOException;
@@ -117,18 +116,6 @@ class PostgresConnection extends Connection
     }
 
     /**
-     * Create a ReplaceQuery.
-     *
-     * @return ReplaceQuery A new ReplaceQuery.
-     *
-     * @throws BadMethodCallException
-     */
-    public function replace(): ReplaceQuery
-    {
-        throw new BadMethodCallException();
-    }
-
-    /**
      * Set the connection schema.
      *
      * @param string $schema The schema name.
@@ -141,6 +128,22 @@ class PostgresConnection extends Connection
         $this->schema = $schema;
 
         return $this;
+    }
+
+    /**
+     * Determine if the connection supports a feature.
+     *
+     * @param DbFeature $feature The DB feature.
+     * @return bool TRUE if the connection supports the feature, otherwise FALSE.
+     */
+    public function supports(DbFeature $feature): bool
+    {
+        return match ($feature) {
+            DbFeature::DeleteUsing,
+            DbFeature::InsertReturning,
+            DbFeature::UpdateFrom => true,
+            default => false,
+        };
     }
 
     /**

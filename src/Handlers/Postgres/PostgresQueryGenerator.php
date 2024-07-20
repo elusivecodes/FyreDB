@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace Fyre\DB\Handlers\Postgres;
 
-use Fyre\DB\Queries\InsertQuery;
 use Fyre\DB\QueryGenerator;
 use Fyre\DB\ValueBinder;
 
+use function array_map;
+use function is_numeric;
 use function str_replace;
 
 /**
@@ -15,32 +16,26 @@ use function str_replace;
 class PostgresQueryGenerator extends QueryGenerator
 {
     /**
-     * Compile an InsertQuery to SQL.
+     * Build the SELECT fields.
      *
-     * @param InsertQuery $query The InsertQuery.
-     * @param ValueBinder|null $binder The ValueBinder.
-     * @return string The compiled SQL query.
+     * @param array $fields The fields.
+     * @param ValueBinder|null $binder The value binder.
+     * @return array The SELECT fields.
      */
-    public function compileInsert(InsertQuery $query, ValueBinder|null $binder = null): string
+    protected function buildSelectFields(array $fields, ValueBinder|null $binder): array
     {
-        $epilog = $query->getEpilog();
+        return array_map(
+            function(int|string $key, mixed $value) use ($binder): string {
+                $value = $this->parseExpression($value, $binder, false);
 
-        if (!$epilog) {
-            $query->epilog('RETURNING *');
-        }
+                if (is_numeric($key)) {
+                    return $value;
+                }
 
-        return parent::compileInsert($query, $binder);
-    }
-
-    /**
-     * Build the SELECT field AS alias portion of a SELECT query.
-     *
-     * @param string $field The field.
-     * @param string $alias The field alias.
-     * @return string The SELECT field AS alias portion of a SELECT query.
-     */
-    protected static function buildSelectAs(string $field, string $alias): string
-    {
-        return $field.' AS "'.str_replace('"', '""', $alias).'"';
+                return $value.' AS "'.str_replace('"', '""', $key).'"';
+            },
+            array_keys($fields),
+            $fields
+        );
     }
 }

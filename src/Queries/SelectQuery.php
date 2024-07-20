@@ -37,11 +37,11 @@ class SelectQuery extends Query
     use WhereTrait;
     use WithTrait;
 
-    protected static bool $multipleTables = true;
-
     protected static bool $tableAliases = true;
 
     protected static bool $virtualTables = true;
+
+    protected bool $multipleTables = true;
 
     /**
      * New SelectQuery constructor.

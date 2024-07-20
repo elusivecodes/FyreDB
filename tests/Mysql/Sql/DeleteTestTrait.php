@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Mysql\Sql;
 
+use Fyre\DB\Exceptions\DbException;
+
 trait DeleteTestTrait
 {
     public function testDelete(): void
@@ -22,6 +24,77 @@ trait DeleteTestTrait
             $this->db->delete('alt')
                 ->from([
                     'alt' => 'test',
+                ])
+                ->sql()
+        );
+    }
+
+    public function testDeleteAliasMerge(): void
+    {
+        $this->assertSame(
+            'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
+            $this->db->delete()
+                ->alias('alt1')
+                ->alias('alt2')
+                ->from([
+                    'alt1' => 'test',
+                ])
+                ->join([
+                    'alt2' => [
+                        'table' => 'test2',
+                        'type' => 'LEFT',
+                        'conditions' => [
+                            'alt2.id = alt.id',
+                        ],
+                    ],
+                ])
+                ->sql()
+        );
+    }
+
+    public function testDeleteAliasMultiple(): void
+    {
+        $this->assertSame(
+            'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
+            $this->db->delete()
+                ->alias([
+                    'alt1',
+                    'alt2',
+                ])
+                ->from([
+                    'alt1' => 'test',
+                ])
+                ->join([
+                    'alt2' => [
+                        'table' => 'test2',
+                        'type' => 'LEFT',
+                        'conditions' => [
+                            'alt2.id = alt.id',
+                        ],
+                    ],
+                ])
+                ->sql()
+        );
+    }
+
+    public function testDeleteAliasOverwrite(): void
+    {
+        $this->assertSame(
+            'DELETE alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
+            $this->db->delete()
+                ->alias('alt1')
+                ->alias('alt2', true)
+                ->from([
+                    'alt1' => 'test',
+                ])
+                ->join([
+                    'alt2' => [
+                        'table' => 'test2',
+                        'type' => 'LEFT',
+                        'conditions' => [
+                            'alt2.id = alt.id',
+                        ],
+                    ],
                 ])
                 ->sql()
         );
@@ -81,54 +154,6 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteMerge(): void
-    {
-        $this->assertSame(
-            'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
-            $this->db->delete()
-                ->alias('alt1')
-                ->alias('alt2')
-                ->from([
-                    'alt1' => 'test',
-                ])
-                ->join([
-                    'alt2' => [
-                        'table' => 'test2',
-                        'type' => 'LEFT',
-                        'conditions' => [
-                            'alt2.id = alt.id',
-                        ],
-                    ],
-                ])
-                ->sql()
-        );
-    }
-
-    public function testDeleteMultipleAliases(): void
-    {
-        $this->assertSame(
-            'DELETE alt1, alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
-            $this->db->delete()
-                ->alias([
-                    'alt1',
-                    'alt2',
-                ])
-                ->from([
-                    'alt1' => 'test',
-                ])
-                ->join([
-                    'alt2' => [
-                        'table' => 'test2',
-                        'type' => 'LEFT',
-                        'conditions' => [
-                            'alt2.id = alt.id',
-                        ],
-                    ],
-                ])
-                ->sql()
-        );
-    }
-
     public function testDeleteMultipleTables(): void
     {
         $this->assertSame(
@@ -167,29 +192,6 @@ trait DeleteTestTrait
         );
     }
 
-    public function testDeleteOverwrite(): void
-    {
-        $this->assertSame(
-            'DELETE alt2 FROM test AS alt1 LEFT JOIN test2 AS alt2 ON alt2.id = alt.id',
-            $this->db->delete()
-                ->alias('alt1')
-                ->alias('alt2', true)
-                ->from([
-                    'alt1' => 'test',
-                ])
-                ->join([
-                    'alt2' => [
-                        'table' => 'test2',
-                        'type' => 'LEFT',
-                        'conditions' => [
-                            'alt2.id = alt.id',
-                        ],
-                    ],
-                ])
-                ->sql()
-        );
-    }
-
     public function testDeleteTables(): void
     {
         $this->assertSame(
@@ -200,6 +202,15 @@ trait DeleteTestTrait
                 ])
                 ->sql()
         );
+    }
+
+    public function testDeleteUsing(): void
+    {
+        $this->expectException(DbException::class);
+
+        $this->db->delete()
+            ->from('test')
+            ->using('test2');
     }
 
     public function testDeleteWhere(): void

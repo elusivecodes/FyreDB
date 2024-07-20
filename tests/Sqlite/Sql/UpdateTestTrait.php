@@ -5,6 +5,7 @@ namespace Tests\Sqlite\Sql;
 
 use Fyre\DateTime\DateTime;
 use Fyre\DB\Connection;
+use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\QueryLiteral;
 
@@ -72,22 +73,32 @@ trait UpdateTestTrait
         );
     }
 
-    public function testUpdateFull(): void
+    public function testUpdateFrom(): void
     {
         $this->assertSame(
-            'UPDATE test SET name = \'Test\', value = 1 INNER JOIN test2 ON test2.id = test.id WHERE test.name = \'test\'',
+            'UPDATE test SET name = \'Test\', value = 1 FROM test2 WHERE test.id = test2.id AND test.name = \'test\'',
             $this->db->update('test')
                 ->set([
                     'name' => 'Test',
                     'value' => 1,
                 ])
-                ->join([
-                    [
-                        'table' => 'test2',
-                        'conditions' => [
-                            'test2.id = test.id',
-                        ],
-                    ],
+                ->from('test2')
+                ->where([
+                    'test.id = test2.id',
+                    'test.name' => 'test',
+                ])
+                ->sql()
+        );
+    }
+
+    public function testUpdateFull(): void
+    {
+        $this->assertSame(
+            'UPDATE test SET name = \'Test\', value = 1 WHERE test.name = \'test\'',
+            $this->db->update('test')
+                ->set([
+                    'name' => 'Test',
+                    'value' => 1,
                 ])
                 ->where([
                     'test.name' => 'test',
@@ -98,23 +109,21 @@ trait UpdateTestTrait
 
     public function testUpdateJoin(): void
     {
-        $this->assertSame(
-            'UPDATE test SET name = \'Test\', value = 1 INNER JOIN test2 ON test2.id = test.id',
-            $this->db->update('test')
-                ->set([
-                    'name' => 'Test',
-                    'value' => 1,
-                ])
-                ->join([
-                    [
-                        'table' => 'test2',
-                        'conditions' => [
-                            'test2.id = test.id',
-                        ],
+        $this->expectException(DbException::class);
+
+        $this->db->update('test')
+            ->set([
+                'name' => 'Test',
+                'value' => 1,
+            ])
+            ->join([
+                [
+                    'table' => 'test2',
+                    'conditions' => [
+                        'test2.id = test.id',
                     ],
-                ])
-                ->sql()
-        );
+                ],
+            ]);
     }
 
     public function testUpdateLiteral(): void
@@ -152,18 +161,12 @@ trait UpdateTestTrait
 
     public function testUpdateMultipleTables(): void
     {
-        $this->assertSame(
-            'UPDATE test AS alt, test2 AS alt2 SET alt.value = 1, alt2.value = 2',
-            $this->db->update([
-                'alt' => 'test',
-                'alt2' => 'test2',
-            ])
-                ->set([
-                    'alt.value' => 1,
-                    'alt2.value' => 2,
-                ])
-                ->sql()
-        );
+        $this->expectException(DbException::class);
+
+        $this->db->update([
+            'alt' => 'test',
+            'alt2' => 'test2',
+        ]);
     }
 
     public function testUpdateOverwrite(): void

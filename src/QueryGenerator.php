@@ -153,7 +153,7 @@ class QueryGenerator
      */
     public function compileDelete(DeleteQuery $query, ValueBinder|null $binder = null): string
     {
-        $sql = $this->buildDelete($query->getTable(), $query->getAlias());
+        $sql = $this->buildDelete($query->getTable(), $query->getAlias(), $query->getUsing(), $binder);
         $sql .= $this->buildJoin($query->getJoin(), $binder);
         $sql .= $this->buildWhere($query->getWhere(), $binder);
         $sql .= $this->buildOrderBy($query->getOrderBy());
@@ -172,6 +172,10 @@ class QueryGenerator
      */
     public function compileInsert(InsertQuery $query, ValueBinder|null $binder = null): string
     {
+        if ($query->getConnection()->supports(DbFeature::InsertReturning) && !$query->getEpilog()) {
+            $query->epilog('RETURNING *');
+        }
+
         $sql = $this->buildInsert($query->getTable(), $query->getValues(), $binder);
         $sql .= $this->buildEpilog($query->getEpilog());
 
@@ -187,6 +191,10 @@ class QueryGenerator
      */
     public function compileInsertFrom(InsertFromQuery $query, ValueBinder|null $binder = null): string
     {
+        if ($query->getConnection()->supports(DbFeature::InsertReturning) && !$query->getEpilog()) {
+            $query->epilog('RETURNING *');
+        }
+
         $sql = $this->buildInsertFrom($query->getTable(), $query->getFrom(), $query->getColumns(), $binder);
         $sql .= $this->buildEpilog($query->getEpilog());
 
@@ -246,7 +254,7 @@ class QueryGenerator
      */
     public function compileUpdate(UpdateQuery $query, ValueBinder|null $binder = null): string
     {
-        $sql = $this->buildUpdate($query->getTable(), $query->getData(), $binder);
+        $sql = $this->buildUpdate($query->getTable(), $query->getData(), $query->getFrom(), $binder);
         $sql .= $this->buildJoin($query->getJoin(), $binder);
         $sql .= $this->buildWhere($query->getWhere(), $binder);
         $sql .= $this->buildEpilog($query->getEpilog());
@@ -338,12 +346,11 @@ class QueryGenerator
      *
      * @param array $tables The tables.
      * @param array $aliases The table aliases to delete.
+     * @param array $using The using tables.
      * @return string The query string.
      */
-    protected function buildDelete(array $tables, array $aliases = []): string
+    protected function buildDelete(array $tables, array $aliases = [], array $using = [], ValueBinder|null $binder = null): string
     {
-        $query = 'DELETE';
-
         if ($aliases === [] && count($tables) > 1) {
             $aliases = array_map(
                 function(int|string $alias, string $table): string {
@@ -358,6 +365,8 @@ class QueryGenerator
             );
         }
 
+        $query = 'DELETE';
+
         if ($aliases !== []) {
             $query .= ' ';
             $query .= implode(', ', $aliases);
@@ -365,6 +374,11 @@ class QueryGenerator
 
         $query .= ' FROM ';
         $query .= $this->buildTables($tables);
+
+        if ($using !== []) {
+            $query .= ' USING ';
+            $query .= $this->buildTables($using, $binder);
+        }
 
         return $query;
     }
@@ -574,19 +588,7 @@ class QueryGenerator
      */
     protected function buildSelect(array $tables, array $fields, bool $distinct = false, ValueBinder|null $binder = null): string
     {
-        $fields = array_map(
-            function(int|string $key, mixed $value) use ($binder): string {
-                $value = $this->parseExpression($value, $binder, false);
-
-                if (is_numeric($key)) {
-                    return $value;
-                }
-
-                return static::buildSelectAs($value, $key);
-            },
-            array_keys($fields),
-            $fields
-        );
+        $fields = $this->buildSelectFields($fields, $binder);
 
         $query = 'SELECT ';
 
@@ -602,6 +604,30 @@ class QueryGenerator
         }
 
         return $query;
+    }
+
+    /**
+     * Build the SELECT fields.
+     *
+     * @param array $fields The fields.
+     * @param ValueBinder|null $binder The value binder.
+     * @return array The SELECT fields.
+     */
+    protected function buildSelectFields(array $fields, ValueBinder|null $binder): array
+    {
+        return array_map(
+            function(int|string $key, mixed $value) use ($binder): string {
+                $value = $this->parseExpression($value, $binder, false);
+
+                if (is_numeric($key)) {
+                    return $value;
+                }
+
+                return $value.' AS '.$key;
+            },
+            array_keys($fields),
+            $fields
+        );
     }
 
     /**
@@ -679,10 +705,11 @@ class QueryGenerator
      *
      * @param array $tables The tables.
      * @param array $data The data.
+     * @param array $from The from tables.
      * @param ValueBinder|null $binder The value binder.
      * @return string The query string.
      */
-    protected function buildUpdate(array $tables, array $data, ValueBinder|null $binder = null): string
+    protected function buildUpdate(array $tables, array $data, array $from = [], ValueBinder|null $binder = null): string
     {
         $data = array_map(
             function(int|string $field, mixed $value) use ($binder): string {
@@ -698,8 +725,14 @@ class QueryGenerator
 
         $query = 'UPDATE ';
         $query .= $this->buildTables($tables);
+
         $query .= ' SET ';
         $query .= implode(', ', $data);
+
+        if ($from !== []) {
+            $query .= ' FROM ';
+            $query .= $this->buildTables($from, $binder);
+        }
 
         return $query;
     }
@@ -885,17 +918,5 @@ class QueryGenerator
         }
 
         return $this->connection->quote($value);
-    }
-
-    /**
-     * Build the SELECT field AS alias portion of a SELECT query.
-     *
-     * @param string $field The field.
-     * @param string $alias The field alias.
-     * @return string The SELECT field AS alias portion of a SELECT query.
-     */
-    protected static function buildSelectAs(string $field, string $alias): string
-    {
-        return $field.' AS '.$alias;
     }
 }

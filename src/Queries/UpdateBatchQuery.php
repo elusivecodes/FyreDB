@@ -33,6 +33,11 @@ class UpdateBatchQuery extends Query
         return $this->data;
     }
 
+    /**
+     * Get the keys to use for updating.
+     *
+     * @return array The keys to use for updating.
+     */
     public function getKeys(): array
     {
         return $this->keys;
