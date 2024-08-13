@@ -891,27 +891,27 @@ class QueryGenerator
                 ->toDatabase($value);
         }
 
+        if ($binder && $quote) {
+            return $binder->bind($value);
+        }
+
         if ($value === null) {
             return 'NULL';
         }
 
         if ($value === false) {
-            $value = '0';
+            return '0';
         }
 
         if ($value === true) {
-            $value = '1';
-        }
-
-        if (!$quote) {
-            return (string) $value;
-        }
-
-        if ($binder) {
-            return $binder->bind($value);
+            return '1';
         }
 
         $value = (string) $value;
+
+        if (!$quote) {
+            return $value;
+        }
 
         if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false) {
             return $value;

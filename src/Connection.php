@@ -17,8 +17,12 @@ use PDOException;
 use PDOStatement;
 use Throwable;
 
+use function array_is_list;
 use function array_replace_recursive;
 use function implode;
+use function is_bool;
+use function is_int;
+use function is_resource;
 
 /**
  * Connection
@@ -154,7 +158,27 @@ abstract class Connection
             return $this->retry()->run(function() use ($sql, $params) {
                 $query = $this->pdo->prepare($sql);
 
-                $query->execute($params);
+                if (array_is_list($params)) {
+                    $query->execute($params);
+                } else {
+                    foreach ($params as $param => $value) {
+                        if (is_resource($value)) {
+                            $type = PDO::PARAM_LOB;
+                        } else if (is_int($value)) {
+                            $type = PDO::PARAM_INT;
+                        } else if (is_bool($value)) {
+                            $type = PDO::PARAM_BOOL;
+                        } else if ($value === null) {
+                            $type = PDO::PARAM_NULL;
+                        } else {
+                            $type = PDO::PARAM_STR;
+                        }
+
+                        $query->bindValue($param, $value, $type);
+                    }
+
+                    $query->execute();
+                }
 
                 return $this->result($query);
             });
