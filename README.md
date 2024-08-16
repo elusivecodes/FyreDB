@@ -1457,6 +1457,14 @@ Get the results as an array.
 $array = $result->all();
 ```
 
+**Clear Buffer**
+
+Clear the results from the buffer.
+
+```php
+$result->clearBuffer();
+```
+
 **Column Count**
 
 Get the column count.

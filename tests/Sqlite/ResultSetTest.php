@@ -40,6 +40,31 @@ final class ResultSetTest extends TestCase
         );
     }
 
+    public function testClearBuffer(): void
+    {
+        $result = $this->db->select()
+            ->from('test')
+            ->execute();
+
+        $result->first();
+        $result->clearBuffer();
+
+        $this->assertSame(
+            [
+                null,
+                [
+                    'id' => 2,
+                    'name' => 'Test 2',
+                ],
+                [
+                    'id' => 3,
+                    'name' => 'Test 3',
+                ],
+            ],
+            $result->all()
+        );
+    }
+
     public function testColumnCount(): void
     {
         $this->assertSame(

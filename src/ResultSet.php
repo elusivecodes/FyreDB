@@ -9,6 +9,7 @@ use Iterator;
 use PDO;
 use PDOStatement;
 
+use function array_fill;
 use function array_keys;
 use function array_merge;
 use function count;
@@ -49,6 +50,15 @@ abstract class ResultSet implements Countable, Iterator
     public function all(): array
     {
         return $this->buffer = array_merge($this->buffer, $this->result->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    /**
+     * Clear results from the buffer.
+     */
+    public function clearBuffer(): void
+    {
+        $count = count($this->buffer);
+        $this->buffer = array_fill(0, $count, null);
     }
 
     /**
