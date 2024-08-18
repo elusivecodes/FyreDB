@@ -207,7 +207,7 @@ final class ConnectionManagerTest extends TestCase
         );
     }
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         ConnectionManager::clear();
 
@@ -251,7 +251,7 @@ final class ConnectionManagerTest extends TestCase
         EOT);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         if (!ConnectionManager::hasConfig()) {
             return;
