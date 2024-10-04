@@ -17,12 +17,17 @@ use PDOException;
 use PDOStatement;
 use Throwable;
 
+use function array_filter;
 use function array_is_list;
+use function array_map;
 use function array_replace_recursive;
+use function call_user_func;
 use function implode;
 use function is_bool;
 use function is_int;
 use function is_resource;
+use function min;
+use function usort;
 
 /**
  * Connection
@@ -32,6 +37,8 @@ abstract class Connection
     protected static array $defaults = [];
 
     protected int|null $affectedRows = null;
+
+    protected array $afterCommitCallbacks = [];
 
     protected array $config;
 
@@ -78,6 +85,35 @@ abstract class Connection
     }
 
     /**
+     * Queue a callback to execute after the transaction is committed.
+     *
+     * @param Closure $callback The callback.
+     * @param int $priority The callback priority.
+     * @param string|null $key The callback key.
+     * @return Connection The Connection.
+     */
+    public function afterCommit(Closure $callback, int $priority = 1, string|null $key = null): static
+    {
+        if (!$this->savePointLevel) {
+            call_user_func($callback);
+        } else {
+            $data = [
+                'callback' => $callback,
+                'priority' => $priority,
+                'savePointLevel' => $this->savePointLevel,
+            ];
+
+            if ($key === null) {
+                $this->afterCommitCallbacks[] = $data;
+            } else {
+                $this->afterCommitCallbacks[$key] = $data;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Begin a transaction.
      *
      * @return Connection The Connection.
@@ -106,12 +142,36 @@ abstract class Connection
             return $this;
         }
 
+        if ($this->savePointLevel === 1) {
+            $this->transCommit();
+        } else if ($this->useSavePoints) {
+            $this->transRelease((string) ($this->savePointLevel - 1));
+        }
+
         $this->savePointLevel--;
 
         if ($this->savePointLevel === 0) {
-            $this->transCommit();
-        } else if ($this->useSavePoints) {
-            $this->transRelease((string) $this->savePointLevel);
+            $callbacks = $this->afterCommitCallbacks;
+
+            $this->afterCommitCallbacks = [];
+
+            usort($callbacks, fn(array $a, $b): int => $a['priority'] <=> $b['priority']);
+
+            foreach ($callbacks as $callback) {
+                try {
+                    call_user_func($callback['callback']);
+                } catch (Throwable $e) {
+                }
+            }
+        } else {
+            $this->afterCommitCallbacks = array_map(
+                function(array $afterCommitCallback): array {
+                    $afterCommitCallback['savePointLevel'] = min($afterCommitCallback['savePointLevel'], $this->savePointLevel);
+
+                    return $afterCommitCallback;
+                },
+                $this->afterCommitCallbacks
+            );
         }
 
         return $this;
@@ -222,6 +282,16 @@ abstract class Connection
         $info = $this->pdo->errorInfo();
 
         return implode(' ', $info);
+    }
+
+    /**
+     * Get the transaction save point level.
+     *
+     * @return int The transaction save point level.
+     */
+    public function getSavePointLevel(): int
+    {
+        return $this->savePointLevel;
     }
 
     /**
@@ -351,12 +421,21 @@ abstract class Connection
             return $this;
         }
 
+        if ($this->savePointLevel === 1) {
+            $this->transRollback();
+        } else if ($this->useSavePoints) {
+            $this->transRollbackTo((string) ($this->savePointLevel - 1));
+        }
+
         $this->savePointLevel--;
 
         if ($this->savePointLevel === 0) {
-            $this->transRollback();
-        } else if ($this->useSavePoints) {
-            $this->transRollbackTo((string) $this->savePointLevel);
+            $this->afterCommitCallbacks = [];
+        } else {
+            $this->afterCommitCallbacks = array_filter(
+                $this->afterCommitCallbacks,
+                fn(array $callback): bool => $callback['savePointLevel'] <= $this->savePointLevel
+            );
         }
 
         return $this;

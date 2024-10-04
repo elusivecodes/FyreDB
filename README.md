@@ -157,6 +157,20 @@ Get the number of affected rows.
 $affectedRows = $connection->affectedRows();
 ```
 
+**After Commit**
+
+Queue a callback to execute after the transaction is committed.
+
+- `$callback` is a *Closure*.
+- `$priority` is a number representing the callback priority, and will default to *1*.
+- `$key` is a string representing a unique identifier for the callback, and will default to *null*.
+
+```php
+$connection->afterCommit($callback, $priority, $key);
+```
+
+The callback will be executed immediately if there is no active transaction.
+
 **Begin**
 
 Begin a transaction.
@@ -230,6 +244,14 @@ Get the last connection error.
 
 ```php
 $error = $connection->getError();
+```
+
+**Get Savepoint Level**
+
+Get the transaction save point level.
+
+```php
+$savePointLevel = $connection->getSavePointLevel();
 ```
 
 **In Transaction**
@@ -1460,6 +1482,14 @@ $array = $result->all();
 **Clear Buffer**
 
 Clear the results from the buffer.
+
+- `$index` is a number representing the index of the result to clear.
+
+```php
+$result->clearBuffer($index);
+```
+
+Alternatively, if the `$index` argument is omitted, the entire buffer will be cleared.
 
 ```php
 $result->clearBuffer();

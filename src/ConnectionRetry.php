@@ -105,7 +105,7 @@ class ConnectionRetry
     {
         if (
             $this->retries < $this->maxRetries &&
-            !$this->connection->inTransaction() &&
+            $this->connection->getSavePointLevel() === 0 &&
             $exception->errorInfo &&
             in_array($exception->errorInfo[1], static::RECONNECT_ERRORS)
         ) {

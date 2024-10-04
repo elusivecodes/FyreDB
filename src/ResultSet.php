@@ -10,6 +10,7 @@ use PDO;
 use PDOStatement;
 
 use function array_fill;
+use function array_key_exists;
 use function array_keys;
 use function array_merge;
 use function count;
@@ -55,10 +56,14 @@ abstract class ResultSet implements Countable, Iterator
     /**
      * Clear results from the buffer.
      */
-    public function clearBuffer(): void
+    public function clearBuffer(int|null $index = null): void
     {
-        $count = count($this->buffer);
-        $this->buffer = array_fill(0, $count, null);
+        if ($index === null) {
+            $count = count($this->buffer);
+            $this->buffer = array_fill(0, $count, null);
+        } else if (array_key_exists($index, $this->buffer)) {
+            $this->buffer[$index] = null;
+        }
     }
 
     /**

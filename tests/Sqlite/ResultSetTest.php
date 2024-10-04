@@ -46,6 +46,31 @@ final class ResultSetTest extends TestCase
             ->from('test')
             ->execute();
 
+        $result->all();
+        $result->clearBuffer(1);
+
+        $this->assertSame(
+            [
+                [
+                    'id' => 1,
+                    'name' => 'Test 1',
+                ],
+                null,
+                [
+                    'id' => 3,
+                    'name' => 'Test 3',
+                ],
+            ],
+            $result->all()
+        );
+    }
+
+    public function testClearBufferAll(): void
+    {
+        $result = $this->db->select()
+            ->from('test')
+            ->execute();
+
         $result->first();
         $result->clearBuffer();
 
