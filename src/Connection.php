@@ -21,7 +21,6 @@ use function array_filter;
 use function array_is_list;
 use function array_map;
 use function array_replace_recursive;
-use function call_user_func;
 use function implode;
 use function is_bool;
 use function is_int;
@@ -95,7 +94,7 @@ abstract class Connection
     public function afterCommit(Closure $callback, int $priority = 1, string|null $key = null): static
     {
         if (!$this->savePointLevel) {
-            call_user_func($callback);
+            $callback();
         } else {
             $data = [
                 'callback' => $callback,
@@ -159,7 +158,7 @@ abstract class Connection
 
             foreach ($callbacks as $callback) {
                 try {
-                    call_user_func($callback['callback']);
+                    $callback['callback']();
                 } catch (Throwable $e) {
                 }
             }
