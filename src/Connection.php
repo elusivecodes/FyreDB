@@ -49,6 +49,8 @@ abstract class Connection
 
     protected int $savePointLevel = 0;
 
+    protected TypeParser $typeParser;
+
     protected bool $useSavePoints = true;
 
     protected string|null $version = null;
@@ -57,9 +59,12 @@ abstract class Connection
      * New Connection constructor.
      *
      * @param array $options Options for the handler.
+     * @param TypeParser The TypeParser.
      */
-    public function __construct(array $options = [])
+    public function __construct(TypeParser $typeParser, array $options = [])
     {
+        $this->typeParser = $typeParser;
+
         $this->config = array_replace_recursive(static::$defaults, $options);
 
         $this->connect();
@@ -291,6 +296,16 @@ abstract class Connection
     public function getSavePointLevel(): int
     {
         return $this->savePointLevel;
+    }
+
+    /**
+     * Get the TypeParser.
+     *
+     * @return TypeParser The TypeParser.
+     */
+    public function getTypeParser(): TypeParser
+    {
+        return $this->typeParser;
     }
 
     /**

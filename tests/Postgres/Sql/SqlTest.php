@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Tests\Postgres\Sql;
 
-use Fyre\DB\Connection;
-use Fyre\DB\ConnectionManager;
 use PHPUnit\Framework\TestCase;
 use Tests\Postgres\PostgresConnectionTrait;
 
@@ -27,8 +25,6 @@ final class SqlTest extends TestCase
     use WhereTestTrait;
     use WithTestTrait;
 
-    protected Connection $db;
-
     public function testGetConnection(): void
     {
         $this->assertSame(
@@ -45,10 +41,5 @@ final class SqlTest extends TestCase
             (string) $this->db->select()
                 ->from('test')
         );
-    }
-
-    protected function setUp(): void
-    {
-        $this->db = ConnectionManager::use();
     }
 }

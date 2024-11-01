@@ -163,7 +163,7 @@ abstract class ResultSet implements Countable, Iterator
             return null;
         }
 
-        return TypeParser::use($type);
+        return $this->connection->getTypeParser()->use($type);
     }
 
     /**

@@ -3,27 +3,51 @@ declare(strict_types=1);
 
 namespace Tests\Sqlite;
 
+use Fyre\DB\Connection;
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Handlers\Sqlite\SqliteConnection;
+use Fyre\DB\TypeParser;
 
 trait SqliteConnectionTrait
 {
-    public static function setUpBeforeClass(): void
-    {
-        ConnectionManager::clear();
+    protected ConnectionManager $connection;
 
-        ConnectionManager::setConfig([
+    protected Connection $db;
+
+    protected function insert(): void
+    {
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1',
+                ],
+                [
+                    'name' => 'Test 2',
+                ],
+                [
+                    'name' => 'Test 3',
+                ],
+            ])
+            ->execute();
+    }
+
+    protected function setUp(): void
+    {
+        $typeParser = new TypeParser();
+
+        $this->connection = new ConnectionManager($typeParser, [
             'default' => [
                 'className' => SqliteConnection::class,
                 'persist' => true,
             ],
         ]);
 
-        $connection = ConnectionManager::use();
+        $this->db = $this->connection->use();
 
-        $connection->query('DROP TABLE IF EXISTS test');
+        $this->db->query('DROP TABLE IF EXISTS test');
 
-        $connection->query(<<<'EOT'
+        $this->db->query(<<<'EOT'
             CREATE TABLE test (
                 id INTEGER NOT NULL,
                 name VARCHAR(255) NULL DEFAULT NULL,
@@ -32,9 +56,8 @@ trait SqliteConnectionTrait
         EOT);
     }
 
-    public static function tearDownAfterClass(): void
+    protected function tearDown(): void
     {
-        $connection = ConnectionManager::use();
-        $connection->query('DELETE FROM test');
+        $this->db->query('DROP TABLE IF EXISTS test');
     }
 }

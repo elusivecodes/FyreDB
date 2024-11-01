@@ -887,8 +887,7 @@ class QueryGenerator
         }
 
         if ($value instanceof DateTime) {
-            $value = TypeParser::use('datetime')
-                ->toDatabase($value);
+            $value = $this->connection->getTypeParser()->use('datetime')->toDatabase($value);
         }
 
         if ($binder && $quote) {

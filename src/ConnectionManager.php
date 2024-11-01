@@ -6,28 +6,65 @@ namespace Fyre\DB;
 use Fyre\DB\Exceptions\DbException;
 
 use function array_key_exists;
-use function array_search;
 use function class_exists;
-use function is_array;
+use function is_subclass_of;
 
 /**
  * ConnectionManager
  */
-abstract class ConnectionManager
+class ConnectionManager
 {
     public const DEFAULT = 'default';
 
-    protected static array $config = [];
+    protected array $config = [];
 
-    protected static array $instances = [];
+    protected array $instances = [];
+
+    protected TypeParser $typeParser;
+
+    /**
+     * New ConnectionManager constructor.
+     *
+     * @param TypeParser $typeParser The TypeParser.
+     * @param array $config The ConnectionManager config.
+     */
+    public function __construct(TypeParser $typeParser, array $config = [])
+    {
+        $this->typeParser = $typeParser;
+
+        foreach ($config as $key => $options) {
+            $this->setConfig($key, $options);
+        }
+    }
+
+    /**
+     * Build a handler.
+     *
+     * @param array $options Options for the handler.
+     * @return Connection The handler.
+     *
+     * @throws DbException if the handler is not valid.
+     */
+    public function build(array $options = []): Connection
+    {
+        if (!array_key_exists('className', $options)) {
+            throw DbException::forInvalidClass();
+        }
+
+        if (!class_exists($options['className'], true) || !is_subclass_of($options['className'], Connection::class)) {
+            throw DbException::forInvalidClass($options['className']);
+        }
+
+        return new $options['className']($this->typeParser, $options);
+    }
 
     /**
      * Clear configs and instances.
      */
-    public static function clear(): void
+    public function clear(): void
     {
-        static::$config = [];
-        static::$instances = [];
+        $this->config = [];
+        $this->instances = [];
     }
 
     /**
@@ -35,24 +72,13 @@ abstract class ConnectionManager
      *
      * @param string|null $key The config key.
      */
-    public static function getConfig(string|null $key = null): array|null
+    public function getConfig(string|null $key = null): array|null
     {
         if (!$key) {
-            return static::$config;
+            return $this->config;
         }
 
-        return static::$config[$key] ?? null;
-    }
-
-    /**
-     * Get the key for a connection instance.
-     *
-     * @param Connection $connection The Connection.
-     * @return string|null The connection key.
-     */
-    public static function getKey(Connection $connection): string|null
-    {
-        return array_search($connection, static::$instances, true) ?: null;
+        return $this->config[$key] ?? null;
     }
 
     /**
@@ -61,9 +87,9 @@ abstract class ConnectionManager
      * @param string $key The config key.
      * @return bool TRUE if the config exists, otherwise FALSE.
      */
-    public static function hasConfig(string $key = self::DEFAULT): bool
+    public function hasConfig(string $key = self::DEFAULT): bool
     {
-        return array_key_exists($key, static::$config);
+        return array_key_exists($key, $this->config);
     }
 
     /**
@@ -72,77 +98,43 @@ abstract class ConnectionManager
      * @param string $key The config key.
      * @return bool TRUE if the handler is loaded, otherwise FALSE.
      */
-    public static function isLoaded(string $key = self::DEFAULT): bool
+    public function isLoaded(string $key = self::DEFAULT): bool
     {
-        return array_key_exists($key, static::$instances);
-    }
-
-    /**
-     * Load a handler.
-     *
-     * @param array $options Options for the handler.
-     * @return Connection The handler.
-     *
-     * @throws DbException if the handler is not valid.
-     */
-    public static function load(array $options = []): Connection
-    {
-        if (!array_key_exists('className', $options)) {
-            throw DbException::forInvalidClass();
-        }
-
-        if (!class_exists($options['className'], true)) {
-            throw DbException::forInvalidClass($options['className']);
-        }
-
-        return new $options['className']($options);
+        return array_key_exists($key, $this->instances);
     }
 
     /**
      * Set handler config.
      *
-     * @param array|string $key The config key.
-     * @param array|null $options The config options.
+     * @param string $key The config key.
+     * @param array $options The config options.
+     * @return static The ConnectionManager.
      *
      * @throws DbException if the config is not valid.
      */
-    public static function setConfig(array|string $key, array|null $options = null): void
+    public function setConfig(string $key, array|null $options = null): static
     {
-        if (is_array($key)) {
-            foreach ($key as $k => $value) {
-                static::setConfig($k, $value);
-            }
-
-            return;
-        }
-
-        if (!is_array($options)) {
-            throw DbException::forInvalidConfig($key);
-        }
-
-        if (array_key_exists($key, static::$config)) {
+        if (array_key_exists($key, $this->config)) {
             throw DbException::forConfigExists($key);
         }
 
-        static::$config[$key] = $options;
+        $this->config[$key] = $options;
+
+        return $this;
     }
 
     /**
      * Unload a handler.
      *
      * @param string $key The config key.
-     * @return bool TRUE if the handler was removed, otherwise FALSE.
+     * @return static The ConnectionManager.
      */
-    public static function unload(string $key = self::DEFAULT): bool
+    public function unload(string $key = self::DEFAULT): static
     {
-        if (!array_key_exists($key, static::$config)) {
-            return false;
-        }
+        unset($this->instances[$key]);
+        unset($this->config[$key]);
 
-        unset(static::$instances[$key]);
-        unset(static::$config[$key]);
-
-        return true;
+        return $this;
     }
 
     /**
@@ -151,8 +143,8 @@ abstract class ConnectionManager
      * @param string $key The config key.
      * @return Connection The handler.
      */
-    public static function use(string $key = self::DEFAULT): Connection
+    public function use(string $key = self::DEFAULT): Connection
     {
-        return static::$instances[$key] ??= static::load(static::$config[$key] ?? []);
+        return $this->instances[$key] ??= $this->build($this->config[$key] ?? []);
     }
 }

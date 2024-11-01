@@ -5,6 +5,7 @@
 
 ## Table Of Contents
 - [Installation](#installation)
+- [Basic Usage](#basic-usage)
 - [Methods](#methods)
 - [Connections](#connections)
     - [MySQL](#mysql)
@@ -37,14 +38,34 @@ use Fyre\DB\ConnectionManager;
 ```
 
 
+## Basic Usage
+
+- `$typeParse` is a [*TypeParser*](https://github.com/elusivecodes/FyreTypeParser).
+- `$config` is an array containing key/value of configuration options.
+
+```php
+$connectionManager = new ConnectionManager($typeParser, $config);
+```
+
+
 ## Methods
+
+**Build**
+
+Build a [*Connection*](#connections).
+
+- `$options` is an array containing configuration options.
+
+```php
+$connection = $connectionManager->build($options);
+```
 
 **Clear**
 
 Clear and close connections.
 
 ```php
-ConnectionManager::clear();
+$connectionManager->clear();
 ```
 
 **Get Config**
@@ -54,23 +75,13 @@ Set a [*Connection*](#connections) config.
 - `$key` is a string representing the [*Connection*](#connections) key.
 
 ```php
-$config = ConnectionManager::getConfig($key);
+$config = $connectionManager->getConfig($key);
 ```
 
 Alternatively, if the `$key` argument is omitted an array containing all configurations will be returned.
 
 ```php
-$config = ConnectionManager::getConfig();
-```
-
-**Get Key**
-
-Get the key for a [*Connection*](#connections) instance.
-
-- `$connection` is a [*Connection*](#connections).
-
-```php
-$key = ConnectionManager::getKey($connection);
+$config = $connectionManager->getConfig();
 ```
 
 **Has Config**
@@ -80,7 +91,7 @@ Check if a [*Connection*](#connections) config exists.
 - `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
 
 ```php
-$hasConfig = ConnectionManager::hasConfig($key);
+$hasConfig = $connectionManager->hasConfig($key);
 ```
 
 **Is Loaded**
@@ -90,17 +101,7 @@ Check if a [*Connection*](#connections) instance is loaded.
 - `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
 
 ```php
-$isLoaded = ConnectionManager::isLoaded($key);
-```
-
-**Load**
-
-Load a [*Connection*](#connections).
-
-- `$options` is an array containing configuration options.
-
-```php
-$connection = ConnectionManager::load($options);
+$isLoaded = $connectionManager->isLoaded($key);
 ```
 
 **Set Config**
@@ -111,13 +112,7 @@ Set the [*Connection*](#connections) config.
 - `$options` is an array containing configuration options.
 
 ```php
-ConnectionManager::setConfig($key, $options);
-```
-
-Alternatively, a single array can be provided containing key/value of configuration options.
-
-```php
-ConnectionManager::setConfig($config);
+$connectionManager->setConfig($key, $options);
 ```
 
 **Unload**
@@ -127,7 +122,7 @@ Unload a [*Connection*](#connections).
 - `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
 
 ```php
-$unloaded = ConnectionManager::unload($key);
+$connectionManager->unload($key);
 ```
 
 **Use**
@@ -137,7 +132,7 @@ Load a shared [*Connection*](#connections) instance.
 - `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
 
 ```php
-$connection = ConnectionManager::use($key);
+$connection = $connectionManager->use($key);
 ```
 
 
@@ -252,6 +247,14 @@ Get the transaction save point level.
 
 ```php
 $savePointLevel = $connection->getSavePointLevel();
+```
+
+**Get Type Parser**
+
+Get the [*TypeParser*](https://github.com/elusivecodes/FyreTypeParser).
+
+```php
+$typeParser = $connection->getTypeParser();
 ```
 
 **In Transaction**
@@ -416,7 +419,6 @@ $version = $connection->version();
 
 The MySQL connection can be loaded using custom configuration.
 
-- `$key` is a string representing the connection key.
 - `$options` is an array containing configuration options.
     - `className` must be set to `\Fyre\DB\Handlers\Mysql\MysqlConnection`.
     - `host` is a string representing the MySQL host, and will default to "*127.0.0.1*".
@@ -438,9 +440,7 @@ The MySQL connection can be loaded using custom configuration.
     - `flags` is an array containing PDO connection options.
 
 ```php
-ConnectionManager::setConfig($key, $options);
-
-$connection = ConnectionManager::use($key);
+$connection = $connectionManager->build($options);
 ```
 
 **Get Collation**
@@ -455,7 +455,6 @@ $collation = $connection->getCollation();
 
 The Postgres connection can be loaded using custom configuration.
 
-- `$key` is a string representing the connection key.
 - `$options` is an array containing configuration options.
     - `className` must be set to `\Fyre\DB\Handlers\Postgres\PostgresConnection`.
     - `host` is a string representing the Postgres host, and will default to "*127.0.0.1*".
@@ -470,9 +469,7 @@ The Postgres connection can be loaded using custom configuration.
     - `flags` is an array containing PDO connection options.
 
 ```php
-ConnectionManager::setConfig($key, $options);
-
-$connection = ConnectionManager::use($key);
+$connection = $connectionManager->build($options);
 ```
 
 **Set Schema**
@@ -489,7 +486,6 @@ $connection->setSchema($schema);
 
 The Sqlite connection can be loaded using custom configuration.
 
-- `$key` is a string representing the connection key.
 - `$options` is an array containing configuration options.
     - `className` must be set to `\Fyre\DB\Handlers\Sqlite\SqliteConnection`.
     - `database` is a string representing the Sqlite database file, and will default to "*:memory:*".
@@ -500,9 +496,7 @@ The Sqlite connection can be loaded using custom configuration.
     - `flags` is an array containing PDO connection options.
 
 ```php
-ConnectionManager::setConfig($key, $options);
-
-$connection = ConnectionManager::use($key);
+$connection = $connectionManager->build($options);
 ```
 
 
@@ -1547,7 +1541,7 @@ $result->free();
 
 **Get Type**
 
-Get the [*Type*](https://github.com/elusivecodes/FyreTypeParser) parser for a column.
+Get the [*Type*](https://github.com/elusivecodes/FyreTypeParser#types) for a column.
 
 - `$name` is a string representing the column name.
 

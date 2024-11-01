@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Tests\Postgres;
 
-use Fyre\DB\Connection;
-use Fyre\DB\ConnectionManager;
 use Fyre\DB\Types\BooleanType;
 use Fyre\DB\Types\DateTimeTimeZoneType;
 use Fyre\DB\Types\DateTimeType;
@@ -20,10 +18,10 @@ final class ResultSetTest extends TestCase
 {
     use PostgresConnectionTrait;
 
-    protected Connection $db;
-
     public function testAll(): void
     {
+        $this->insert();
+
         $this->assertSame(
             [
                 [
@@ -48,6 +46,8 @@ final class ResultSetTest extends TestCase
 
     public function testClearBuffer(): void
     {
+        $this->insert();
+
         $result = $this->db->select()
             ->from('test')
             ->execute();
@@ -73,6 +73,8 @@ final class ResultSetTest extends TestCase
 
     public function testClearBufferAll(): void
     {
+        $this->insert();
+
         $result = $this->db->select()
             ->from('test')
             ->execute();
@@ -98,6 +100,8 @@ final class ResultSetTest extends TestCase
 
     public function testColumnCount(): void
     {
+        $this->insert();
+
         $this->assertSame(
             2,
             $this->db->select()
@@ -109,6 +113,8 @@ final class ResultSetTest extends TestCase
 
     public function testColumns(): void
     {
+        $this->insert();
+
         $this->assertSame(
             [
                 'id',
@@ -123,6 +129,8 @@ final class ResultSetTest extends TestCase
 
     public function testCount(): void
     {
+        $this->insert();
+
         $this->assertSame(
             3,
             $this->db->select()
@@ -134,6 +142,8 @@ final class ResultSetTest extends TestCase
 
     public function testFetch(): void
     {
+        $this->insert();
+
         $this->assertSame(
             [
                 'id' => 2,
@@ -148,6 +158,8 @@ final class ResultSetTest extends TestCase
 
     public function testFirst(): void
     {
+        $this->insert();
+
         $this->assertSame(
             [
                 'id' => 1,
@@ -162,6 +174,8 @@ final class ResultSetTest extends TestCase
 
     public function testIteration(): void
     {
+        $this->insert();
+
         $query = $this->db->select()
             ->from('test')
             ->execute();
@@ -193,6 +207,8 @@ final class ResultSetTest extends TestCase
 
     public function testLast(): void
     {
+        $this->insert();
+
         $this->assertSame(
             [
                 'id' => 3,
@@ -207,6 +223,8 @@ final class ResultSetTest extends TestCase
 
     public function testType(): void
     {
+        $this->insert();
+
         $this->assertInstanceOf(
             StringType::class,
             $this->db->select()
@@ -293,29 +311,5 @@ final class ResultSetTest extends TestCase
             DateTimeTimeZoneType::class,
             $result->getType('v_timestamp_tz')
         );
-    }
-
-    protected function setUp(): void
-    {
-        $this->db = ConnectionManager::use();
-        $this->db->insert()
-            ->into('test')
-            ->values([
-                [
-                    'name' => 'Test 1',
-                ],
-                [
-                    'name' => 'Test 2',
-                ],
-                [
-                    'name' => 'Test 3',
-                ],
-            ])
-            ->execute();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->db->query('TRUNCATE test RESTART IDENTITY');
     }
 }

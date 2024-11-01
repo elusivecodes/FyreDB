@@ -3,16 +3,12 @@ declare(strict_types=1);
 
 namespace Tests\Sqlite;
 
-use Fyre\DB\Connection;
-use Fyre\DB\ConnectionManager;
 use Fyre\DB\Exceptions\DbException;
 use PHPUnit\Framework\TestCase;
 
 final class ConnectionTest extends TestCase
 {
     use SqliteConnectionTrait;
-
-    protected Connection $db;
 
     public function testCharset(): void
     {
@@ -35,10 +31,5 @@ final class ConnectionTest extends TestCase
             '/^\d+\.\d+.*/',
             $this->db->version()
         );
-    }
-
-    protected function setUp(): void
-    {
-        $this->db = ConnectionManager::use();
     }
 }

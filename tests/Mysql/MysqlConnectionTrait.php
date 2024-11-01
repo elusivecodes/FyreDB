@@ -3,18 +3,42 @@ declare(strict_types=1);
 
 namespace Tests\Mysql;
 
+use Fyre\DB\Connection;
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Handlers\Mysql\MysqlConnection;
+use Fyre\DB\TypeParser;
 
 use function getenv;
 
 trait MysqlConnectionTrait
 {
-    public static function setUpBeforeClass(): void
-    {
-        ConnectionManager::clear();
+    protected ConnectionManager $connection;
 
-        ConnectionManager::setConfig([
+    protected Connection $db;
+
+    protected function insert(): void
+    {
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 1',
+                ],
+                [
+                    'name' => 'Test 2',
+                ],
+                [
+                    'name' => 'Test 3',
+                ],
+            ])
+            ->execute();
+    }
+
+    protected function setUp(): void
+    {
+        $typeParser = new TypeParser();
+
+        $this->connection = new ConnectionManager($typeParser, [
             'default' => [
                 'className' => MysqlConnection::class,
                 'host' => getenv('MYSQL_HOST'),
@@ -29,11 +53,11 @@ trait MysqlConnectionTrait
             ],
         ]);
 
-        $connection = ConnectionManager::use();
+        $this->db = $this->connection->use();
 
-        $connection->query('DROP TABLE IF EXISTS test');
+        $this->db->query('DROP TABLE IF EXISTS test');
 
-        $connection->query(<<<'EOT'
+        $this->db->query(<<<'EOT'
             CREATE TABLE test (
                 id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 name VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
@@ -42,9 +66,8 @@ trait MysqlConnectionTrait
         EOT);
     }
 
-    public static function tearDownAfterClass(): void
+    protected function tearDown(): void
     {
-        $connection = ConnectionManager::use();
-        $connection->query('DROP TABLE IF EXISTS test');
+        $this->db->query('DROP TABLE IF EXISTS test');
     }
 }
