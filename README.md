@@ -86,7 +86,7 @@ $config = $connectionManager->getConfig();
 
 **Has Config**
 
-Check if a [*Connection*](#connections) config exists.
+Determine whether a [*Connection*](#connections) config exists.
 
 - `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
 
@@ -96,7 +96,7 @@ $hasConfig = $connectionManager->hasConfig($key);
 
 **Is Loaded**
 
-Check if a [*Connection*](#connections) instance is loaded.
+Determine whether a [*Connection*](#connections) instance is loaded.
 
 - `$key` is a string representing the [*Connection*](#connections) key, and will default to `ConnectionManager::DEFAULT`.
 
@@ -259,7 +259,7 @@ $typeParser = $connection->getTypeParser();
 
 **In Transaction**
 
-Determine if a transaction is in progress.
+Determine whether a transaction is in progress.
 
 ```php
 $inTransaction = $connection->inTransaction();

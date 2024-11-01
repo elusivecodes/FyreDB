@@ -347,7 +347,7 @@ abstract class Connection
     }
 
     /**
-     * Determine if a transaction is in progress.
+     * Determine whether a transaction is in progress.
      *
      * @return bool TRUE if a transaction is in progress, otherwise FALSE.
      */
@@ -480,7 +480,7 @@ abstract class Connection
     }
 
     /**
-     * Determine if the connection supports a feature.
+     * Determine whether the connection supports a feature.
      *
      * @param DbFeature $feature The DB feature.
      * @return bool TRUE if the connection supports the feature, otherwise FALSE.

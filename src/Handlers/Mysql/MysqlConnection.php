@@ -133,7 +133,7 @@ class MysqlConnection extends Connection
     }
 
     /**
-     * Determine if the connection supports a feature.
+     * Determine whether the connection supports a feature.
      *
      * @param DbFeature $feature The DB feature.
      * @return bool TRUE if the connection supports the feature, otherwise FALSE.

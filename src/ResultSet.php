@@ -213,7 +213,7 @@ abstract class ResultSet implements Countable, Iterator
     }
 
     /**
-     * Determine if the current index is valid.
+     * Determine whether the current index is valid.
      *
      * @return bool TRUE if the current index is valid, otherwise FALSE.
      */

@@ -82,7 +82,7 @@ class ConnectionManager
     }
 
     /**
-     * Determine if a config exists.
+     * Determine whether a config exists.
      *
      * @param string $key The config key.
      * @return bool TRUE if the config exists, otherwise FALSE.
@@ -93,7 +93,7 @@ class ConnectionManager
     }
 
     /**
-     * Determine if a handler is loaded.
+     * Determine whether a handler is loaded.
      *
      * @param string $key The config key.
      * @return bool TRUE if the handler is loaded, otherwise FALSE.
