@@ -269,14 +269,6 @@ Get the transaction save point level.
 $savePointLevel = $connection->getSavePointLevel();
 ```
 
-**Get Type Parser**
-
-Get the [*TypeParser*](https://github.com/elusivecodes/FyreTypeParser).
-
-```php
-$typeParser = $connection->getTypeParser();
-```
-
 **In Transaction**
 
 Determine whether a transaction is in progress.
