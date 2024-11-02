@@ -92,7 +92,7 @@ class PostgresConnection extends Connection
      */
     public function generator(): QueryGenerator
     {
-        return $this->generator ??= new PostgresQueryGenerator($this);
+        return $this->generator ??= $this->container->build(PostgresQueryGenerator::class, ['connection' => $this]);
     }
 
     /**

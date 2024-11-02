@@ -26,21 +26,22 @@ abstract class ResultSet implements Countable, Iterator
 
     protected array|null $columnMeta = null;
 
-    protected Connection $connection;
-
     protected int $index = 0;
 
     protected PDOStatement $result;
+
+    protected TypeParser $typeParser;
 
     /**
      * New ResultSet constructor.
      *
      * @param PDOStatement $result The raw result.
+     * @param TypeParser $typeParser The TypeParser.
      */
-    public function __construct(PDOStatement $result, Connection $connection)
+    public function __construct(PDOStatement $result, TypeParser $typeParser)
     {
         $this->result = $result;
-        $this->connection = $connection;
+        $this->typeParser = $typeParser;
     }
 
     /**
@@ -163,7 +164,7 @@ abstract class ResultSet implements Countable, Iterator
             return null;
         }
 
-        return $this->connection->getTypeParser()->use($type);
+        return $this->typeParser->use($type);
     }
 
     /**

@@ -40,11 +40,27 @@ use Fyre\DB\ConnectionManager;
 
 ## Basic Usage
 
-- `$typeParse` is a [*TypeParser*](https://github.com/elusivecodes/FyreTypeParser).
-- `$config` is an array containing key/value of configuration options.
+- `$container` is a  [*Container*](https://github.com/elusivecodes/FyreContainer).
+- `$config` is a [*Config*](https://github.com/elusivecodes/FyreConfig).
 
 ```php
-$connectionManager = new ConnectionManager($typeParser, $config);
+$connectionManager = new ConnectionManager($container, $config);
+```
+
+Default configuration options will be resolved from the "*Database*" key in the [*Config*](https://github.com/elusivecodes/FyreConfig).
+
+**Autoloading**
+
+It is recommended to bind the *ConnectionManager* to the [*Container*](https://github.com/elusivecodes/FyreContainer) as a singleton.
+
+```php
+$container->singleton(ConnectionManager::class);
+```
+
+Any dependencies will be injected automatically when loading from the [*Container*](https://github.com/elusivecodes/FyreContainer).
+
+```php
+$connectionManager = $container->use(ConnectionManager::class);
 ```
 
 
@@ -59,6 +75,8 @@ Build a [*Connection*](#connections).
 ```php
 $connection = $connectionManager->build($options);
 ```
+
+[*Connection*](#connections) dependencies will be resolved automatically from the [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 **Clear**
 
@@ -134,6 +152,8 @@ Load a shared [*Connection*](#connections) instance.
 ```php
 $connection = $connectionManager->use($key);
 ```
+
+[*Connection*](#connections) dependencies will be resolved automatically from the [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 
 ## Connections

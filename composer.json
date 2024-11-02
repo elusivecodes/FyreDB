@@ -20,7 +20,9 @@
         }
     },
     "require": {
-        "fyre/typeparser": "^4.0",
+        "fyre/config": "^4.0",
+        "fyre/container": "^1.0",
+        "fyre/typeparser": "^5.0",
         "fyre/datetime": "^3.0"
     },
     "require-dev": {

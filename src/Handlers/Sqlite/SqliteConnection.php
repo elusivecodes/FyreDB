@@ -137,9 +137,7 @@ class SqliteConnection extends Connection
 
         $class = static::resultSetClass();
 
-        $resultSet = new $class($result, $this);
-
-        return $resultSet;
+        return $this->container->build($class, ['result' => $result]);
     }
 
     /**

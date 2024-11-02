@@ -40,6 +40,8 @@ class QueryGenerator
 {
     protected Connection $connection;
 
+    protected TypeParser $typeParser;
+
     /**
      * Combine conditions.
      *
@@ -138,10 +140,12 @@ class QueryGenerator
      * New QueryGenerator constructor.
      *
      * @param Connection $connection The connection.
+     * @param TypeParser $typeParser The TypeParser.
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, TypeParser $typeParser)
     {
         $this->connection = $connection;
+        $this->typeParser = $typeParser;
     }
 
     /**
@@ -887,7 +891,7 @@ class QueryGenerator
         }
 
         if ($value instanceof DateTime) {
-            $value = $this->connection->getTypeParser()->use('datetime')->toDatabase($value);
+            $value = $this->typeParser->use('datetime')->toDatabase($value);
         }
 
         if ($binder && $quote) {

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Mysql;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\DB\Connection;
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Handlers\Mysql\MysqlConnection;
@@ -36,9 +38,10 @@ trait MysqlConnectionTrait
 
     protected function setUp(): void
     {
-        $typeParser = new TypeParser();
-
-        $this->connection = new ConnectionManager($typeParser, [
+        $container = new Container();
+        $container->singleton(TypeParser::class);
+        $container->singleton(Config::class);
+        $container->use(Config::class)->set('Database', [
             'default' => [
                 'className' => MysqlConnection::class,
                 'host' => getenv('MYSQL_HOST'),
@@ -52,6 +55,8 @@ trait MysqlConnectionTrait
                 'persist' => true,
             ],
         ]);
+
+        $this->connection = $container->use(ConnectionManager::class);
 
         $this->db = $this->connection->use();
 

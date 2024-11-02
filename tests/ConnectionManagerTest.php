@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Handlers\Mysql\MysqlConnection;
@@ -186,9 +188,10 @@ final class ConnectionManagerTest extends TestCase
 
     protected function setUp(): void
     {
-        $typeParser = new TypeParser();
-
-        $this->connection = new ConnectionManager($typeParser, [
+        $container = new Container();
+        $container->singleton(TypeParser::class);
+        $container->singleton(Config::class);
+        $container->use(Config::class)->set('Database', [
             'default' => [
                 'className' => MysqlConnection::class,
                 'host' => getenv('MYSQL_HOST'),
@@ -214,6 +217,8 @@ final class ConnectionManagerTest extends TestCase
                 'persist' => true,
             ],
         ]);
+
+        $this->connection = $container->use(ConnectionManager::class);
 
         $db = $this->connection->use();
 

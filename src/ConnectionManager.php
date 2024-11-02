@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Fyre\DB;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\DB\Exceptions\DbException;
 
 use function array_key_exists;
@@ -18,21 +20,24 @@ class ConnectionManager
 
     protected array $config = [];
 
-    protected array $instances = [];
+    protected Container $container;
 
-    protected TypeParser $typeParser;
+    protected array $instances = [];
 
     /**
      * New ConnectionManager constructor.
      *
-     * @param TypeParser $typeParser The TypeParser.
+     * @param Container $container The Container.
+     * @param Config $config The Config.
      * @param array $config The ConnectionManager config.
      */
-    public function __construct(TypeParser $typeParser, array $config = [])
+    public function __construct(Container $container, Config $config)
     {
-        $this->typeParser = $typeParser;
+        $this->container = $container;
 
-        foreach ($config as $key => $options) {
+        $handlers = $config->get('Database', []);
+
+        foreach ($handlers as $key => $options) {
             $this->setConfig($key, $options);
         }
     }
@@ -55,7 +60,7 @@ class ConnectionManager
             throw DbException::forInvalidClass($options['className']);
         }
 
-        return new $options['className']($this->typeParser, $options);
+        return $this->container->build($options['className'], ['options' => $options]);
     }
 
     /**

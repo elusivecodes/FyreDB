@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\Sqlite;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\DB\Connection;
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Handlers\Sqlite\SqliteConnection;
@@ -34,14 +36,17 @@ trait SqliteConnectionTrait
 
     protected function setUp(): void
     {
-        $typeParser = new TypeParser();
-
-        $this->connection = new ConnectionManager($typeParser, [
+        $container = new Container();
+        $container->singleton(TypeParser::class);
+        $container->singleton(Config::class);
+        $container->use(Config::class)->set('Database', [
             'default' => [
                 'className' => SqliteConnection::class,
                 'persist' => true,
             ],
         ]);
+
+        $this->connection = $container->use(ConnectionManager::class);
 
         $this->db = $this->connection->use();
 

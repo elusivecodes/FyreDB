@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\DB;
 
 use Closure;
+use Fyre\Container\Container;
 use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Queries\DeleteQuery;
 use Fyre\DB\Queries\InsertFromQuery;
@@ -41,6 +42,8 @@ abstract class Connection
 
     protected array $config;
 
+    protected Container $container;
+
     protected QueryGenerator $generator;
 
     protected PDO|null $pdo = null;
@@ -48,8 +51,6 @@ abstract class Connection
     protected ConnectionRetry $retry;
 
     protected int $savePointLevel = 0;
-
-    protected TypeParser $typeParser;
 
     protected bool $useSavePoints = true;
 
@@ -59,11 +60,11 @@ abstract class Connection
      * New Connection constructor.
      *
      * @param array $options Options for the handler.
-     * @param TypeParser The TypeParser.
+     * @param Container The Container.
      */
-    public function __construct(TypeParser $typeParser, array $options = [])
+    public function __construct(Container $container, array $options = [])
     {
-        $this->typeParser = $typeParser;
+        $this->container = $container;
 
         $this->config = array_replace_recursive(static::$defaults, $options);
 
@@ -258,7 +259,7 @@ abstract class Connection
      */
     public function generator(): QueryGenerator
     {
-        return $this->generator ??= new QueryGenerator($this);
+        return $this->generator ??= $this->container->build(QueryGenerator::class, ['connection' => $this]);
     }
 
     /**
@@ -296,16 +297,6 @@ abstract class Connection
     public function getSavePointLevel(): int
     {
         return $this->savePointLevel;
-    }
-
-    /**
-     * Get the TypeParser.
-     *
-     * @return TypeParser The TypeParser.
-     */
-    public function getTypeParser(): TypeParser
-    {
-        return $this->typeParser;
     }
 
     /**
@@ -562,9 +553,7 @@ abstract class Connection
 
         $class = static::resultSetClass();
 
-        $resultSet = new $class($result, $this);
-
-        return $resultSet;
+        return $this->container->build($class, ['result' => $result]);
     }
 
     /**
