@@ -452,7 +452,7 @@ The MySQL connection can be loaded using custom configuration.
     - `flags` is an array containing PDO connection options.
 
 ```php
-$connection = $connectionManager->build($options);
+$container->use(Config::class)->set('Database.mysql', $options);
 ```
 
 **Get Collation**
@@ -481,7 +481,7 @@ The Postgres connection can be loaded using custom configuration.
     - `flags` is an array containing PDO connection options.
 
 ```php
-$connection = $connectionManager->build($options);
+$container->use(Config::class)->set('Database.postgres', $options);
 ```
 
 **Set Schema**
@@ -508,7 +508,7 @@ The Sqlite connection can be loaded using custom configuration.
     - `flags` is an array containing PDO connection options.
 
 ```php
-$connection = $connectionManager->build($options);
+$container->use(Config::class)->set('Database.sqlite', $options);
 ```
 
 
