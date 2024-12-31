@@ -18,6 +18,7 @@ final class ConnectionTest extends TestCase
             $this->db->getCharset()
         );
     }
+
     public function testEventQuery(): void
     {
         $ran = false;
@@ -51,7 +52,6 @@ final class ConnectionTest extends TestCase
 
         $this->db->getEventManager()->off('Db.query');
     }
-
 
     public function testFailedQuery(): void
     {
