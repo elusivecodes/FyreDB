@@ -9,6 +9,7 @@ use Fyre\DB\Connection;
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Handlers\Mysql\MysqlConnection;
 use Fyre\DB\TypeParser;
+use Fyre\Event\EventManager;
 
 use function getenv;
 
@@ -41,6 +42,7 @@ trait MysqlConnectionTrait
         $container = new Container();
         $container->singleton(TypeParser::class);
         $container->singleton(Config::class);
+        $container->singleton(EventManager::class, fn(): EventManager => new EventManager());
         $container->use(Config::class)->set('Database', [
             'default' => [
                 'className' => MysqlConnection::class,

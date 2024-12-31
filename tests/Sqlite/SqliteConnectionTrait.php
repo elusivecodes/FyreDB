@@ -9,6 +9,7 @@ use Fyre\DB\Connection;
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Handlers\Sqlite\SqliteConnection;
 use Fyre\DB\TypeParser;
+use Fyre\Event\EventManager;
 
 trait SqliteConnectionTrait
 {
@@ -39,6 +40,7 @@ trait SqliteConnectionTrait
         $container = new Container();
         $container->singleton(TypeParser::class);
         $container->singleton(Config::class);
+        $container->singleton(EventManager::class, fn(): EventManager => new EventManager());
         $container->use(Config::class)->set('Database', [
             'default' => [
                 'className' => SqliteConnection::class,

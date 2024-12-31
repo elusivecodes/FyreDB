@@ -9,6 +9,7 @@ use Fyre\DB\ConnectionManager;
 use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Handlers\Mysql\MysqlConnection;
 use Fyre\DB\TypeParser;
+use Fyre\Event\EventManager;
 use PHPUnit\Framework\TestCase;
 
 use function getenv;
@@ -191,6 +192,7 @@ final class ConnectionManagerTest extends TestCase
         $container = new Container();
         $container->singleton(TypeParser::class);
         $container->singleton(Config::class);
+        $container->singleton(EventManager::class, fn(): EventManager => new EventManager());
         $container->use(Config::class)->set('Database', [
             'default' => [
                 'className' => MysqlConnection::class,

@@ -5,6 +5,7 @@ namespace Tests\Mysql;
 
 use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Handlers\Mysql\MysqlConnection;
+use Fyre\Event\Event;
 use PHPUnit\Framework\TestCase;
 
 final class ConnectionTest extends TestCase
@@ -25,6 +26,40 @@ final class ConnectionTest extends TestCase
             'utf8mb4_unicode_ci',
             $this->db->getCollation()
         );
+    }
+
+    public function testEventQuery(): void
+    {
+        $ran = false;
+        $this->db->getEventManager()->on('Db.query', function(Event $event, string $sql, array|null $params = null) use (&$ran): void {
+            $ran = true;
+
+            $this->assertSame('SELECT 1 FROM test', $sql);
+            $this->assertNull($params);
+        });
+
+        $this->db->query('SELECT 1 FROM test');
+
+        $this->assertTrue($ran);
+
+        $this->db->getEventManager()->off('Db.query');
+    }
+
+    public function testEventQueryParams(): void
+    {
+        $ran = false;
+        $this->db->getEventManager()->on('Db.query', function(Event $event, string $sql, array|null $params = null) use (&$ran): void {
+            $ran = true;
+
+            $this->assertSame('SELECT ? FROM test', $sql);
+            $this->assertSame([1], $params);
+        });
+
+        $this->db->execute('SELECT ? FROM test', [1]);
+
+        $this->assertTrue($ran);
+
+        $this->db->getEventManager()->off('Db.query');
     }
 
     public function testFailedConnection(): void

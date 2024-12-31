@@ -13,6 +13,8 @@ use Fyre\DB\Queries\ReplaceQuery;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\Queries\UpdateBatchQuery;
 use Fyre\DB\Queries\UpdateQuery;
+use Fyre\Event\EventDispatcherTrait;
+use Fyre\Event\EventManager;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -34,6 +36,8 @@ use function usort;
  */
 abstract class Connection
 {
+    use EventDispatcherTrait;
+
     protected static array $defaults = [];
 
     protected int|null $affectedRows = null;
@@ -45,6 +49,8 @@ abstract class Connection
     protected Container $container;
 
     protected QueryGenerator $generator;
+
+    protected bool $inTransaction = false;
 
     protected PDO|null $pdo = null;
 
@@ -59,12 +65,14 @@ abstract class Connection
     /**
      * New Connection constructor.
      *
+     * @param Container $container The Container.
+     * @param EventManager $eventManager The EventManager.
      * @param array $options Options for the handler.
-     * @param Container The Container.
      */
-    public function __construct(Container $container, array $options = [])
+    public function __construct(Container $container, EventManager $eventManager, array $options = [])
     {
         $this->container = $container;
+        $this->eventManager = $eventManager;
 
         $this->config = array_replace_recursive(static::$defaults, $options);
 
@@ -221,6 +229,8 @@ abstract class Connection
     {
         try {
             return $this->retry()->run(function() use ($sql, $params) {
+                $this->dispatchEvent('Db.query', ['sql' => $sql, 'params' => $params]);
+
                 $query = $this->pdo->prepare($sql);
 
                 if (array_is_list($params)) {
@@ -344,7 +354,7 @@ abstract class Connection
      */
     public function inTransaction(): bool
     {
-        return $this->pdo->inTransaction();
+        return $this->inTransaction;
     }
 
     /**
@@ -394,6 +404,8 @@ abstract class Connection
     {
         try {
             return $this->retry()->run(function() use ($sql) {
+                $this->dispatchEvent('Db.query', ['sql' => $sql]);
+
                 return $this->pdo->query($sql);
             });
         } catch (PDOException $e) {
@@ -578,9 +590,8 @@ abstract class Connection
      */
     protected function transBegin(): void
     {
-        $this->retry()->run(function() {
-            $this->pdo->beginTransaction();
-        });
+        $this->rawQuery('BEGIN');
+        $this->inTransaction = true;
     }
 
     /**
@@ -588,7 +599,8 @@ abstract class Connection
      */
     protected function transCommit(): void
     {
-        $this->pdo->commit();
+        $this->rawQuery('COMMIT');
+        $this->inTransaction = false;
     }
 
     /**
@@ -598,7 +610,7 @@ abstract class Connection
      */
     protected function transRelease(string $savePoint): void
     {
-        $this->query('RELEASE SAVEPOINT sp_'.$savePoint);
+        $this->rawQuery('RELEASE SAVEPOINT sp_'.$savePoint);
     }
 
     /**
@@ -606,7 +618,8 @@ abstract class Connection
      */
     protected function transRollback(): void
     {
-        $this->pdo->rollBack();
+        $this->rawQuery('ROLLBACK');
+        $this->inTransaction = false;
     }
 
     /**
@@ -616,7 +629,7 @@ abstract class Connection
      */
     protected function transRollbackTo(string $savePoint): void
     {
-        $this->query('ROLLBACK TO SAVEPOINT sp_'.$savePoint);
+        $this->rawQuery('ROLLBACK TO SAVEPOINT sp_'.$savePoint);
     }
 
     /**
@@ -626,6 +639,6 @@ abstract class Connection
      */
     protected function transSavepoint(string $savePoint): void
     {
-        $this->query('SAVEPOINT sp_'.$savePoint);
+        $this->rawQuery('SAVEPOINT sp_'.$savePoint);
     }
 }
