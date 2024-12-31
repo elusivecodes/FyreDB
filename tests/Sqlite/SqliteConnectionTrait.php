@@ -40,7 +40,7 @@ trait SqliteConnectionTrait
         $container = new Container();
         $container->singleton(TypeParser::class);
         $container->singleton(Config::class);
-        $container->singleton(EventManager::class, fn(): EventManager => new EventManager());
+        $container->singleton(EventManager::class);
         $container->use(Config::class)->set('Database', [
             'default' => [
                 'className' => SqliteConnection::class,
