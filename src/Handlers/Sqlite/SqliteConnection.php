@@ -6,7 +6,7 @@ namespace Fyre\DB\Handlers\Sqlite;
 use Fyre\DB\Connection;
 use Fyre\DB\DbFeature;
 use Fyre\DB\Exceptions\DbException;
-use PDO;
+use Pdo\Sqlite;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
@@ -63,17 +63,17 @@ class SqliteConnection extends Connection
         }
 
         $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            Sqlite::ATTR_ERRMODE => Sqlite::ERRMODE_EXCEPTION,
         ];
 
         if ($this->config['persist']) {
-            $options[PDO::ATTR_PERSISTENT] = true;
+            $options[Sqlite::ATTR_PERSISTENT] = true;
         }
 
         $options = array_replace($options, $this->config['flags']);
 
         try {
-            $this->pdo = new PDO($dsn, null, null, $options);
+            $this->pdo = new Sqlite($dsn, null, null, $options);
         } catch (PDOException $e) {
             throw DbException::forConnectionFailed($e->getMessage());
         }

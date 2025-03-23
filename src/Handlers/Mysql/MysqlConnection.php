@@ -6,7 +6,7 @@ namespace Fyre\DB\Handlers\Mysql;
 use Fyre\DB\Connection;
 use Fyre\DB\DbFeature;
 use Fyre\DB\Exceptions\DbException;
-use PDO;
+use Pdo\Mysql;
 use PDOException;
 use RuntimeException;
 
@@ -66,47 +66,47 @@ class MysqlConnection extends Connection
         }
 
         $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            Mysql::ATTR_ERRMODE => Mysql::ERRMODE_EXCEPTION,
         ];
 
         if ($this->config['timeout']) {
-            $options[PDO::ATTR_TIMEOUT] = $this->config['timeout'];
+            $options[Mysql::ATTR_TIMEOUT] = $this->config['timeout'];
         }
 
         if ($this->config['collation']) {
-            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET collation_connection = '.$this->config['collation'];
+            $options[Mysql::MYSQL_ATTR_INIT_COMMAND] = 'SET collation_connection = '.$this->config['collation'];
         }
 
         if ($this->config['compress']) {
-            $options[PDO::MYSQL_ATTR_COMPRESS] = true;
+            $options[Mysql::MYSQL_ATTR_COMPRESS] = true;
         }
 
         if ($this->config['persist']) {
-            $options[PDO::ATTR_PERSISTENT] = true;
+            $options[Mysql::ATTR_PERSISTENT] = true;
         }
 
         if ($this->config['ssl']) {
             if ($this->config['ssl']['key']) {
-                $options[PDO::MYSQL_ATTR_SSL_KEY] = $this->config['ssl']['key'];
+                $options[Mysql::MYSQL_ATTR_SSL_KEY] = $this->config['ssl']['key'];
             }
             if ($this->config['ssl']['cert']) {
-                $options[PDO::MYSQL_ATTR_SSL_CERT] = $this->config['ssl']['cert'];
+                $options[Mysql::MYSQL_ATTR_SSL_CERT] = $this->config['ssl']['cert'];
             }
             if ($this->config['ssl']['ca']) {
-                $options[PDO::MYSQL_ATTR_SSL_CA] = $this->config['ssl']['ca'];
+                $options[Mysql::MYSQL_ATTR_SSL_CA] = $this->config['ssl']['ca'];
             }
             if ($this->config['ssl']['capath']) {
-                $options[PDO::MYSQL_ATTR_SSL_CAPATH] = $this->config['ssl']['capath'];
+                $options[Mysql::MYSQL_ATTR_SSL_CAPATH] = $this->config['ssl']['capath'];
             }
             if ($this->config['ssl']['cipher']) {
-                $options[PDO::MYSQL_ATTR_SSL_CIPHER] = $this->config['ssl']['cipher'];
+                $options[Mysql::MYSQL_ATTR_SSL_CIPHER] = $this->config['ssl']['cipher'];
             }
         }
 
         $options = array_replace($options, $this->config['flags']);
 
         try {
-            $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password'], $options);
+            $this->pdo = new Mysql($dsn, $this->config['username'], $this->config['password'], $options);
         } catch (PDOException $e) {
             throw DbException::forConnectionFailed($e->getMessage());
         }

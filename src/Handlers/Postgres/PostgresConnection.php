@@ -7,7 +7,7 @@ use Fyre\DB\Connection;
 use Fyre\DB\DbFeature;
 use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\QueryGenerator;
-use PDO;
+use Pdo\Pgsql;
 use PDOException;
 use RuntimeException;
 
@@ -57,21 +57,21 @@ class PostgresConnection extends Connection
         }
 
         $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            Pgsql::ATTR_ERRMODE => Pgsql::ERRMODE_EXCEPTION,
         ];
 
         if ($this->config['timeout']) {
-            $options[PDO::ATTR_TIMEOUT] = $this->config['timeout'];
+            $options[Pgsql::ATTR_TIMEOUT] = $this->config['timeout'];
         }
 
         if ($this->config['persist']) {
-            $options[PDO::ATTR_PERSISTENT] = true;
+            $options[Pgsql::ATTR_PERSISTENT] = true;
         }
 
         $options = array_replace($options, $this->config['flags']);
 
         try {
-            $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password'], $options);
+            $this->pdo = new Pgsql($dsn, $this->config['username'], $this->config['password'], $options);
         } catch (PDOException $e) {
             throw DbException::forConnectionFailed($e->getMessage());
         }
