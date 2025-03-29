@@ -450,6 +450,7 @@ The MySQL connection can be loaded using custom configuration.
         - `capath` is a string representing the path to a directory containing CA certificates.
         - `cipher` is a string representing a list of allowable ciphers to use for encryption.
     - `flags` is an array containing PDO connection options.
+    - `log` is a boolean indicating whether to log queries, and will default to *false*.
 
 ```php
 $container->use(Config::class)->set('Database.mysql', $options);
@@ -479,6 +480,7 @@ The Postgres connection can be loaded using custom configuration.
     - `persist` is a boolean indicating whether to use a persistent connection, and will default to *false*.
     - `timeout` is a number indicating the connection timeout.
     - `flags` is an array containing PDO connection options.
+    - `log` is a boolean indicating whether to log queries, and will default to *false*.
 
 ```php
 $container->use(Config::class)->set('Database.postgres', $options);
@@ -506,6 +508,7 @@ The Sqlite connection can be loaded using custom configuration.
     - `mode` is a string representing the mode flag.
     - `persist` is a boolean indicating whether to use a persistent connection, and will default to *false*.
     - `flags` is an array containing PDO connection options.
+    - `log` is a boolean indicating whether to log queries, and will default to *false*.
 
 ```php
 $container->use(Config::class)->set('Database.sqlite', $options);

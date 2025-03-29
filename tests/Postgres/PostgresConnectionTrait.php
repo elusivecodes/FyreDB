@@ -10,8 +10,12 @@ use Fyre\DB\ConnectionManager;
 use Fyre\DB\Handlers\Postgres\PostgresConnection;
 use Fyre\DB\TypeParser;
 use Fyre\Event\EventManager;
+use Fyre\Log\Handlers\FileLogger;
+use Fyre\Log\LogManager;
 
 use function getenv;
+use function rmdir;
+use function unlink;
 
 trait PostgresConnectionTrait
 {
@@ -43,6 +47,7 @@ trait PostgresConnectionTrait
         $container->singleton(TypeParser::class);
         $container->singleton(Config::class);
         $container->singleton(EventManager::class);
+        $container->singleton(LogManager::class);
         $container->use(Config::class)->set('Database', [
             'default' => [
                 'className' => PostgresConnection::class,
@@ -53,6 +58,15 @@ trait PostgresConnectionTrait
                 'port' => getenv('POSTGRES_PORT'),
                 'charset' => 'utf8',
                 'persist' => true,
+            ],
+        ]);
+        $container->use(Config::class)->set('Log', [
+            'queries' => [
+                'className' => FileLogger::class,
+                'threshold' => 8,
+                'scopes' => ['queries'],
+                'path' => 'log',
+                'file' => 'queries',
             ],
         ]);
 
@@ -74,5 +88,8 @@ trait PostgresConnectionTrait
     protected function tearDown(): void
     {
         $this->db->query('DROP TABLE IF EXISTS test');
+
+        @unlink('log/queries.log');
+        @rmdir('log');
     }
 }

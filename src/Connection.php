@@ -15,6 +15,7 @@ use Fyre\DB\Queries\UpdateBatchQuery;
 use Fyre\DB\Queries\UpdateQuery;
 use Fyre\Event\EventDispatcherTrait;
 use Fyre\Event\EventManager;
+use Fyre\Log\LogManager;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -22,14 +23,21 @@ use Throwable;
 
 use function array_filter;
 use function array_is_list;
+use function array_keys;
 use function array_map;
 use function array_replace_recursive;
+use function filter_var;
 use function implode;
 use function is_bool;
 use function is_int;
 use function is_resource;
+use function is_string;
 use function min;
+use function preg_quote;
+use function preg_replace;
 use function usort;
+
+use const FILTER_VALIDATE_FLOAT;
 
 /**
  * Connection
@@ -38,7 +46,9 @@ abstract class Connection
 {
     use EventDispatcherTrait;
 
-    protected static array $defaults = [];
+    protected static array $defaults = [
+        'log' => false,
+    ];
 
     protected int|null $affectedRows = null;
 
@@ -51,6 +61,10 @@ abstract class Connection
     protected QueryGenerator $generator;
 
     protected bool $inTransaction = false;
+
+    protected LogManager $logManager;
+
+    protected bool $logQueries = false;
 
     protected PDO|null $pdo = null;
 
@@ -67,14 +81,17 @@ abstract class Connection
      *
      * @param Container $container The Container.
      * @param EventManager $eventManager The EventManager.
+     * @param LogManager $logManager The LogManager.
      * @param array $options Options for the handler.
      */
-    public function __construct(Container $container, EventManager $eventManager, array $options = [])
+    public function __construct(Container $container, EventManager $eventManager, LogManager $logManager, array $options = [])
     {
         $this->container = $container;
         $this->eventManager = $eventManager;
+        $this->logManager = $logManager;
 
-        $this->config = array_replace_recursive(static::$defaults, $options);
+        $this->config = array_replace_recursive(self::$defaults, static::$defaults, $options);
+        $this->logQueries = $this->config['log'];
 
         $this->connect();
     }
@@ -84,6 +101,10 @@ abstract class Connection
      */
     public function __destruct()
     {
+        if ($this->inTransaction) {
+            $this->logManager->handle('warning', 'Connection closing while a transaction is in process.');
+        }
+
         $this->disconnect();
     }
 
@@ -207,6 +228,18 @@ abstract class Connection
     }
 
     /**
+     * Disable query logging.
+     *
+     * @return Connection The Connection.
+     */
+    public function disableQueryLogging(): static
+    {
+        $this->logQueries = false;
+
+        return $this;
+    }
+
+    /**
      * Disconnect from the database.
      */
     public function disconnect(): bool
@@ -214,6 +247,18 @@ abstract class Connection
         $this->pdo = null;
 
         return true;
+    }
+
+    /**
+     * Enable query logging.
+     *
+     * @return Connection The Connection.
+     */
+    public function enableQueryLogging(): static
+    {
+        $this->logQueries = true;
+
+        return $this;
     }
 
     /**
@@ -230,6 +275,45 @@ abstract class Connection
         try {
             return $this->retry()->run(function() use ($sql, $params) {
                 $this->dispatchEvent('Db.query', ['sql' => $sql, 'params' => $params]);
+
+                if ($this->logQueries) {
+                    if ($params === []) {
+                        $logMessage = $sql;
+                    } else {
+                        $logParams = array_map(function(mixed $value): string {
+                            if ($value === null) {
+                                return 'NULL';
+                            }
+
+                            if ($value === false) {
+                                return 'FALSE';
+                            }
+
+                            if ($value === true) {
+                                return 'TRUE';
+                            }
+
+                            $value = (string) $value;
+
+                            if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false) {
+                                return $value;
+                            }
+
+                            return $this->quote($value);
+                        }, $params);
+
+                        $logKeys = array_map(
+                            fn(string $key): int|string => is_string($key) ?
+                                '/:'.preg_quote($key, '/').'\b/' :
+                                '/[?]/',
+                            array_keys($params)
+                        );
+
+                        $logMessage = preg_replace($logKeys, $logParams, $sql);
+                    }
+
+                    $this->logManager->handle('debug', $logMessage, scope: 'queries');
+                }
 
                 $query = $this->pdo->prepare($sql);
 
@@ -405,6 +489,10 @@ abstract class Connection
         try {
             return $this->retry()->run(function() use ($sql) {
                 $this->dispatchEvent('Db.query', ['sql' => $sql]);
+
+                if ($this->logQueries) {
+                    $this->logManager->handle('debug', $sql, scope: 'queries');
+                }
 
                 return $this->pdo->query($sql);
             });
