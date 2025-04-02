@@ -24,7 +24,7 @@
         "fyre/container": "^1.0",
         "fyre/datetime": "^3.0",
         "fyre/event": "^4.0",
-        "fyre/log": "^5.2",
+        "fyre/log": "^6.0",
         "fyre/typeparser": "^5.0"
     },
     "require-dev": {
