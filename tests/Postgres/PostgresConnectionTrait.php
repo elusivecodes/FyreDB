@@ -63,7 +63,6 @@ trait PostgresConnectionTrait
         $container->use(Config::class)->set('Log', [
             'queries' => [
                 'className' => FileLogger::class,
-                'threshold' => 8,
                 'scopes' => ['queries'],
                 'path' => 'log',
                 'file' => 'queries',
@@ -89,7 +88,7 @@ trait PostgresConnectionTrait
     {
         $this->db->query('DROP TABLE IF EXISTS test');
 
-        @unlink('log/queries.log');
+        @unlink('log/queries-cli.log');
         @rmdir('log');
     }
 }

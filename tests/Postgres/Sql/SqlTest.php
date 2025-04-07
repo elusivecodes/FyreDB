@@ -60,7 +60,7 @@ final class SqlTest extends TestCase
 
         $this->assertStringContainsString(
             'SELECT test.id, test.name FROM test WHERE test.name = \'test\'',
-            file_get_contents('log/queries.log')
+            file_get_contents('log/queries-cli.log')
         );
     }
 
@@ -74,7 +74,7 @@ final class SqlTest extends TestCase
 
         $this->assertStringContainsString(
             'SELECT 1',
-            file_get_contents('log/queries.log')
+            file_get_contents('log/queries-cli.log')
         );
     }
 
