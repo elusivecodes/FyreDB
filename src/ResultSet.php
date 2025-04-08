@@ -237,6 +237,11 @@ abstract class ResultSet implements Countable, Iterator
 
             for ($i = 0; $i < $columnCount; $i++) {
                 $column = $this->result->getColumnMeta($i);
+
+                if (!$column) {
+                    continue;
+                }
+
                 $name = $column['name'];
 
                 $this->columnMeta[$name] = $column;
