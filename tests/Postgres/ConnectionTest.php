@@ -74,6 +74,107 @@ final class ConnectionTest extends TestCase
         $this->db->query('INVALID');
     }
 
+    public function testForeignKeys(): void
+    {
+        $this->db->rawQuery(
+            'ALTER TABLE test ADD COLUMN test_id INTEGER'
+        );
+
+        $this->db->rawQuery(
+            'ALTER TABLE test ADD CONSTRAINT test_fk FOREIGN KEY (test_id) REFERENCES test(id) ON DELETE CASCADE ON UPDATE CASCADE DEFERRABLE INITIALLY IMMEDIATE'
+        );
+
+        $this->db->begin();
+
+        $this->assertSame(
+            $this->db,
+            $this->db->disableForeignKeys()
+        );
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test',
+                    'test_id' => 2,
+                ],
+            ])
+            ->execute();
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2',
+                    'test_id' => 1,
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            $this->db,
+            $this->db->enableForeignKeys()
+        );
+
+        $this->db->commit();
+    }
+
+    public function testTruncate(): void
+    {
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test',
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            [
+                'id' => 1,
+                'name' => 'Test',
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->first()
+        );
+
+        $this->assertSame(
+            $this->db,
+            $this->db->truncate('test')
+        );
+
+        $this->assertSame(
+            [],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->all()
+        );
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            [
+                'id' => 1,
+                'name' => 'Test 2',
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->first()
+        );
+    }
+
     public function testVersion(): void
     {
         $this->assertMatchesRegularExpression(

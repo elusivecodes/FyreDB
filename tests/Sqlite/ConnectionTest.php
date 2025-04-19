@@ -60,6 +60,87 @@ final class ConnectionTest extends TestCase
         $this->db->query('INVALID');
     }
 
+    public function testForeignKeys(): void
+    {
+        $this->assertSame(
+            $this->db,
+            $this->db->disableForeignKeys()
+        );
+
+        $this->assertSame(
+            0,
+            $this->db->query('PRAGMA foreign_keys')
+                ->first()['foreign_keys']
+        );
+
+        $this->assertSame(
+            $this->db,
+            $this->db->enableForeignKeys()
+        );
+
+        $this->assertSame(
+            1,
+            $this->db->query('PRAGMA foreign_keys')
+                ->first()['foreign_keys']
+        );
+    }
+
+    public function testTruncate(): void
+    {
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test',
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            [
+                'id' => 1,
+                'name' => 'Test',
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->first()
+        );
+
+        $this->assertSame(
+            $this->db,
+            $this->db->truncate('test')
+        );
+
+        $this->assertSame(
+            [],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->all()
+        );
+
+        $this->db->insert()
+            ->into('test')
+            ->values([
+                [
+                    'name' => 'Test 2',
+                ],
+            ])
+            ->execute();
+
+        $this->assertSame(
+            [
+                'id' => 1,
+                'name' => 'Test 2',
+            ],
+            $this->db->select()
+                ->from('test')
+                ->execute()
+                ->first()
+        );
+    }
+
     public function testVersion(): void
     {
         $this->assertMatchesRegularExpression(

@@ -222,12 +222,44 @@ Create a [*DeleteQuery*](#delete).
 $query = $connection->delete($alias);
 ```
 
+**Disable Foreign Keys**
+
+Disable foreign key checks.
+
+```php
+$connection->disableForeignKeys();
+```
+
+**Disable Query Logging**
+
+Disable query logging.
+
+```php
+$connection->disableQueryLogging();
+```
+
 **Disconnect**
 
 Disconnect from the database.
 
 ```php
 $connection->disconnect();
+```
+
+**Enable Foreign Keys**
+
+Enable foreign key checks.
+
+```php
+$connection->enableForeignKeys();
+```
+
+**Enable Query Logging**
+
+Enable query logging.
+
+```php
+$connection->enableQueryLogging();
 ```
 
 **Execute**
@@ -393,6 +425,16 @@ $result = $connection->transactional($callback);
 ```
 
 If the callback returns *false* or throws an *Exception* the transaction will be rolled back, otherwise it will be committed.
+
+**Truncate**
+
+Truncate a table.
+
+- `$tableName` is a string representing the table name.
+
+```php
+$connection->truncate($tableName);
+```
 
 **Update**
 

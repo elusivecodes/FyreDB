@@ -86,6 +86,30 @@ class PostgresConnection extends Connection
     }
 
     /**
+     * Disable foreign key checks.
+     *
+     * @return Connection The Connection.
+     */
+    public function disableForeignKeys(): static
+    {
+        $this->rawQuery('SET CONSTRAINTS ALL DEFERRED');
+
+        return $this;
+    }
+
+    /**
+     * Enable foreign key checks.
+     *
+     * @return Connection The Connection.
+     */
+    public function enableForeignKeys(): static
+    {
+        $this->rawQuery('SET CONSTRAINTS ALL IMMEDIATE');
+
+        return $this;
+    }
+
+    /**
      * Get the query generator.
      *
      * @return QueryGenerator The query generator.
@@ -144,6 +168,19 @@ class PostgresConnection extends Connection
             DbFeature::UpdateFrom => true,
             default => false,
         };
+    }
+
+    /**
+     * Truncate a table.
+     *
+     * @param string $tableName The table name.
+     * @return Connection The Connection.
+     */
+    public function truncate(string $tableName): static
+    {
+        $this->rawQuery('TRUNCATE '.$tableName.' RESTART IDENTITY CASCADE');
+
+        return $this;
     }
 
     /**

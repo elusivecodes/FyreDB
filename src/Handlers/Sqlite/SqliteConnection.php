@@ -33,6 +33,8 @@ class SqliteConnection extends Connection
         'flags' => [],
     ];
 
+    protected bool $hasSequences;
+
     /**
      * Connect to the database.
      *
@@ -84,6 +86,30 @@ class SqliteConnection extends Connection
     }
 
     /**
+     * Disable foreign key checks.
+     *
+     * @return Connection The Connection.
+     */
+    public function disableForeignKeys(): static
+    {
+        $this->rawQuery('PRAGMA foreign_keys = OFF');
+
+        return $this;
+    }
+
+    /**
+     * Enable foreign key checks.
+     *
+     * @return Connection The Connection.
+     */
+    public function enableForeignKeys(): static
+    {
+        $this->rawQuery('PRAGMA foreign_keys = ON');
+
+        return $this;
+    }
+
+    /**
      * Get the connection charset.
      *
      * @return string The connection charset.
@@ -91,6 +117,22 @@ class SqliteConnection extends Connection
     public function getCharset(): string
     {
         return $this->rawQuery('PRAGMA ENCODING')->fetchColumn();
+    }
+
+    /**
+     * Determine whether the database contains any sequences.
+     *
+     * @return bool TRUE if the database contains any sequences, otherwise FALSE.
+     */
+    public function hasSequences(): bool
+    {
+        return $this->hasSequences ??= $this->select('1')
+            ->from('sqlite_master')
+            ->where([
+                'name' => 'sqlite_sequence',
+            ])
+            ->execute()
+            ->count() > 0;
     }
 
     /**
@@ -119,6 +161,30 @@ class SqliteConnection extends Connection
             DbFeature::UpdateFrom => true,
             default => false,
         };
+    }
+
+    /**
+     * Truncate a table.
+     *
+     * @param string $tableName The table name.
+     * @return Connection The Connection.
+     */
+    public function truncate(string $tableName): static
+    {
+        if ($this->hasSequences()) {
+            $this->delete()
+                ->from('sqlite_sequence')
+                ->where([
+                    'name' => $tableName,
+                ])
+                ->execute();
+        }
+
+        $this->delete()
+            ->from($tableName)
+            ->execute();
+
+        return $this;
     }
 
     /**

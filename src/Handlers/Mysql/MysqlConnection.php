@@ -113,6 +113,30 @@ class MysqlConnection extends Connection
     }
 
     /**
+     * Disable foreign key checks.
+     *
+     * @return Connection The Connection.
+     */
+    public function disableForeignKeys(): static
+    {
+        $this->rawQuery('SET FOREIGN_KEY_CHECKS = 0');
+
+        return $this;
+    }
+
+    /**
+     * Enable foreign key checks.
+     *
+     * @return Connection The Connection.
+     */
+    public function enableForeignKeys(): static
+    {
+        $this->rawQuery('SET FOREIGN_KEY_CHECKS = 1');
+
+        return $this;
+    }
+
+    /**
      * Get the connection charset.
      *
      * @return string The connection charset.
@@ -149,6 +173,19 @@ class MysqlConnection extends Connection
             DbFeature::UpdateMultipleTables => true,
             default => false,
         };
+    }
+
+    /**
+     * Truncate a table.
+     *
+     * @param string $tableName The table name.
+     * @return Connection The Connection.
+     */
+    public function truncate(string $tableName): static
+    {
+        $this->rawQuery('TRUNCATE TABLE '.$tableName);
+
+        return $this;
     }
 
     /**

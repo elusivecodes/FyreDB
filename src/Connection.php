@@ -228,6 +228,13 @@ abstract class Connection
     }
 
     /**
+     * Disable foreign key checks.
+     *
+     * @return Connection The Connection.
+     */
+    abstract public function disableForeignKeys(): static;
+
+    /**
      * Disable query logging.
      *
      * @return Connection The Connection.
@@ -248,6 +255,13 @@ abstract class Connection
 
         return true;
     }
+
+    /**
+     * Enable foreign key checks.
+     *
+     * @return Connection The Connection.
+     */
+    abstract public function enableForeignKeys(): static;
 
     /**
      * Enable query logging.
@@ -608,6 +622,14 @@ abstract class Connection
 
         return true;
     }
+
+    /**
+     * Truncate a table.
+     *
+     * @param string $tableName The table name.
+     * @return Connection The Connection.
+     */
+    abstract public function truncate(string $tableName): static;
 
     /**
      * Create an UpdateQuery.
