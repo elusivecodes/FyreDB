@@ -20,8 +20,6 @@ class ConnectionManager
 
     protected array $config = [];
 
-    protected Container $container;
-
     protected array $instances = [];
 
     /**
@@ -31,10 +29,10 @@ class ConnectionManager
      * @param Config $config The Config.
      * @param array $config The ConnectionManager config.
      */
-    public function __construct(Container $container, Config $config)
-    {
-        $this->container = $container;
-
+    public function __construct(
+        protected Container $container,
+        Config $config
+    ) {
         $handlers = $config->get('Database', []);
 
         foreach ($handlers as $key => $options) {

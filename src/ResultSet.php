@@ -28,21 +28,16 @@ abstract class ResultSet implements Countable, Iterator
 
     protected int $index = 0;
 
-    protected PDOStatement $result;
-
-    protected TypeParser $typeParser;
-
     /**
      * New ResultSet constructor.
      *
      * @param PDOStatement $result The raw result.
      * @param TypeParser $typeParser The TypeParser.
      */
-    public function __construct(PDOStatement $result, TypeParser $typeParser)
-    {
-        $this->result = $result;
-        $this->typeParser = $typeParser;
-    }
+    public function __construct(
+        protected PDOStatement $result,
+        protected TypeParser $typeParser
+    ) {}
 
     /**
      * Get the results as an array.

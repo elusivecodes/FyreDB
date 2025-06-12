@@ -56,13 +56,9 @@ abstract class Connection
 
     protected array $config;
 
-    protected Container $container;
-
     protected QueryGenerator $generator;
 
     protected bool $inTransaction = false;
-
-    protected LogManager $logManager;
 
     protected bool $logQueries = false;
 
@@ -84,12 +80,12 @@ abstract class Connection
      * @param LogManager $logManager The LogManager.
      * @param array $options Options for the handler.
      */
-    public function __construct(Container $container, EventManager $eventManager, LogManager $logManager, array $options = [])
-    {
-        $this->container = $container;
-        $this->eventManager = $eventManager;
-        $this->logManager = $logManager;
-
+    public function __construct(
+        protected Container $container,
+        protected EventManager $eventManager,
+        protected LogManager $logManager,
+        array $options = []
+    ) {
         $this->config = array_replace_recursive(self::$defaults, static::$defaults, $options);
         $this->logQueries = $this->config['log'];
 

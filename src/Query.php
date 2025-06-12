@@ -19,8 +19,6 @@ abstract class Query
 
     protected static bool $virtualTables = false;
 
-    protected Connection $connection;
-
     protected bool $dirty = false;
 
     protected bool $multipleTables = false;
@@ -35,10 +33,10 @@ abstract class Query
      * @param Connection $connection The connection.
      * @param array|string|null $table The table.
      */
-    public function __construct(Connection $connection, array|string|null $table = null)
-    {
-        $this->connection = $connection;
-
+    public function __construct(
+        protected Connection $connection,
+        array|string|null $table = null
+    ) {
         if ($table) {
             $this->table($table);
         }

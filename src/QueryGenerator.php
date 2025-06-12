@@ -38,10 +38,6 @@ use const FILTER_VALIDATE_FLOAT;
  */
 class QueryGenerator
 {
-    protected Connection $connection;
-
-    protected TypeParser $typeParser;
-
     /**
      * Combine conditions.
      *
@@ -142,11 +138,10 @@ class QueryGenerator
      * @param Connection $connection The connection.
      * @param TypeParser $typeParser The TypeParser.
      */
-    public function __construct(Connection $connection, TypeParser $typeParser)
-    {
-        $this->connection = $connection;
-        $this->typeParser = $typeParser;
-    }
+    public function __construct(
+        protected Connection $connection,
+        protected TypeParser $typeParser
+    ) {}
 
     /**
      * Compile a DeleteQuery to SQL.

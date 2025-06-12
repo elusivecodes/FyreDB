@@ -18,12 +18,6 @@ class ConnectionRetry
         2006, // gone away
     ];
 
-    protected Connection $connection;
-
-    protected int $maxRetries;
-
-    protected int $reconnectDelay;
-
     protected int $retries = 0;
 
     /**
@@ -33,12 +27,11 @@ class ConnectionRetry
      * @param int $reconnectDelay The number of milliseconds to wait before reconnecting.
      * @param int $maxRetries The maximum number of retries.
      */
-    public function __construct(Connection $connection, int $reconnectDelay = 100, int $maxRetries = 1)
-    {
-        $this->connection = $connection;
-        $this->reconnectDelay = $reconnectDelay;
-        $this->maxRetries = $maxRetries;
-    }
+    public function __construct(
+        protected Connection $connection,
+        protected int $reconnectDelay = 100,
+        protected int $maxRetries = 1
+    ) {}
 
     /**
      * Get the number of retry attempts.

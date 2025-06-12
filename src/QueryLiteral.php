@@ -8,17 +8,14 @@ namespace Fyre\DB;
  */
 class QueryLiteral
 {
-    protected string $string;
-
     /**
      * New QueryLiteral constructor.
      *
      * @param string $string The literal string.
      */
-    public function __construct(string $string)
-    {
-        $this->string = $string;
-    }
+    public function __construct(
+        protected string $string
+    ) {}
 
     /**
      * Get the literal string.
