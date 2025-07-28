@@ -5,6 +5,7 @@ namespace Fyre\DB;
 
 use Countable;
 use Fyre\DB\Types\Type;
+use Fyre\Utility\Traits\MacroTrait;
 use Iterator;
 use PDO;
 use PDOStatement;
@@ -20,6 +21,8 @@ use function count;
  */
 abstract class ResultSet implements Countable, Iterator
 {
+    use MacroTrait;
+
     protected static array $types = [];
 
     protected array $buffer = [];

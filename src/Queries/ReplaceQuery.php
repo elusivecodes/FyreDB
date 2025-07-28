@@ -7,6 +7,7 @@ use Fyre\DB\Queries\Traits\EpilogTrait;
 use Fyre\DB\Queries\Traits\IntoTrait;
 use Fyre\DB\Query;
 use Fyre\DB\ValueBinder;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_merge;
 
@@ -17,6 +18,7 @@ class ReplaceQuery extends Query
 {
     use EpilogTrait;
     use IntoTrait;
+    use MacroTrait;
 
     protected array $values = [];
 

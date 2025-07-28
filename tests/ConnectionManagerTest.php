@@ -5,14 +5,23 @@ namespace Tests;
 
 use Fyre\Config\Config;
 use Fyre\Container\Container;
+use Fyre\DB\Connection;
 use Fyre\DB\ConnectionManager;
 use Fyre\DB\Exceptions\DbException;
 use Fyre\DB\Handlers\Mysql\MysqlConnection;
+use Fyre\DB\Queries\DeleteQuery;
+use Fyre\DB\Queries\InsertQuery;
+use Fyre\DB\Queries\ReplaceQuery;
+use Fyre\DB\Queries\SelectQuery;
+use Fyre\DB\Queries\UpdateQuery;
+use Fyre\DB\ResultSet;
 use Fyre\DB\TypeParser;
 use Fyre\Event\EventManager;
 use Fyre\Log\LogManager;
+use Fyre\Utility\Traits\MacroTrait;
 use PHPUnit\Framework\TestCase;
 
+use function class_uses;
 use function getenv;
 
 final class ConnectionManagerTest extends TestCase
@@ -102,6 +111,44 @@ final class ConnectionManagerTest extends TestCase
 
         $this->assertTrue(
             $this->connection->isLoaded('other')
+        );
+    }
+
+    public function testMacroable(): void
+    {
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(Connection::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(ResultSet::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(DeleteQuery::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(InsertQuery::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(ReplaceQuery::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(SelectQuery::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(UpdateQuery::class)
         );
     }
 

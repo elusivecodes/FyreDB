@@ -11,6 +11,7 @@ use Fyre\DB\Queries\Traits\JoinTrait;
 use Fyre\DB\Queries\Traits\WhereTrait;
 use Fyre\DB\Query;
 use Fyre\DB\ValueBinder;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_merge;
 
@@ -23,6 +24,7 @@ class UpdateQuery extends Query
     use JoinTrait {
         JoinTrait::join as protected _join;
     }
+    use MacroTrait;
     use WhereTrait;
 
     protected static bool $tableAliases = true;

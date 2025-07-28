@@ -14,6 +14,7 @@ use Fyre\DB\Queries\Traits\OrderByTrait;
 use Fyre\DB\Queries\Traits\WhereTrait;
 use Fyre\DB\Query;
 use Fyre\DB\ValueBinder;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_filter;
 use function array_merge;
@@ -29,6 +30,7 @@ class DeleteQuery extends Query
         JoinTrait::join as protected _join;
     }
     use LimitTrait;
+    use MacroTrait;
     use OrderByTrait;
     use WhereTrait;
 

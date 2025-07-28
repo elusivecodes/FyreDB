@@ -25,6 +25,7 @@
         "fyre/datetime": "^3.0",
         "fyre/event": "^4.0",
         "fyre/log": "^6.0",
+        "fyre/macro": "^1.0",
         "fyre/typeparser": "^5.0"
     },
     "require-dev": {

@@ -16,6 +16,7 @@ use Fyre\DB\Queries\UpdateQuery;
 use Fyre\Event\EventDispatcherTrait;
 use Fyre\Event\EventManager;
 use Fyre\Log\LogManager;
+use Fyre\Utility\Traits\MacroTrait;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -45,6 +46,7 @@ use const FILTER_VALIDATE_FLOAT;
 abstract class Connection
 {
     use EventDispatcherTrait;
+    use MacroTrait;
 
     protected static array $defaults = [
         'log' => false,

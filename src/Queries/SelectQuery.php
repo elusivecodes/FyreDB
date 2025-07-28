@@ -18,6 +18,7 @@ use Fyre\DB\Queries\Traits\WhereTrait;
 use Fyre\DB\Queries\Traits\WithTrait;
 use Fyre\DB\Query;
 use Fyre\DB\ValueBinder;
+use Fyre\Utility\Traits\MacroTrait;
 
 /**
  * SelectQuery
@@ -31,6 +32,7 @@ class SelectQuery extends Query
     use HavingTrait;
     use JoinTrait;
     use LimitOffsetTrait;
+    use MacroTrait;
     use OrderByTrait;
     use SelectTrait;
     use UnionTrait;
