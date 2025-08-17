@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\DB;
 
 use Countable;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function count;
 
@@ -12,6 +13,8 @@ use function count;
  */
 class ValueBinder implements Countable
 {
+    use MacroTrait;
+
     protected array $bindings = [];
 
     /**

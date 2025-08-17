@@ -6,6 +6,7 @@ namespace Fyre\DB;
 use Fyre\Config\Config;
 use Fyre\Container\Container;
 use Fyre\DB\Exceptions\DbException;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_key_exists;
 use function class_exists;
@@ -16,6 +17,8 @@ use function is_subclass_of;
  */
 class ConnectionManager
 {
+    use MacroTrait;
+
     public const DEFAULT = 'default';
 
     protected array $config = [];

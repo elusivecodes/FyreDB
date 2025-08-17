@@ -14,8 +14,11 @@ use Fyre\DB\Queries\InsertQuery;
 use Fyre\DB\Queries\ReplaceQuery;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\Queries\UpdateQuery;
+use Fyre\DB\QueryGenerator;
+use Fyre\DB\QueryLiteral;
 use Fyre\DB\ResultSet;
 use Fyre\DB\TypeParser;
+use Fyre\DB\ValueBinder;
 use Fyre\Event\EventManager;
 use Fyre\Log\LogManager;
 use Fyre\Utility\Traits\MacroTrait;
@@ -118,6 +121,11 @@ final class ConnectionManagerTest extends TestCase
     {
         $this->assertContains(
             MacroTrait::class,
+            class_uses(ConnectionManager::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
             class_uses(Connection::class)
         );
 
@@ -149,6 +157,21 @@ final class ConnectionManagerTest extends TestCase
         $this->assertContains(
             MacroTrait::class,
             class_uses(UpdateQuery::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(QueryGenerator::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(QueryLiteral::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(ValueBinder::class)
         );
     }
 

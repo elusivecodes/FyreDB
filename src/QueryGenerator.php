@@ -12,6 +12,7 @@ use Fyre\DB\Queries\ReplaceQuery;
 use Fyre\DB\Queries\SelectQuery;
 use Fyre\DB\Queries\UpdateBatchQuery;
 use Fyre\DB\Queries\UpdateQuery;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_filter;
 use function array_key_exists;
@@ -38,6 +39,8 @@ use const FILTER_VALIDATE_FLOAT;
  */
 class QueryGenerator
 {
+    use MacroTrait;
+
     /**
      * Combine conditions.
      *

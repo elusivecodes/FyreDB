@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace Fyre\DB;
 
+use Fyre\Utility\Traits\MacroTrait;
+
 /**
  * QueryLiteral
  */
 class QueryLiteral
 {
+    use MacroTrait;
+
     /**
      * New QueryLiteral constructor.
      *
